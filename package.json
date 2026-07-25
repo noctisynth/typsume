@@ -1,0 +1,27 @@
+{
+  "name": "typst-resume",
+  "private": true,
+  "type": "module",
+  "description": "Data-driven Typst resume compiler. CLI + Web share one schema and one WASM compiler.",
+  "version": "0.0.0",
+  "workspaces": [
+    "packages/*",
+    "templates/*"
+  ],
+  "scripts": {
+    "check": "biome check .",
+    "fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "bun run -F '*' test",
+    "test:core": "bun run -F @typst-resume/core test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "bun": ">=1.4.0",
+    "node": ">=20.0.0"
+  },
+  "packageManager": "bun@1.4.0"
+}

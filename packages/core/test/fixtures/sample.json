@@ -1,0 +1,60 @@
+{
+  "schema": "cv/1.0",
+  "basics": {
+    "name": "Xxx Yyy",
+    "title": "Software Engineer",
+    "contacts": [
+      { "icon": "email", "text": "name@example.com", "link": "https://example.com" },
+      { "icon": "github", "text": "github.com/example", "link": "https://github.com/example" }
+    ]
+  },
+  "skills": [
+    {
+      "name": "Languages",
+      "items": [
+        { "name": "TypeScript", "level": "精通" },
+        { "name": "Rust", "level": "熟悉" },
+        { "name": "Python", "level": "了解" }
+      ]
+    },
+    {
+      "name": "Frameworks",
+      "items": [{ "name": "React" }, { "name": "Bun" }]
+    }
+  ],
+  "education": [
+    {
+      "title": "B.S. in Computer Science",
+      "subtitle": "Sample University",
+      "period": "2018 - 2022",
+      "highlights": ["Dean's List"]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Senior Engineer",
+      "subtitle": "Example Corp",
+      "period": "2022 - present",
+      "stack": ["TypeScript", "Rust", "PostgreSQL"],
+      "links": [{ "label": "Project", "href": "https://example.com" }],
+      "body": "Worked on distributed systems.",
+      "highlights": ["Cut p95 latency by 40%", "Migrated legacy service to typed RPC"]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Sample Project",
+      "subtitle": "Open-source CLI",
+      "period": "2024",
+      "stack": ["Bun", "TypeScript"],
+      "links": [{ "label": "repo", "href": "https://github.com/example/sample" }],
+      "highlights": ["100+ GitHub stars"]
+    }
+  ],
+  "awards": [{ "title": "Sample Award", "date": "2023" }],
+  "meta": {
+    "template": "default",
+    "locale": "zh-CN",
+    "fontSize": 10
+  }
+}

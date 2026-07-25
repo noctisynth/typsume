@@ -1,0 +1,13 @@
+{
+  "schema": "cv/2.0",
+  "basics": {
+    "name": "Xxx Yyy",
+    "contacts": [{ "icon": "email", "text": "name@example.com", "link": "not-a-url" }]
+  },
+  "skills": [
+    {
+      "name": "Languages",
+      "items": [{ "name": "TypeScript", "level": "略懂" }]
+    }
+  ]
+}
