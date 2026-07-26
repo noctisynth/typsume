@@ -93,8 +93,9 @@ typst-resume/
 
 ```ts
 type ResumeData = {
-  basics:    { name, photo?, contacts[] }
-  skills:    { name, items[] }[]
+  schema:    'typst-resume/1.0'
+  basics:    { name, title?, photo?, contacts[] }
+  skills:    { name, items: { name, level? }[] }[]
   education: Item[]
   experience: Item[]
   projects:  Item[]
@@ -105,7 +106,8 @@ type ResumeData = {
 type Item = {
   title, subtitle?, period?, stack?[],
   links?: { label, href }[],
-  body?, highlights: string[]
+  body?, highlights: string[],
+  extra?: Record<string, unknown>
 }
 ```
 
@@ -113,13 +115,13 @@ type Item = {
 
 详见三份子文档的"验证清单（DoD）"。**总里程碑**：
 
-| W | 范围 | 出口 |
-|---|------|------|
-| W1 | packages/core 起架 + Zod schema + types（Bun workspace） | 单元测试通过 |
-| W2 | templates/default 改造（参考一份高质量中文 typst 简历样式） | CLI smoke：占位 JSON 出 PDF |
-| W3 | packages/cli MVP（Bun + citty） | `typsume build / validate / dump / templates` 可用 |
-| W4 | packages/web 起架 + typst.ts 集成 + 表单 + 实时预览 | 浏览器填表出 PDF |
-| W5 | 第二个模板 + IndexedDB 多版本 + 国际化 + e2e | 提 PR 给简历圈 |
+| W | 范围 | 出口 | 状态 |
+|---|------|------|------|
+| W1 | packages/core 起架 + Zod schema + types（Bun workspace） | 单元测试通过 | ✅ |
+| W2 | templates/default 改造 + typst.ts WASM smoke | 占位 JSON 出 PDF（视觉 ≥ 95%） | ✅ |
+| W3 | packages/cli MVP（Bun + citty） | `typsume build / validate / dump / templates / init / dev` 可用 | ▶ |
+| W4 | packages/web 起架 + typst.ts 集成 + 表单 + 实时预览 | 浏览器填表出 PDF | |
+| W5 | 第二个模板 + IndexedDB 多版本 + 国际化 + e2e | 提 PR 给简历圈 | |
 
 ## 9. 风险与决策记录
 
@@ -127,7 +129,7 @@ type Item = {
 |---|------|---------|------|
 | R1 | Markdown DSL 设计曾被考虑，**被否决**（用户明确不采纳） | 仅 JSON / YAML / TOML 输入 | 未来仍可探索，但不在 v1 范围 |
 | R2 | typst.ts WASM 体积大（~5MB） | 首屏不加载，进入编辑器按需加载 + 子集字体 | v1.1 考虑 Service Worker 缓存 |
-| R3 | Zod → JSON Schema 同步偏移 | CI 中 `schema.test.ts` 双向校验 | 弃 JSON Schema 只用 Zod |
+| R3 | Zod → JSON Schema 同步偏移 | CI 中 `schema.test.ts` 双向校验 | Zod 4 内置 `z.toJSONSchema()`，直接推导，无 drift 风险 |
 | R4 | 多端 schema drift | `packages/core` 是 workspace 公共依赖，monorepo 强约束 | 包版本锁 + CI 校验 |
 | R5 | 自定义模板上传 v1 不做 | 模板作者通过 PR 贡献 | v2 做模板市集 |
 | R6 | CLI 分发/单 binary | Bun runtime + WASM artifact 单一目标；v1 通过 `bun add typsume` 即可（**用户无需安装 typst**） | v1.1 用 `bun build --compile` 出单 binary；v2 可选 Rust 重写 |
