@@ -1,52 +1,48 @@
-# typsume
+# Typsume
 
-数据驱动 Typst 简历编译器。JSON / YAML / TOML → PDF，全流程 WASM 编译，无需安装 Typst。
+Data-driven Typst resume compiler. JSON / YAML / TOML → PDF via WASM, no system Typst required.
 
-## 快速开始
+## Quick start
 
 ```bash
 bun install
 
-# 构建示例简历
+# build sample resume
 bun run typsume build examples/sample/resume.json
 
-# 新建项目
+# create a new project
 bun run typsume init my-resume
 cd my-resume
 bun run typsume build resume.json
 ```
 
-## 结构
+## Structure
 
 ```
-@typsume/workspace         根工作区
+@typsume/workspace         root workspace
 ├── packages/
-│   ├── core               共享 Zod schema + TS 类型 + JSON Schema
-│   └── cli                typsume CLI（citty + typst.ts WASM）
+│   ├── core               shared Zod schema + TS types + JSON Schema
+│   └── cli                typsume CLI (citty + typst.ts WASM)
 ├── templates/
-│   └── default/           默认双栏简历模板
+│   └── default/           default two-column resume template
 ├── examples/
-│   └── sample/            示例占位数据
-└── .changes/              smif 变更集
+│   └── sample/            sample placeholder data
+└── .changes/              smif changesets
 ```
 
 ## CLI
 
-| 命令 | 功能 |
-|------|------|
-| `typsume build <source>` | 校验并编译为 PDF |
-| `typsume validate <source>` | 仅校验 schema |
-| `typsume dump <source>` | 标准化并输出 JSON |
-| `typsume templates` | 列出可用模板 |
-| `typsume init [dir]` | 初始化最小项目 |
-| `typsume dev <source>` | 监听文件变更自动重建 |
+| Command | Description |
+|---------|-------------|
+| `typsume build <source>` | Validate and compile to PDF |
+| `typsume validate <source>` | Schema validation only |
+| `typsume dump <source>` | Normalize and print JSON |
+| `typsume templates` | List available templates |
+| `typsume init [dir]` | Scaffold a minimal project |
+| `typsume dev <source>` | Watch and rebuild on change |
 
-输入支持 JSON、YAML、TOML。
+Input formats: JSON, YAML, TOML.
 
-## 字体
-
-模板默认使用 Maple Mono NF（SIL OFL 1.1）。字体文件不纳入版本控制，请自行下载放置于 `templates/*/fonts/`。
-
-## 许可证
+## License
 
 MIT
