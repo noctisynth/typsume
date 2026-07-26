@@ -19,8 +19,8 @@ icon-color   = "#0b628b"
 
 # Maple Mono NF CN: open-source monospace (SIL OFL 1.1) with Chinese
 # coverage from Resource Han Rounded. Bundled under ./fonts/. See OFL-NOTICE.txt.
-font         = "Maple Mono NF CN"
-mono-font    = "Maple Mono NF CN"
+font         = "Maple Mono NF"
+mono-font    = "Maple Mono NF"
 
 font-size    = 10
 heading-size = 13

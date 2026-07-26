@@ -33,7 +33,7 @@
   show link: set text(fill: rgb_of(colors.link))
   set par(first-line-indent: 0em, spacing: 0.6em, justify: true)
   grid(
-    columns: (auto, 12em),
+    columns: (1fr, 12em),
     gutter: (gutter-width, auto),
     [#body],
     { header },
@@ -113,10 +113,7 @@
 #let photo = data.basics.at("photo", default: none)
 #let contacts = data.basics.contacts
 
-#show: resume.with(
-  font-size: sizes.font * 1pt,
-  photo: photo,
-)[
+#let header = [
   #set align(right)
   = [#data.basics.name]
   #h(0.5em)
@@ -161,6 +158,9 @@
       ]
     ),
   )
+]
+
+#let body = [
   == #icons.fa-code 项目经历
   #for it in data.projects [
     #item(
@@ -223,3 +223,10 @@
     ]
   ]
 ]
+
+#resume(
+  font-size: sizes.font * 1pt,
+  photo: photo,
+  header,
+  body,
+)
