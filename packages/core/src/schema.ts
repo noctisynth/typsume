@@ -13,7 +13,7 @@ export const CONTACT_ICON_VALUES = [
 
 export const SKILL_LEVELS = ['精通', '熟悉', '了解'] as const;
 
-export const RESUME_SCHEMA_VERSION = 'cv/1.0' as const;
+export const RESUME_SCHEMA_VERSION = 'typst-resume/1.0' as const;
 
 export const ContactSchema = z.object({
   icon: z.string().min(1),

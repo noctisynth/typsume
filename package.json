@@ -17,6 +17,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.5",
+    "@myriaddreamin/typst-ts-renderer": "^0.7.0",
+    "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
+    "@myriaddreamin/typst.ts": "^0.7.0",
     "typescript": "^5.9.3"
   },
   "engines": {

@@ -34,7 +34,7 @@
   - `ItemBlockSchema`（`title, subtitle?, period?, stack?: string[], links?: {label, href} [], body?, highlights: string[]` 默认 `[]`, `extra?`）
   - `AwardSchema`（`title, date, level?`）
   - `ResumeMetaSchema`（`template?, locale?, fontSize?`）
-  - `ResumeSchema`（包含 `schema: literal "cv/1.0"`、`basics`、`skills`、`education`、`experience`、`projects`、`awards`、`meta?`）
+  - `ResumeSchema`（包含 `schema: literal "typst-resume/1.0"`、`basics`、`skills`、`education`、`experience`、`projects`、`awards`、`meta?`）
 - [x] 默认值策略：数组字段默认 `[]`，可选字段默认 `undefined`，跟 doc 描述一致
 - [x] 错误信息本地化：Zod 默认英文即可；中文友好错误是 v1.1
 
@@ -68,8 +68,10 @@
 
 ### 1.6 文档同步
 
-- [~] 在 [`docs/PRD.md`](./docs/PRD.md) §6 仓库结构图给 `packages/core/` 加 "(✅ 起架)" 标记
-- [~] 在 [`docs/data-driven-template.md`](./docs/data-driven-template.md) §3 把 "权威定义" 链接指向 `packages/core/src/schema.ts`
+- [x] 在 [`docs/PRD.md`](./docs/PRD.md) §6 仓库结构图给 `packages/core/` 加 "(✅ 起架)" 标记
+- [x] 在 [`docs/data-driven-template.md`](./docs/data-driven-template.md) §3 把 "权威定义" 链接指向 `packages/core/src/schema.ts`
+
+> **W1 退出条件已达成**。下一里程碑：W2 — `templates/default` + CLI smoke。
 
 ---
 
@@ -77,11 +79,22 @@
 
 > 不要在 W1 完成前开始。
 
-- [ ] 把 `templates/default/template.typ` 写成 data-driven 版本（参考 [`docs/data-driven-template.md`](./docs/data-driven-template.md) §5 / §7）
-- [ ] 写 `templates/default/meta.toml`（主题色、字体、必需字段；遵守 kebab-case 落盘）
-- [ ] 导出 `examples/sample/resume.json`（基于占位数据，覆盖典型结构；通过 schema 校验）
-- [ ] 写最小的 typst.ts WASM smoke：通过 core schema → 写 JSON → typst.ts compile → 输出 PDF
+- [x] 把 `templates/default/template.typ` 写成 data-driven 版本（参考 [`docs/data-driven-template.md`](./docs/data-driven-template.md) §5 / §7）
+- [x] 写 `templates/default/meta.toml`（主题色、字体、必需字段；遵守 kebab-case 落盘）
+- [x] 导出 `examples/sample/resume.json`（基于占位数据，覆盖典型结构；通过 schema 校验）
+- [x] 写最小的 typst.ts WASM smoke：通过 core schema → 写 JSON → typst.ts compile → 输出 PDF
 - [ ] DoD：default 模板对占位 fixture 输出 PDF（视觉与参考样式像素级一致，允许抗锯齿差异）
+
+> **W2 偏离记录**：
+> 1. **schema version 字面量**：`cv/1.0` → `typst-resume/1.0`（与项目名一致；旧 `cv` 已废弃，ADR 同步）。
+> 2. **typst.ts API 选型**：cookery 文档里的 `NodeCompiler.create()` 在 0.7.0 已下线；改用底层 `createTypstCompiler() + init({ workspace, beforeBuild: [withAccessModel(...)] }) + compile({ format: pdf })`。
+> 3. **AccessModel**：typst.ts 自带 `FetchAccessModel` 内部用 `XMLHttpRequest`（浏览器 API），Node 端无法使用；改用 `MemoryAccessModel`（注意其路径必须以 `/@memory/` 开头）。
+> 4. **cfg 注入**：meta.toml 由 CLI/smoke 解析后切成 `cfg_colors.json / cfg_fonts.json / cfg_sizes.json / cfg_layout.json` 注入到虚拟 workspace；模板用 `json("cfg_*.json")` 读取。`length` 类型用 `eval(..., mode: "code")` 还原（typst 不接受 raw string 当 length）。
+> 5. **可选字段访问**：schema optional 字段在 typst 里 `data.foo` 会"dictionary does not contain key"——必须用 `data.at("foo", default: none)`。
+> 6. **字体**：templates/default/meta.toml 把 `Microsoft Yahei` → `Noto Sans CJK SC`、`Cascadia Mono` → `JetBrains Mono`（跨平台；typst.ts 内置 fallback，CI 上若无 CJK 会出豆腐但渲染路径通）。视觉对齐 D oD 需要在装有 CJK 字体的机器上验证。
+> 7. **SVG 渲染**：renderer WASM 在 Bun 环境下 init 失败（`WebAssembly.instantiate(module, imports)` 类型不匹配）；smoke 阶段只验证 PDF，SVG 留到 W3 packages/cli 落地时再解决。
+
+> **W2 已达成中间态**：smoke 跑通 `examples/sample/resume.json → templates/default/template.typ → 39490 字节 PDF`。PDF 内容（无 CJK 字体）正确，但**视觉对齐 D oD 需要在装了 CJK 的机器上目检**——目前未达成。
 
 ## W3 — `packages/cli`
 
@@ -115,6 +128,7 @@
 | 2026-07-25 | CLI 命令名 `typsume`（不是 `cv`） | 用户 |
 | 2026-07-25 | 所有配置 TOML（`typsume.config.toml` / `~/.config/typsume/config.toml`） | 用户 |
 | 2026-07-25 | 模板元信息 `meta.toml`（不是 JSON） | 用户 |
+| 2026-07-26 | schema version 字面量 `typst-resume/X.Y`（与项目名一致；旧 `cv/1.0` 已废弃） | 用户 |
 | 2026-07-25 | 弃 Markdown DSL 路线 | 用户 |
 | 2026-07-25 | CLI 用 typst.ts WASM（**不依赖系统 typst**），CLI 与 Web 共用 artifact | 用户 |
 | 2026-07-25 | Web 选 React 19（不是 Vue），UI 用 shadcn/ui | 用户 |

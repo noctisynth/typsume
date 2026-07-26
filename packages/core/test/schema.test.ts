@@ -48,7 +48,7 @@ describe('ResumeSchema (Zod)', () => {
 
   it('rejects empty name', () => {
     const result = ResumeSchema.safeParse({
-      schema: 'cv/1.0',
+      schema: 'typst-resume/1.0',
       basics: { name: '' },
     });
     expect(result.success).toBe(false);
@@ -56,7 +56,7 @@ describe('ResumeSchema (Zod)', () => {
 
   it('rejects skill level outside the enum', () => {
     const result = ResumeSchema.safeParse({
-      schema: 'cv/1.0',
+      schema: 'typst-resume/1.0',
       basics: { name: 'Xxx' },
       skills: [{ name: 'Languages', items: [{ name: 'TS', level: 'expert' }] }],
     });
@@ -65,7 +65,7 @@ describe('ResumeSchema (Zod)', () => {
 
   it('rejects malformed URL in item link', () => {
     const result = ResumeSchema.safeParse({
-      schema: 'cv/1.0',
+      schema: 'typst-resume/1.0',
       basics: { name: 'Xxx' },
       experience: [
         {
@@ -110,7 +110,7 @@ describe('JSON Schema parity (Ajv)', () => {
 
   it('JSON Schema rejects empty name', () => {
     const ok = validate({
-      schema: 'cv/1.0',
+      schema: 'typst-resume/1.0',
       basics: { name: '' },
     });
     expect(ok).toBe(false);

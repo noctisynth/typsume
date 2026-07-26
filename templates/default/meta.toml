@@ -1,0 +1,31 @@
+name         = "default"
+display-name = "默认简历"
+description  = "经典双栏简历：左侧内容右侧头像/标题区，theme-color 标题下划线。"
+version      = "1.0.0"
+author       = "<author>"
+license      = "MIT"
+page         = "a4"
+
+required-fields = ["basics.name"]
+optional-fields = ["basics.title", "basics.photo", "awards"]
+
+[config]
+theme-color  = "#0b628b"
+main-color   = "#343434"
+secondary-color = "#808080"
+link-color   = "#1e6485"
+icon-color   = "#0b628b"
+font         = "Noto Sans CJK SC"
+mono-font    = "JetBrains Mono"
+font-size    = 10
+heading-size = 13
+list-size    = 8.5
+item-title-size = 11
+
+margin-top    = "1.5cm"
+margin-bottom = "1.5cm"
+margin-left   = "1.5cm"
+margin-right  = "1.5cm"
+
+gutter-width = "2em"
+side-width   = "12em"

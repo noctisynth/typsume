@@ -20,6 +20,10 @@
     {
       "name": "Frameworks",
       "items": [{ "name": "React" }, { "name": "Bun" }]
+    },
+    {
+      "name": "Tools",
+      "items": [{ "name": "Git", "level": "精通" }, { "name": "Docker", "level": "熟悉" }]
     }
   ],
   "education": [
@@ -27,7 +31,7 @@
       "title": "B.S. in Computer Science",
       "subtitle": "Sample University",
       "period": "2018 - 2022",
-      "highlights": ["Dean's List"]
+      "highlights": ["Dean's List, 2020 - 2022"]
     }
   ],
   "experience": [
@@ -37,8 +41,19 @@
       "period": "2022 - present",
       "stack": ["TypeScript", "Rust", "PostgreSQL"],
       "links": [{ "label": "Project", "href": "https://example.com" }],
-      "body": "Worked on distributed systems.",
-      "highlights": ["Cut p95 latency by 40%", "Migrated legacy service to typed RPC"]
+      "body": "Worked on distributed systems and developer tooling.",
+      "highlights": [
+        "Cut p95 latency by 40% by introducing an in-memory cache layer",
+        "Migrated legacy service to typed RPC, eliminating 200+ hand-written validators",
+        "Mentored 3 junior engineers through their first production deployment"
+      ]
+    },
+    {
+      "title": "Software Engineer Intern",
+      "subtitle": "Sample Co",
+      "period": "2021 - 2022",
+      "stack": ["Python", "Django"],
+      "highlights": ["Built an internal dashboard used by 50+ engineers"]
     }
   ],
   "projects": [
@@ -48,13 +63,15 @@
       "period": "2024",
       "stack": ["Bun", "TypeScript"],
       "links": [{ "label": "repo", "href": "https://github.com/example/sample" }],
-      "highlights": ["100+ GitHub stars"]
+      "highlights": ["100+ GitHub stars", "Published to npm under @example/sample"]
     }
   ],
-  "awards": [{ "title": "Sample Award", "date": "2023" }],
+  "awards": [
+    { "title": "Sample Award", "date": "2023" },
+    { "title": "Regional Hackathon Winner", "date": "2022", "level": "First Place" }
+  ],
   "meta": {
     "template": "default",
-    "locale": "zh-CN",
-    "fontSize": 10
+    "locale": "zh-CN"
   }
 }

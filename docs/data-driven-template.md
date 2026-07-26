@@ -68,6 +68,7 @@ type Basics = {
 }
 
 type ResumeData = {
+  schema: 'typst-resume/1.0'            // schema 版本字面量，便于将来 bump 时直接拒绝老数据
   basics: Basics
   skills: SkillSection[]
   education: ItemBlock[]
@@ -114,8 +115,8 @@ optional-fields = ["basics.photo", "awards"]
 
 [config]
 theme-color = "#0b628b"
-font        = "Microsoft Yahei"
-mono-font   = "Cascadia Mono"
+font        = "Noto Sans CJK SC"
+mono-font   = "JetBrains Mono"
 ```
 
 字段命名约定：Kebab-case（与 Cargo / Biome / GitHub config 一致），Zod schema 用 camelCase 类型推导，但 TOML 文件落盘用 kebab-case（人类书写友好）。

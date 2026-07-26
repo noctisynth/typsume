@@ -1,5 +1,5 @@
 {
-  "schema": "cv/1.0",
+  "schema": "typst-resume/1.0",
   "basics": {
     "name": "Xxx Yyy"
   }

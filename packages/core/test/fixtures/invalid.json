@@ -1,5 +1,5 @@
 {
-  "schema": "cv/2.0",
+  "schema": "typst-resume/2.0",
   "basics": {
     "name": "Xxx Yyy",
     "contacts": [{ "icon": "email", "text": "name@example.com", "link": "not-a-url" }]
