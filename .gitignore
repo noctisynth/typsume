@@ -38,6 +38,10 @@ coverage/
 # typst temp
 typsume-*.tmp/
 
+# bundled fonts (too large for repo; download separately)
+**/fonts/*.ttf
+**/fonts/*.otf
+
 # generated fixtures (keep directory, ignore large artifacts)
 *.pdf
 !docs/**/*.pdf
