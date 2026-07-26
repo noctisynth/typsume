@@ -1,6 +1,6 @@
 # Typsume
 
-数据驱动 Typst 简历编译器。
+数据驱动的 Typst 简历编译器。
 
 [English](./README.md)
 
