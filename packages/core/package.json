@@ -1,7 +1,6 @@
 {
-  "name": "@typst-resume/core",
+  "name": "@typsume/core",
   "version": "0.0.0",
-  "private": true,
   "type": "module",
   "description": "Shared Zod schema, derived TS types, and JSON Schema for typst-resume.",
   "license": "MIT",
