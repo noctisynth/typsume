@@ -1,0 +1,9 @@
+Maple Mono NF CN — Copyright 2022 The Maple Mono Project Authors
+                                 https://github.com/subframe7536/maple-font
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+The full license text is available at https://openfontlicense.org/open-font-license-official-text/
+
+Files in this directory:
+  - MapleMono-NF-CN-Regular.ttf  (template main + mono weight)
+  - MapleMono-NF-CN-Bold.ttf     (template bold weight)

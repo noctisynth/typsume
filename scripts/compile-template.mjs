@@ -13,11 +13,11 @@
 // compile end-to-end) and as a reference for the future packages/cli
 // build command — the typst.ts wiring is the same shape CLI will use.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CompileFormatEnum, createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
-import { withAccessModel } from '@myriaddreamin/typst.ts/options.init';
+import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
 
 const repoRoot = resolve(import.meta.dirname, '..');
 const templateDir = resolve(repoRoot, 'templates/default');
@@ -40,7 +40,14 @@ const resumeJsonPath = inputArg
   : resolve(repoRoot, 'examples/sample/resume.json');
 const outputPath = outputArg
   ? resolve(process.cwd(), outputArg)
-  : resolve(repoRoot, '.smoke-out', `${resumeJsonPath.split('/').pop().replace(/\.[^.]+$/, '')}.pdf`);
+  : resolve(
+      repoRoot,
+      '.smoke-out',
+      `${resumeJsonPath
+        .split('/')
+        .pop()
+        .replace(/\.[^.]+$/, '')}.pdf`,
+    );
 
 // ---------- meta.toml -> cfg_*.json ----------
 
@@ -115,12 +122,27 @@ insertAbs(`${VROOT}cfg_fonts.json`, JSON.stringify(fonts));
 insertAbs(`${VROOT}cfg_sizes.json`, JSON.stringify(sizes));
 insertAbs(`${VROOT}cfg_layout.json`, JSON.stringify(layout));
 
+// bundle SVG icons from templates/default/icons/ into the virtual workspace
+const iconsDir = resolve(templateDir, 'icons');
+for (const entry of readdirSync(iconsDir)) {
+  if (!entry.endsWith('.svg')) continue;
+  insertAbs(`${VROOT}icons/${entry}`, readFileSync(resolve(iconsDir, entry), 'utf8'));
+}
+
+// bundle bundled fonts as Uint8Array blobs for typst.ts
+const fontsDir = resolve(templateDir, 'fonts');
+const fontBlobs = [];
+for (const entry of readdirSync(fontsDir)) {
+  if (!entry.endsWith('.ttf') && !entry.endsWith('.otf')) continue;
+  fontBlobs.push(readFileSync(resolve(fontsDir, entry)));
+}
+
 // ---------- compile ----------
 
 const compiler = createTypstCompiler();
 await compiler.init({
   workspace: VROOT,
-  beforeBuild: [withAccessModel(fsAcc)],
+  beforeBuild: [loadFonts(fontBlobs, { assets: false }), withAccessModel(fsAcc)],
 });
 
 const doc = await compiler.compile({

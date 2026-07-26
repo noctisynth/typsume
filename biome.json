@@ -15,7 +15,10 @@
       "!**/coverage",
       "!**/*.min.js",
       "!**/bun.lock",
-      "!**/bun.lockb"
+      "!**/bun.lockb",
+      "!**/templates/default/icons/*.svg",
+      "!**/templates/default/fonts/*.ttf",
+      "!**/scripts/test_with.typ"
     ]
   },
   "formatter": {

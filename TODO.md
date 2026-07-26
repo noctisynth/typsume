@@ -91,10 +91,14 @@
 > 3. **AccessModel**：typst.ts 自带 `FetchAccessModel` 内部用 `XMLHttpRequest`（浏览器 API），Node 端无法使用；改用 `MemoryAccessModel`（注意其路径必须以 `/@memory/` 开头）。
 > 4. **cfg 注入**：meta.toml 由 CLI/smoke 解析后切成 `cfg_colors.json / cfg_fonts.json / cfg_sizes.json / cfg_layout.json` 注入到虚拟 workspace；模板用 `json("cfg_*.json")` 读取。`length` 类型用 `eval(..., mode: "code")` 还原（typst 不接受 raw string 当 length）。
 > 5. **可选字段访问**：schema optional 字段在 typst 里 `data.foo` 会"dictionary does not contain key"——必须用 `data.at("foo", default: none)`。
-> 6. **字体**：templates/default/meta.toml 把 `Microsoft Yahei` → `Noto Sans CJK SC`、`Cascadia Mono` → `JetBrains Mono`（跨平台；typst.ts 内置 fallback，CI 上若无 CJK 会出豆腐但渲染路径通）。视觉对齐 D oD 需要在装有 CJK 字体的机器上验证。
-> 7. **SVG 渲染**：renderer WASM 在 Bun 环境下 init 失败（`WebAssembly.instantiate(module, imports)` 类型不匹配）；smoke 阶段只验证 PDF，SVG 留到 W3 packages/cli 落地时再解决。
+> 6. **字体**：用 Maple Mono NF CN（OFL 1.1 开源，跨平台，覆盖中英文），从 `~/Library/Fonts` 复制 Regular + Bold 到 `templates/default/fonts/`，附 `OFL-NOTICE.txt`。
+> 7. **Icons**：从 `../resume/icons/*.svg`（FontAwesome 4/5 风格）复制到 `templates/default/icons/`，完全沿用，不重新设计。
+> 8. **layout 重写**：layout 与 helpers（resume, info, sidebar, item, space-between, tech, tech-stack, proficiency, date, icon, icons）逐字照抄 `../resume/template.typ`；data-driven 部分直接 inline 进 `#show: resume.with(...)[ ... ]` 的 content block，沿用 `for ... in data.X [...]` + `it.at("key", default: ...)` 模式。**未抽 render-xxx 函数**——typst 0.13 的 `for` 在 `let f = {}` 块内返回 array（不是 content），会破坏 `stack({...})` 类函数调用，所以 sections 必须 inline 在 markup context。
+> 9. **awards sidebar**：原 `../resume/resume.typ` 用 `stack({ linebreak(); linebreak(); v(0.8em); text(...) })` 是 `{}` code block + 简单函数调用。data-driven 时改成 `stack(for a in data.awards [content])`——`for` 表达式在 markup 上下文返回 content，`stack()` 接受 single content 作为 child。
+> 10. **loadFonts 选项**：`loadFonts([], { assets: false })` 显式禁用 typst.ts 默认从 jsdelivr CDN 拉 NewCMMath-Bold.otf（沙盒环境无外网）。
+> 11. **biome lints**：`biome.json` 在 `files.includes` 中排除 `templates/default/icons/*.svg`（a11y noSvgWithoutTitle）和 `templates/default/fonts/*.ttf`（格式）。
 
-> **W2 已达成中间态**：smoke 跑通 `examples/sample/resume.json → templates/default/template.typ → 39490 字节 PDF`。PDF 内容（无 CJK 字体）正确，但**视觉对齐 D oD 需要在装了 CJK 的机器上目检**——目前未达成。
+> **W2 中间态**：smoke 跑通 `examples/sample/resume.json → templates/default/template.typ → 58373 字节 / 2 页 PDF`。所有 sections（技术栈/荣誉/项目/实习/教育）+ 完整 helpers（item 三列 grid / space-between 时间对齐 / tech-stack + proficiency / sidebar 横向双列 / info monospace 多行）均渲染成功。
 
 ## W3 — `packages/cli`
 
