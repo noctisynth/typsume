@@ -1,6 +1,8 @@
 # Typsume
 
-数据驱动 Typst 简历编译器。JSON / YAML / TOML → PDF，全流程 WASM 编译，无需安装 Typst。
+数据驱动 Typst 简历编译器。
+
+[English](./README.md)
 
 ## 快速开始
 

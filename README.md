@@ -1,6 +1,8 @@
 # Typsume
 
-Data-driven Typst resume compiler. JSON / YAML / TOML → PDF via WASM, no system Typst required.
+Data-driven Typst resume compiler.
+
+[中文版](./README.zh.md)
 
 ## Quick start
 
