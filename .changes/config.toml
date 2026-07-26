@@ -9,16 +9,16 @@ fix = "Bug Fixes"
 perf = "Performance Improvements"
 refactor = "Refactors"
 
-[packages."@typst-resume/core"]
+[packages."@typsume/cli"]
+path = "packages/cli"
+resolver = "nodejs"
+
+[packages."@typsume/core"]
 path = "packages/core"
 resolver = "nodejs"
 
-[packages.typst-resume]
+[packages."@typsume/workspace"]
 path = "."
-resolver = "nodejs"
-
-[packages.typsume]
-path = "packages/cli"
 resolver = "nodejs"
 
 [resolver.nodejs.pre-check]

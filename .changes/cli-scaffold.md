@@ -1,7 +1,8 @@
-typsume: minor:feat
+---
+"@typsume/cli": minor:feat
 ---
 
-feat: scaffold all subcommands
+Scaffold all subcommands
 
 typsume now has 6 subcommands via citty:
 - build: compile JSON/YAML/TOML to PDF via typst.ts WASM
