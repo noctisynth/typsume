@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { ResumeSchema } from '@typst-resume/core/schema';
+import { ResumeSchema } from '@typsume/core/schema';
 import { defineCommand } from 'citty';
 import { ExitCode, TypsumeError } from '../errors.ts';
 import { parseSource } from '../format.ts';

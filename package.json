@@ -14,7 +14,7 @@
     "format": "biome format --write .",
     "typsume": "bun run packages/cli/src/main.ts",
     "test": "bun run -F '*' test",
-    "test:core": "bun run -F @typst-resume/core test"
+    "test:core": "bun run -F @typsume/core test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.5",

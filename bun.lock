@@ -13,13 +13,13 @@
       },
     },
     "packages/cli": {
-      "name": "typsume",
-      "version": "0.1.0",
+      "name": "@typsume/cli",
+      "version": "0.0.0",
       "bin": "./src/main.ts",
       "dependencies": {
         "@iarna/toml": "^2.2.5",
         "@myriaddreamin/typst.ts": "^0.7.0",
-        "@typst-resume/core": "workspace:*",
+        "@typsume/core": "workspace:*",
         "citty": "^0.1.6",
         "js-yaml": "^4.1.0",
       },
@@ -30,7 +30,7 @@
       },
     },
     "packages/core": {
-      "name": "@typst-resume/core",
+      "name": "@typsume/core",
       "version": "0.0.0",
       "dependencies": {
         "zod": "^4.4.3",
@@ -131,7 +131,9 @@
 
     "@types/node": ["@types/node@26.1.1", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-nxAkRSVkN1Y0JC1W8ky/fTfkGsMmcrRsbx+3XoZE+rMOX71kLYTV7fLXpqud1GpbpP5TuffXFqfX7fH2GgZREw=="],
 
-    "@typst-resume/core": ["@typst-resume/core@workspace:packages/core"],
+    "@typsume/cli": ["@typsume/cli@workspace:packages/cli"],
+
+    "@typsume/core": ["@typsume/core@workspace:packages/core"],
 
     "@vitest/expect": ["@vitest/expect@4.1.10", "", { "dependencies": { "@standard-schema/spec": "^1.1.0", "@types/chai": "^5.2.2", "@vitest/spy": "4.1.10", "@vitest/utils": "4.1.10", "chai": "^6.2.2", "tinyrainbow": "^3.1.0" } }, "sha512-YsCn+qAk1GWjQOWFEsEcL2gNQ0zmVmQu3T03qP6UyjhtmdtwtbuI+DASn/7iQB3HGTXkdBwGddzxPlmiql5vlA=="],
 
@@ -248,8 +250,6 @@
     "tslib": ["tslib@2.8.1", "", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 
     "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
-
-    "typsume": ["typsume@workspace:packages/cli"],
 
     "undici-types": ["undici-types@8.3.0", "", {}, "sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ=="],
 

@@ -11,7 +11,7 @@
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "@myriaddreamin/typst.ts": "^0.7.0",
-    "@typst-resume/core": "workspace:*",
+    "@typsume/core": "workspace:*",
     "citty": "^0.1.6",
     "js-yaml": "^4.1.0"
   },
