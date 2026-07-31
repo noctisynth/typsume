@@ -2,6 +2,11 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse } from '@iarna/toml';
 
+export interface FontResource {
+  urls: string[];
+  integrity?: string;
+}
+
 export interface MetaToml {
   name: string;
   'display-name'?: string;
@@ -13,6 +18,9 @@ export interface MetaToml {
   'required-fields'?: string[];
   'optional-fields'?: string[];
   config?: Record<string, unknown>;
+  resources?: {
+    fonts?: FontResource[];
+  };
 }
 
 export function readMeta(templateDir: string): MetaToml {

@@ -21,12 +21,14 @@ export function resolveTemplate(
   config: LoadedConfig,
   /** Template name to look up (from meta field, etc.) */
   name?: string,
+  projectRoot = process.cwd(),
 ): ResolvedTemplate {
   const candidate = flag ?? config.project?.template ?? config.global?.template;
 
   if (candidate) {
     // 1. Try as an absolute or relative path
-    const asPath = isAbsolute(candidate) ? candidate : resolve(process.cwd(), candidate);
+    const relativeBase = flag ? process.cwd() : projectRoot;
+    const asPath = isAbsolute(candidate) ? candidate : resolve(relativeBase, candidate);
     if (existsSync(asPath) && existsSync(resolve(asPath, 'meta.toml'))) {
       return { dir: asPath, meta: readMeta(asPath) };
     }

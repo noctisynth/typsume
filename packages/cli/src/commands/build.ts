@@ -6,6 +6,7 @@ import { compileWithTemplate } from '../compiler.ts';
 import { loadConfig } from '../config.ts';
 import { ExitCode, TypsumeError } from '../errors.ts';
 import { parseSource } from '../format.ts';
+import { ensureProjectRuntime, findProjectRoot } from '../project.ts';
 import { resolveTemplate } from '../resolver.ts';
 import { handleErrors } from '../utils.ts';
 
@@ -41,6 +42,7 @@ export default defineCommand({
   run: handleErrors(async ({ args }) => {
     const cwd = process.cwd();
     const sourcePath = resolve(cwd, args.source);
+    const projectRoot = findProjectRoot(sourcePath);
 
     // 1. Read + parse
     let data: unknown;
@@ -66,8 +68,8 @@ export default defineCommand({
     }
 
     // 3. Resolve template
-    const config = loadConfig(cwd);
-    const resolved = resolveTemplate(args.template, config);
+    const config = loadConfig(projectRoot);
+    const resolved = resolveTemplate(args.template, config, undefined, projectRoot);
 
     // 4. Strict mode check
     if (args.strict) {
@@ -130,6 +132,8 @@ export default defineCommand({
     const result = await compileWithTemplate({
       templateDir: resolved.dir,
       resumeJson: JSON.stringify(parsed.data),
+      fontCacheDir: ensureProjectRuntime(projectRoot),
+      fontResources: resolved.meta.resources?.fonts ?? [],
       config: { colors, fonts, sizes, layout },
     });
 

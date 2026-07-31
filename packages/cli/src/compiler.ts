@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { CompileFormatEnum, createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
+import { loadRemoteFonts } from './font-resources.ts';
+import type { FontResource } from './meta.ts';
 
 const VROOT = '/@memory/';
 
@@ -16,6 +18,8 @@ async function ensureWasm(): Promise<void> {
 export interface CompileOptions {
   templateDir: string;
   resumeJson: string;
+  fontCacheDir: string;
+  fontResources?: FontResource[];
   config: {
     colors: Record<string, string>;
     fonts: { main: string; mono: string };
@@ -62,6 +66,9 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
       fontBlobs.push(readFileSync(resolve(fontsDir, entry)));
     }
   }
+  fontBlobs.push(
+    ...(await loadRemoteFonts(opts.fontResources ?? [], { cacheDir: opts.fontCacheDir })),
+  );
 
   if (!compiler) throw new Error('compiler not initialized');
 

@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
+import { ensureProjectRuntime } from '../project.ts';
 
 const SAMPLE_RESUME = {
   schema: 'typst-resume/1.0',
@@ -69,6 +70,7 @@ export default defineCommand({
   run({ args }) {
     const targetDir = resolve(process.cwd(), args.dir);
     mkdirSync(targetDir, { recursive: true });
+    ensureProjectRuntime(targetDir);
 
     const resumePath = resolve(targetDir, 'resume.json');
     if (!existsSync(resumePath)) {
