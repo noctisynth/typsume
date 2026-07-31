@@ -118,7 +118,7 @@ type Item = {
 | W | 范围 | 出口 | 状态 |
 |---|------|------|------|
 | W1 | packages/core 起架 + Zod schema + types（Bun workspace） | 单元测试通过 | ✅ |
-| W2 | templates/default 改造 + typst.ts WASM smoke | 占位 JSON 出 PDF（视觉 ≥ 95%） | ✅ |
+| W2 | templates/default 改造 + typst.ts WASM smoke | 占位 JSON 成功输出 PDF | ✅ |
 | W3 | packages/cli MVP（Bun + citty） | `typsume build / validate / dump / templates / init / dev` 可用 | ▶ |
 | W4 | packages/web 起架 + typst.ts 集成 + 表单 + 实时预览 | 浏览器填表出 PDF | |
 | W5 | 第二个模板 + IndexedDB 多版本 + 国际化 + e2e | 提 PR 给简历圈 | |
@@ -144,7 +144,6 @@ type Item = {
 | PDF 与 CLI 像素级一致（同一 JSON） | 100% |
 | Star（GitHub，6 个月内） | ≥ 200 |
 | 模板市集上线前内置模板数 | ≥ 3 |
-| W2 一次 PR 让 `default` 模板输出 PDF 的视觉与参考样式一致率 | ≥ 95%（允许少量抗锯齿差异） |
 
 ## 11. 许可证
 

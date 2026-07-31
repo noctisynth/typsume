@@ -83,7 +83,7 @@
 - [x] 写 `templates/default/meta.toml`（主题色、字体、必需字段；遵守 kebab-case 落盘）
 - [x] 导出 `examples/sample/resume.json`（基于占位数据，覆盖典型结构；通过 schema 校验）
 - [x] 写最小的 typst.ts WASM smoke：通过 core schema → 写 JSON → typst.ts compile → 输出 PDF
-- [ ] DoD：default 模板对占位 fixture 输出 PDF（视觉与参考样式像素级一致，允许抗锯齿差异）
+- [x] DoD：default 模板对占位 fixture 成功输出 PDF
 
 > **W2 偏离记录**：
 > 1. **schema version 字面量**：`cv/1.0` → `typst-resume/1.0`（与项目名一致；旧 `cv` 已废弃，ADR 同步）。
@@ -93,12 +93,14 @@
 > 5. **可选字段访问**：schema optional 字段在 typst 里 `data.foo` 会"dictionary does not contain key"——必须用 `data.at("foo", default: none)`。
 > 6. **字体（已废弃方案）**：曾把 Maple Mono NF CN 二进制放入 `templates/default/fonts/`；文件过大，已从 Git 历史移除。新方案由 `meta.toml.resources.fonts` 声明远程资源，编译器按需下载。
 > 7. **Icons**：从 `../resume/icons/*.svg`（FontAwesome 4/5 风格）复制到 `templates/default/icons/`，完全沿用，不重新设计。
-> 8. **layout 重写**：layout 与 helpers（resume, info, sidebar, item, space-between, tech, tech-stack, proficiency, date, icon, icons）逐字照抄 `../resume/template.typ`；data-driven 部分直接 inline 进 `#show: resume.with(...)[ ... ]` 的 content block，沿用 `for ... in data.X [...]` + `it.at("key", default: ...)` 模式。**未抽 render-xxx 函数**——typst 0.13 的 `for` 在 `let f = {}` 块内返回 array（不是 content），会破坏 `stack({...})` 类函数调用，所以 sections 必须 inline 在 markup context。
+> 8. **layout 重写**：layout 与 helpers（resume, info, sidebar, item, space-between, tech, tech-stack, proficiency, date, icon, icons）沿用 `../resume/template.typ`；data-driven sections 直接 inline 进 `header` / `body` markup content block，沿用 `for ... in data.X [...]` + `it.at("key", default: ...)` 模式。**未抽 render-xxx 函数**——typst 0.13 的 `for` 在 `let f = {}` 块内返回 array（不是 content），会破坏 `stack({...})` 类函数调用，所以 sections 必须 inline 在 markup context。
 > 9. **awards sidebar**：原 `../resume/resume.typ` 用 `stack({ linebreak(); linebreak(); v(0.8em); text(...) })` 是 `{}` code block + 简单函数调用。data-driven 时改成 `stack(for a in data.awards [content])`——`for` 表达式在 markup 上下文返回 content，`stack()` 接受 single content 作为 child。
 > 10. **loadFonts 选项**：`loadFonts([], { assets: false })` 显式禁用 typst.ts 默认从 jsdelivr CDN 拉 NewCMMath-Bold.otf（沙盒环境无外网）。
 > 11. **biome lints**：`biome.json` 在 `files.includes` 中排除 `templates/default/icons/*.svg`（a11y noSvgWithoutTitle）和 `templates/default/fonts/*.ttf`（格式）。
+> 12. **模板资源挂载**：compiler 递归挂载模板根内的自包含资源（`meta.toml` 与字体除外）；字体继续走 `loadFonts` 专用通道，使 `basics.photo` 等相对模板根资源可用且 compiler 无需理解业务字段。
+> 13. **layout / photo**：`cfg_layout.json` 中的 margin、gutter、side width 用 `eval(..., mode: "code")` 恢复为 Typst length；恢复原模板的可选头像渲染分支。
 
-> **W2 中间态**：smoke 跑通 `examples/sample/resume.json → templates/default/template.typ → 58373 字节 / 2 页 PDF`。所有 sections（技术栈/荣誉/项目/实习/教育）+ 完整 helpers（item 三列 grid / space-between 时间对齐 / tech-stack + proficiency / sidebar 横向双列 / info monospace 多行）均渲染成功。
+> **W2 退出条件已达成**：smoke 跑通 `examples/sample/resume.json → templates/default/template.typ → 72361 字节 / 1 页 PDF`。所有 sections（技术栈/荣誉/项目/实习/教育）+ 完整 helpers（item 三列 grid / space-between 时间对齐 / tech-stack + proficiency / sidebar 横向双列 / info monospace 多行）均渲染成功。
 
 ## W3 — `packages/cli`
 
@@ -151,6 +153,7 @@
 | 2026-07-25 | 工作流：PRD → TODO → 代码，PRD 始终是"最终预期"；无授权不写代码 | 用户 |
 | 2026-07-31 | 大字体改为 `meta.toml` 远程资源；顺序镜像、可选 SHA-256、ZIP 解压，异常行为必须显式告知 | 用户 |
 | 2026-08-01 | CLI 字体原始响应缓存到简历项目 `.typsume/fonts/`；声明摘要作键、原子写入、内联 `.gitignore`；Web 不持久缓存字体 | 用户 |
+| 2026-08-01 | W2 不做主观视觉或像素级验收；以占位 fixture 成功输出 PDF 作为退出条件 | 用户 |
 
 ---
 

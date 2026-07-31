@@ -166,26 +166,18 @@ CLI 缓存约定：
 
 ```typst
 // templates/default/template.typ
-#let data = json("resume.json")     // compiler 注入此文件路径
-#let config = data.meta.config
+#let data       = json("resume.json")
+#let colors     = json("cfg_colors.json")
+#let fonts      = json("cfg_fonts.json")
+#let sizes      = json("cfg_sizes.json")
+#let layout_cfg = json("cfg_layout.json")
 
-// --- 颜色/字体来自 config，不再 hardcode ---
-#let colors = (
-  main: rgb("#343434"),
-  theme: rgb(config.themeColor),
-  link: rgb("#1e6485"),
-  secondary: rgb("#808080"),
-)
+// compiler 解析 meta.toml 后注入 cfg_*.json；Typst length 需要恢复为原生值。
+#let length_of(value) = eval(value, mode: "code")
 
-// --- 复用现有原语，但读 from `data` ---
-#show: resume-page.with(
-  font-size: data.meta.fontSize,
-  photo: data.basics.photo,
-  colors: colors,
-  fonts: (main: config.font, mono: config.monoFont),
-)
-
-= #data.basics.name
+// --- 复用现有原语；sections 在 markup content block 中读取 `data` ---
+#let header = [
+  = #data.basics.name
 
 // ----- 联系方式 -----
 #info(
@@ -206,6 +198,9 @@ CLI 缓存约定：
 ]
 
 // ----- 项目 / 经历 -----
+#]
+
+#let body = [
 #for p in data.projects [
   #v(0.7em)
   #item(
@@ -221,6 +216,22 @@ CLI 缓存约定：
     - #p.highlights.join("\n- ")
   ]
 ]
+#]
+
+#resume(
+  font-size: sizes.font * 1pt,
+  margin: (
+    top: length_of(layout_cfg.margin_top),
+    bottom: length_of(layout_cfg.margin_bottom),
+    left: length_of(layout_cfg.margin_left),
+    right: length_of(layout_cfg.margin_right),
+  ),
+  gutter-width: length_of(layout_cfg.gutter_width),
+  side-width: length_of(layout_cfg.side_width),
+  photo: data.basics.at("photo", default: none),
+  header,
+  body,
+)
 ```
 
 模板的 `template.typ` **禁止**引用 `../`、`/abs/path` 之类的相对外部路径。一切所需资源都从模板根目录出发。
@@ -254,13 +265,13 @@ CLI 缓存约定：
 
 | 步骤 | 内容 | 状态 |
 |------|------|------|
-| 1 | 把 `template.typ` 中的常量（colors / fonts）抽到 `meta.toml.config` | TBD |
-| 2 | 把 `#resume.with(...)` 改造成接受 `data + colors + fonts` 的纯渲染函数 | TBD |
-| 3 | 把 `resume.typ` 中的内容改写成一份对应 `ResumeData` 的 JSON | TBD |
-| 4 | 新增 `templates/default/template.typ`，引用改造后的函数 | TBD |
-| 5 | 原 `resume.typ` / `template.typ` 保留为 `examples/sample.typ` 作为回归基准 | TBD |
+| 1 | 把 `template.typ` 中的 colors / fonts / sizes / layout 常量抽到 `meta.toml.config` | 完成 |
+| 2 | 保留原有排版 helpers；数据 sections 在 `header` / `body` markup content block 中 inline 渲染 | 完成 |
+| 3 | 把原硬编码内容改写为符合 `ResumeData` 的 `examples/sample/resume.json` | 完成 |
+| 4 | 新增自包含的 `templates/default/template.typ`，只读取 compiler 注入的数据和模板根资源 | 完成 |
+| 5 | 原视觉参考样式回归基准 | 已取消；W2 不做主观视觉或像素级验收 |
 
-W2 退出条件：`default` 模板对占位 fixture 的输出 PDF 与参考样式视觉一致（≥ 95%），否则视为不达标。
+W2 退出条件：`default` 模板对占位 fixture 成功输出 PDF。W2 不设置主观视觉或像素级验收。
 
 ## 8. 多模板隔离约定
 

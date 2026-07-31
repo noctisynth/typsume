@@ -1,5 +1,5 @@
 ---
-"@typsume/workspace": patch:fix
+"@typsume/cli": patch:fix
 ---
 
 Honor default template layout settings and optional photos
