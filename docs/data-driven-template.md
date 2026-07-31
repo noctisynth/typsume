@@ -92,7 +92,7 @@ templates/
 ├── default/                # v1 必备模板
 │   ├── template.typ        # 入口，声明如何读取 resume.json
 │   ├── meta.toml           # 模板元信息（被 CLI / Web 读取）
-│   ├── fonts/              # 自带字体（可选）
+│   ├── fonts/              # 小型、本地字体（可选；大型字体应声明为远程资源）
 │   ├── icons/              # 自带 icon（可选）
 │   └── preview.png         # 缩略图
 ├── modern/                 # v1.1 第二套样式
@@ -117,11 +117,38 @@ optional-fields = ["basics.photo", "awards"]
 theme-color = "#0b628b"
 font        = "Noto Sans CJK SC"
 mono-font   = "JetBrains Mono"
+
+[[resources.fonts]]
+urls = [
+  "https://example.com/font-primary.zip",
+  "https://example.com/font-mirror.zip",
+]
+integrity = "sha256-<base64>" # 可选
 ```
 
 字段命名约定：Kebab-case（与 Cargo / Biome / GitHub config 一致），Zod schema 用 camelCase 类型推导，但 TOML 文件落盘用 kebab-case（人类书写友好）。
 
-`config` 是模板特定的样式覆盖，由 `compiler` 注入到 JSON 中作为 `meta.config`。
+`config` 是模板特定的 Typst 渲染参数；其中 `font` / `mono-font` 是字体 family name，
+不是文件路径或下载地址。`resources.fonts` 是编译器资源清单，不会注入 Typst 数据。
+
+### 字体资源契约
+
+- 一个模板可以声明多组 `[[resources.fonts]]`；每组资源的 `urls` 至少包含一个 URL。
+- 同一组资源的 URL 是镜像关系。compiler 按声明顺序尝试，成功取得有效字体后停止尝试该组的后续 URL。
+- `integrity` 可选，格式固定为 `sha256-<base64>`，校验对象是下载响应的原始字节。校验失败等同该 URL 失败。
+- 响应类型按内容识别，不依赖 URL 后缀或 `Content-Type`。v1 支持直接 `.ttf` / `.otf` 字体和 ZIP 压缩包。
+- ZIP 使用 `fflate` 在内存中解压，只加载其中的 `.ttf` / `.otf` 文件；目录和其他文件不传给 typst.ts。
+- 本地 `fonts/` 与远程字体字节最终一起传给 typst.ts `loadFonts`。
+- 不做磁盘缓存。一次 `build` 下载一次；长驻的 CLI / Web 进程可以在进程或页面生命周期内复用字节，退出或刷新后释放。
+- `template.typ` 不负责联网、解压或校验，也不得直接引用远程 URL。
+
+资源加载的非预期行为必须可观察：
+
+- 单个 URL 失败时，说明失败原因以及是否即将尝试下一个镜像。
+- 校验失败、ZIP 解压失败、ZIP 中没有字体或部分字体被跳过时，说明当前结果和下一步。
+- 所有镜像失败时，明确说明将不加载该组远程字体、继续尝试编译，并提示排版可能变化或编译可能失败。
+- URL 日志不得输出查询参数或凭证。
+- 当前阶段不承诺 typst.ts 自动加载系统字体；跨平台系统字体发现属于后续任务。
 
 ## 5. template.typ 的新形态
 
@@ -201,7 +228,7 @@ mono-font   = "JetBrains Mono"
                                 │  typst.ts compile     │
                                 │    template.typ       │
                                 │    resume.json        │
-                                │    (内置 icon + 字体)  │
+                                │ (内置 icon + 本地/远程字体) │
                                 └──────────┬────────────┘
                                            ▼
                                         *.pdf
@@ -249,3 +276,4 @@ Web（v1.1+）：
 - [ ] 第二个模板 `modern` 跑同一份 JSON，输出另一套样式
 - [ ] `meta.toml.requiredFields` 与实际模板访问的字段一致
 - [ ] 缺字段时（schema 通过、模板字段缺失）输出明确错误而非泛编译错误
+- [ ] 远程直接字体与 ZIP 字体均可注入编译器；镜像回退和异常后续行为均有明确输出

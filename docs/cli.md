@@ -124,13 +124,25 @@ typsume build resume.json --dry-run
 3. parse   转 JSON object
 4. schema  Zod validate → 失败打印 path + message，exit 1
 5. template meta check  --strict 时校验 requiredFields
-6. compile 同进程调用 @myriaddreamin/typst.ts 的 compiler.render()，传入模板路径 + resume.json
-7. write   把返回的 PDF bytes 写到 -o 指定路径
-8. clean   清理临时目录
-9. exit    0
+6. fonts   读取本地字体；按 meta.toml 顺序下载、校验并解压远程字体资源
+7. compile 同进程调用 @myriaddreamin/typst.ts，传入模板路径、resume.json 与字体字节
+8. write   把返回的 PDF bytes 写到 -o 指定路径
+9. clean   释放内存资源；不写字体磁盘缓存
+10. exit   0
 ```
 
 WASM init 懒加载：首次 build 才初始化 typst renderer，避免冷启动拖累 help / templates 等元命令。
+
+字体下载默认允许联网，不额外询问。每个资源按 `meta.toml` 的 `urls` 顺序尝试；直接字体和 ZIP
+均在内存中处理。当前版本不做磁盘缓存，因此每次独立执行 `build` 都重新下载。`dev` 可以在当前
+进程内复用已取得的字体，进程退出后释放。
+
+任何非预期资源行为都必须写到 stderr，并同时说明下一步。例如：当前镜像失败后将尝试下一个、
+所有镜像失败后将不加载该字体并继续编译。后者可能改变排版，也可能因没有可用字体而编译失败；
+当前版本不声称自动加载系统字体。日志中的 URL 隐去 query 和 fragment。
+
+后续 `--offline` 会显式跳过远程字体；它必须告知用户接下来只会使用已加载的本地/系统字体。
+跨平台系统字体发现与加载另列 TODO，不属于当前远程下载修复。
 
 错误信息必须可读：
 ```

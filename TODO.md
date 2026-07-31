@@ -91,7 +91,7 @@
 > 3. **AccessModel**：typst.ts 自带 `FetchAccessModel` 内部用 `XMLHttpRequest`（浏览器 API），Node 端无法使用；改用 `MemoryAccessModel`（注意其路径必须以 `/@memory/` 开头）。
 > 4. **cfg 注入**：meta.toml 由 CLI/smoke 解析后切成 `cfg_colors.json / cfg_fonts.json / cfg_sizes.json / cfg_layout.json` 注入到虚拟 workspace；模板用 `json("cfg_*.json")` 读取。`length` 类型用 `eval(..., mode: "code")` 还原（typst 不接受 raw string 当 length）。
 > 5. **可选字段访问**：schema optional 字段在 typst 里 `data.foo` 会"dictionary does not contain key"——必须用 `data.at("foo", default: none)`。
-> 6. **字体**：用 Maple Mono NF CN（OFL 1.1 开源，跨平台，覆盖中英文），从 `~/Library/Fonts` 复制 Regular + Bold 到 `templates/default/fonts/`，附 `OFL-NOTICE.txt`。
+> 6. **字体（已废弃方案）**：曾把 Maple Mono NF CN 二进制放入 `templates/default/fonts/`；文件过大，已从 Git 历史移除。新方案由 `meta.toml.resources.fonts` 声明远程资源，编译器按需下载。
 > 7. **Icons**：从 `../resume/icons/*.svg`（FontAwesome 4/5 风格）复制到 `templates/default/icons/`，完全沿用，不重新设计。
 > 8. **layout 重写**：layout 与 helpers（resume, info, sidebar, item, space-between, tech, tech-stack, proficiency, date, icon, icons）逐字照抄 `../resume/template.typ`；data-driven 部分直接 inline 进 `#show: resume.with(...)[ ... ]` 的 content block，沿用 `for ... in data.X [...]` + `it.at("key", default: ...)` 模式。**未抽 render-xxx 函数**——typst 0.13 的 `for` 在 `let f = {}` 块内返回 array（不是 content），会破坏 `stack({...})` 类函数调用，所以 sections 必须 inline 在 markup context。
 > 9. **awards sidebar**：原 `../resume/resume.typ` 用 `stack({ linebreak(); linebreak(); v(0.8em); text(...) })` 是 `{}` code block + 简单函数调用。data-driven 时改成 `stack(for a in data.awards [content])`——`for` 表达式在 markup 上下文返回 content，`stack()` 接受 single content 作为 child。
@@ -106,6 +106,12 @@
 - [ ] `typsume build / validate / dump / templates / dev / init / help`
 - [ ] TOML 配置加载（项目 + `~/.config/typsume/config.toml`）
 - [ ] WASM 编译通道同进程
+- [~] 远程字体资源
+  - [ ] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）
+  - [ ] 下载直接 TTF / OTF，使用 `fflate` 在内存中解压 ZIP 中的全部 TTF / OTF
+  - [ ] 与模板本地字体合并后传给 typst.ts；不做磁盘缓存
+  - [ ] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
+  - [ ] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
 - [ ] DoD：CI 在 ubuntu-latest 全新镜像除 bun 外不装任何东西，build 通过
 
 ## W4 — `packages/web`
@@ -115,6 +121,7 @@
 - [ ] Zustand + persist (IndexedDB)
 - [ ] react-hook-form + zodResolver
 - [ ] `typst.ts` 浏览器端集成 + `<TypstDocument />`
+- [ ] 复用 CLI 字体资源契约：浏览器内下载、校验、ZIP 解压、页面生命周期复用和可见状态提示
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
@@ -139,6 +146,7 @@
 | 2026-07-25 | CLI 运行时 Bun ≥ 1.4.0 + citty | 用户 |
 | 2026-07-25 | 全局配置走 XDG：`~/.config/typsume/config.toml` | 用户 |
 | 2026-07-25 | 工作流：PRD → TODO → 代码，PRD 始终是"最终预期"；无授权不写代码 | 用户 |
+| 2026-07-31 | 大字体改为 `meta.toml` 远程资源；顺序镜像、可选 SHA-256、ZIP 解压、不做磁盘缓存，异常行为必须显式告知 | 用户 |
 
 ---
 
@@ -151,3 +159,5 @@
 - [ ] 自定义模板上传
 - [ ] 账户 + 云同步（opt-in）
 - [ ] 单 binary 分发（`bun build --compile`）
+- [ ] CLI `--offline`：显式跳过远程字体并提示后续行为
+- [ ] 跨平台系统字体发现：CLI 扫描系统字体，Web 评估 `queryLocalFonts()` 权限与兼容性；不可静默 fallback

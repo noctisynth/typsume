@@ -133,6 +133,8 @@ type Item = {
 | R4 | 多端 schema drift | `packages/core` 是 workspace 公共依赖，monorepo 强约束 | 包版本锁 + CI 校验 |
 | R5 | 自定义模板上传 v1 不做 | 模板作者通过 PR 贡献 | v2 做模板市集 |
 | R6 | CLI 分发/单 binary | Bun runtime + WASM artifact 单一目标；v1 通过 `bun add typsume` 即可（**用户无需安装 typst**） | v1.1 用 `bun build --compile` 出单 binary；v2 可选 Rust 重写 |
+| R7 | 中文字体文件体积过大，不适合进入 Git 历史 | 模板在 `meta.toml` 声明远程字体资源；CLI / Web 在编译前下载并通过 typst.ts 注入，不做磁盘缓存 | 后续增加 `--offline` 与跨平台系统字体发现 |
+| R8 | 远程字体不可用会改变排版或导致编译失败 | 每个异常步骤必须说明原因与接下来的行为；镜像全部失败后继续尝试编译，并明确提示当前阶段不保证系统字体可用 | 后续实现 CLI / Web 系统字体加载 |
 
 ## 10. 成功指标
 
