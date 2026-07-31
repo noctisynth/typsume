@@ -1,5 +1,5 @@
 ---
-"@typsume/core": minor:feat
+"@typsume/core": patch:feat
 "@typsume/cli": patch:fix
 ---
 
