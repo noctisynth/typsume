@@ -31,7 +31,7 @@
   - `BasicsSchema`（`name: min(1), title?, photo?: string, contacts: Contact[]` 默认 `[]`）
   - `SkillItemSchema`（`name, level?` 枚举 `精通|熟悉|了解`）
   - `SkillSectionSchema`（`name, items: SkillItem[]` min 1）
-  - `ItemBlockSchema`（`title, subtitle?, period?, stack?: string[], links?: {label, href} [], body?, highlights: string[]` 默认 `[]`, `extra?`）
+  - `ItemBlockSchema`（`title, subtitle?, period?, department?, stack?: string[], links?: {label, href} [], body?, highlights: string[]` 默认 `[]`, `extra?`）
   - `AwardSchema`（`title, date, level?`）
   - `ResumeMetaSchema`（`template?, locale?, fontSize?`）
   - `ResumeSchema`（包含 `schema: literal "typst-resume/1.0"`、`basics`、`skills`、`education`、`experience`、`projects`、`awards`、`meta?`）
@@ -83,6 +83,7 @@
 - [x] 写 `templates/default/meta.toml`（主题色、字体、必需字段；遵守 kebab-case 落盘）
 - [x] 导出 `examples/sample/resume.json`（基于占位数据，覆盖典型结构；通过 schema 校验）
 - [x] 新增 `examples/sample/resume.zh.json`（中文占位数据，覆盖典型结构与长标题换行）
+- [x] 对齐原模板的 ItemBlock 语义：公司/职位、学校/专业映射，以及 experience `department` 补充信息行
 - [x] 写最小的 typst.ts WASM smoke：通过 core schema → 写 JSON → typst.ts compile → 输出 PDF
 - [x] DoD：default 模板对占位 fixture 成功输出 PDF
 
@@ -101,7 +102,7 @@
 > 12. **模板资源挂载**：compiler 递归挂载模板根内的自包含资源（`meta.toml` 与字体除外）；字体继续走 `loadFonts` 专用通道，使 `basics.photo` 等相对模板根资源可用且 compiler 无需理解业务字段。
 > 13. **layout / photo**：`cfg_layout.json` 中的 margin、gutter、side width 用 `eval(..., mode: "code")` 恢复为 Typst length；恢复原模板的可选头像渲染分支。
 
-> **W2 退出条件已达成**：smoke 跑通 `examples/sample/resume.json → templates/default/template.typ → 72361 字节 / 1 页 PDF`。所有 sections（技术栈/荣誉/项目/实习/教育）+ 完整 helpers（item 三列 grid / space-between 时间对齐 / tech-stack + proficiency / sidebar 横向双列 / info monospace 多行）均渲染成功。
+> **W2 退出条件已达成**：smoke 跑通英文样例 `72395 字节 / 1 页 PDF` 与中文样例 `122595 字节 / 1 页 PDF`。所有 sections（技术栈/荣誉/项目/实习/教育）+ 完整 helpers（item 三列 grid / space-between 时间对齐 / tech-stack + proficiency / sidebar 横向双列 / info monospace 多行）均渲染成功。
 
 ## W3 — `packages/cli`
 
@@ -155,6 +156,7 @@
 | 2026-07-31 | 大字体改为 `meta.toml` 远程资源；顺序镜像、可选 SHA-256、ZIP 解压，异常行为必须显式告知 | 用户 |
 | 2026-08-01 | CLI 字体原始响应缓存到简历项目 `.typsume/fonts/`；声明摘要作键、原子写入、内联 `.gitignore`；Web 不持久缓存字体 | 用户 |
 | 2026-08-01 | W2 不做主观视觉或像素级验收；以占位 fixture 成功输出 PDF 作为退出条件 | 用户 |
+| 2026-08-01 | `ItemBlock.department?` 表示工作经历的部门/业务线；experience 渲染 department，projects 渲染 stack | 用户 |
 
 ---
 

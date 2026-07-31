@@ -104,12 +104,17 @@ type ResumeData = {
 }
 
 type Item = {
-  title, subtitle?, period?, stack?[],
+  title, subtitle?, period?, department?, stack?[],
   links?: { label, href }[],
   body?, highlights: string[],
   extra?: Record<string, unknown>
 }
 ```
+
+`experience` 中 `title` 表示公司/组织，`subtitle` 表示职位，`department` 表示部门或业务线；
+`projects` 中 `title` 表示项目名，`subtitle` 表示项目来源，`stack` 表示技术栈或项目标签。
+default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在原模板 `#tech[...]`
+所在的补充信息行。
 
 ## 8. 里程碑
 

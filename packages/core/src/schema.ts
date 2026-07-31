@@ -47,6 +47,7 @@ export const ItemBlockSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().optional(),
   period: z.string().optional(),
+  department: z.string().optional(),
   stack: z.array(z.string()).optional(),
   links: z.array(ItemLinkSchema).optional(),
   body: z.string().optional(),

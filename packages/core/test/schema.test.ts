@@ -18,6 +18,9 @@ describe('ResumeSchema (Zod)', () => {
     const data = loadFixture('sample.json');
     const result = ResumeSchema.safeParse(data);
     expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.experience[0]?.department).toBe('Developer Platform');
+    }
   });
 
   it('accepts a minimal resume (only schema + basics.name)', () => {

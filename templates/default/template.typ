@@ -211,9 +211,9 @@
       [* #(it.at("subtitle", default: "")) *],
       if it.at("period", default: none) != none [ #date(it.period) ],
     )
-    #let stack-tags = it.at("stack", default: ())
-    #if stack-tags.len() > 0 [
-      #tech[ #stack-tags.join(" ") ]
+    #let department = it.at("department", default: none)
+    #if department != none [
+      #tech[ #department ]
     ]
     #if it.at("body", default: none) != none [ #(it.body) ]
     #let highlights = it.at("highlights", default: ())

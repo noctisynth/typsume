@@ -47,6 +47,7 @@ type ItemBlock = {
   title: string                          // 主标题（项目名 / 公司名）
   subtitle?: string                      // 副标题（角色 / 来源）
   period?: string                        // 时间段，原样排版
+  department?: string                    // 工作经历的部门 / 业务线
   stack?: string[]                       // 技术栈标签
   links?: { label: string, href: string }[]
   body?: string                          // 正文（Markdown 子集）
@@ -82,6 +83,15 @@ type ResumeData = {
   }
 }
 ```
+
+字段在不同 section 中的语义：
+
+- `experience`：`title` 是公司/组织，`subtitle` 是职位，`department` 是部门或业务线。
+- `projects`：`title` 是项目名，`subtitle` 是项目来源，`stack` 是技术栈或项目标签。
+- `education`：`title` 是学校，`subtitle` 是专业、院系或学位。
+
+default 模板在工作经历中把 `department` 渲染到原模板 `#tech[...]` 的位置，在项目经历中
+则在同一位置渲染 `stack`。`stack` 不用于承载部门名称。
 
 JSON Schema / Zod schema 的实现属于 `packages/core`，本文件不下放。
 

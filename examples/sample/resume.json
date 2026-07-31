@@ -28,18 +28,18 @@
   ],
   "education": [
     {
-      "title": "B.S. in Computer Science",
-      "subtitle": "Sample University",
+      "title": "Sample University",
+      "subtitle": "B.S. in Computer Science",
       "period": "2018 - 2022",
       "highlights": ["Dean's List, 2020 - 2022"]
     }
   ],
   "experience": [
     {
-      "title": "Senior Engineer",
-      "subtitle": "Example Corp",
+      "title": "Example Corp",
+      "subtitle": "Senior Engineer",
       "period": "2022 - present",
-      "stack": ["TypeScript", "Rust", "PostgreSQL"],
+      "department": "Developer Platform",
       "links": [{ "label": "Project", "href": "https://example.com" }],
       "body": "Worked on distributed systems and developer tooling.",
       "highlights": [
@@ -49,10 +49,10 @@
       ]
     },
     {
-      "title": "Software Engineer Intern",
-      "subtitle": "Sample Co",
+      "title": "Sample Co",
+      "subtitle": "Software Engineer Intern",
       "period": "2021 - 2022",
-      "stack": ["Python", "Django"],
+      "department": "Engineering Productivity",
       "highlights": ["Built an internal dashboard used by 50+ engineers"]
     }
   ],

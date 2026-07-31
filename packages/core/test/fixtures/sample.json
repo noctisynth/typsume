@@ -24,18 +24,18 @@
   ],
   "education": [
     {
-      "title": "B.S. in Computer Science",
-      "subtitle": "Sample University",
+      "title": "Sample University",
+      "subtitle": "B.S. in Computer Science",
       "period": "2018 - 2022",
       "highlights": ["Dean's List"]
     }
   ],
   "experience": [
     {
-      "title": "Senior Engineer",
-      "subtitle": "Example Corp",
+      "title": "Example Corp",
+      "subtitle": "Senior Engineer",
       "period": "2022 - present",
-      "stack": ["TypeScript", "Rust", "PostgreSQL"],
+      "department": "Developer Platform",
       "links": [{ "label": "Project", "href": "https://example.com" }],
       "body": "Worked on distributed systems.",
       "highlights": ["Cut p95 latency by 40%", "Migrated legacy service to typed RPC"]
