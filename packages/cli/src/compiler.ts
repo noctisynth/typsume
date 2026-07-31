@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { relative, resolve, sep } from 'node:path';
 import { CompileFormatEnum, createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
@@ -43,20 +43,27 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
     fsAcc.insertFile(absPath, bytes, new Date());
   }
 
-  insert(`${VROOT}template.typ`, readFileSync(resolve(opts.templateDir, 'template.typ'), 'utf-8'));
+  function insertTemplateResources(directory: string): void {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const sourcePath = resolve(directory, entry.name);
+      if (entry.isDirectory()) {
+        insertTemplateResources(sourcePath);
+        continue;
+      }
+      if (!entry.isFile() || entry.name === 'meta.toml') continue;
+      if (entry.name.endsWith('.ttf') || entry.name.endsWith('.otf')) continue;
+
+      const workspacePath = relative(opts.templateDir, sourcePath).split(sep).join('/');
+      insert(`${VROOT}${workspacePath}`, readFileSync(sourcePath));
+    }
+  }
+
+  insertTemplateResources(opts.templateDir);
   insert(`${VROOT}resume.json`, opts.resumeJson);
   insert(`${VROOT}cfg_colors.json`, JSON.stringify(opts.config.colors));
   insert(`${VROOT}cfg_fonts.json`, JSON.stringify(opts.config.fonts));
   insert(`${VROOT}cfg_sizes.json`, JSON.stringify(opts.config.sizes));
   insert(`${VROOT}cfg_layout.json`, JSON.stringify(opts.config.layout));
-
-  const iconsDir = resolve(opts.templateDir, 'icons');
-  if (existsSync(iconsDir)) {
-    for (const entry of readdirSync(iconsDir)) {
-      if (!entry.endsWith('.svg')) continue;
-      insert(`${VROOT}icons/${entry}`, readFileSync(resolve(iconsDir, entry)));
-    }
-  }
 
   const fontsDir = resolve(opts.templateDir, 'fonts');
   const fontBlobs: Uint8Array[] = [];
