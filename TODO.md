@@ -106,15 +106,15 @@
 - [ ] `typsume build / validate / dump / templates / dev / init / help`
 - [ ] TOML 配置加载（项目 + `~/.config/typsume/config.toml`）
 - [ ] WASM 编译通道同进程
-- [~] 远程字体资源
-  - [ ] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）
-  - [ ] 下载直接 TTF / OTF，使用 `fflate` 在内存中解压 ZIP 中的全部 TTF / OTF
-  - [ ] 从 source 定位项目根；以资源声明 SHA-256 为键缓存原始响应到 `.typsume/fonts/`
-  - [ ] 临时文件完整写入后原子重命名；损坏缓存显式告知并重新下载
-  - [ ] `init` 创建、`build` 补建 `.typsume/.gitignore`（内容为 `*`）
-  - [ ] 与模板本地字体合并后传给 typst.ts；ZIP 只在内存解压
-  - [ ] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
-  - [ ] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
+- [x] 远程字体资源
+  - [x] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）
+  - [x] 下载直接 TTF / OTF，使用 `fflate` 在内存中解压 ZIP 中的全部 TTF / OTF
+  - [x] 从 source 定位项目根；以资源声明 SHA-256 为键缓存原始响应到 `.typsume/fonts/`
+  - [x] 临时文件完整写入后原子重命名；损坏缓存显式告知并重新下载
+  - [x] `init` 创建、`build` 补建 `.typsume/.gitignore`（内容为 `*`）
+  - [x] 与模板本地字体合并后传给 typst.ts；ZIP 只在内存解压
+  - [x] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
+  - [x] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
 - [ ] DoD：CI 在 ubuntu-latest 全新镜像除 bun 外不装任何东西，build 通过
 
 ## W4 — `packages/web`

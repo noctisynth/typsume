@@ -6,7 +6,8 @@
   "license": "MIT",
   "bin": "./src/main.ts",
   "scripts": {
-    "typsume": "bun run src/main.ts"
+    "typsume": "bun run src/main.ts",
+    "test": "bun test"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
