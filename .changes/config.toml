@@ -17,10 +17,6 @@ resolver = "nodejs"
 path = "packages/core"
 resolver = "nodejs"
 
-[packages."@typsume/workspace"]
-path = "."
-resolver = "nodejs"
-
 [resolver.nodejs.pre-check]
 url = "https://registry.npmjs.org/{{ package.name }}/{{ package.version }}"
 
@@ -28,7 +24,7 @@ url = "https://registry.npmjs.org/{{ package.name }}/{{ package.version }}"
 command = "npm"
 args = [
     "publish",
-    "--provenance",
+    # "--provenance",
     "--access",
     "public",
 ]
