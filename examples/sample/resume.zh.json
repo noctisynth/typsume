@@ -1,0 +1,73 @@
+{
+  "schema": "typst-resume/1.0",
+  "basics": {
+    "name": "示例用户",
+    "title": "软件工程师",
+    "contacts": [
+      { "icon": "envelope", "text": "name@example.com", "link": "https://example.com" },
+      { "icon": "github", "text": "github.com/example", "link": "https://github.com/example" }
+    ]
+  },
+  "skills": [
+    {
+      "name": "编程语言",
+      "items": [
+        { "name": "TypeScript", "level": "精通" },
+        { "name": "Rust", "level": "熟悉" },
+        { "name": "Python", "level": "了解" }
+      ]
+    },
+    {
+      "name": "工程能力",
+      "items": [{ "name": "分布式系统", "level": "熟悉" }, { "name": "持续集成", "level": "熟悉" }]
+    }
+  ],
+  "education": [
+    {
+      "title": "计算机科学与技术学士",
+      "subtitle": "示例大学",
+      "period": "2018 - 2022",
+      "highlights": ["连续三年获得校级奖学金"]
+    }
+  ],
+  "experience": [
+    {
+      "title": "高级分布式系统与开发者生产力平台工程师",
+      "subtitle": "某某国际科技实验室",
+      "period": "2022 - 至今",
+      "stack": ["TypeScript", "Rust", "PostgreSQL"],
+      "links": [{ "label": "项目主页", "href": "https://example.com" }],
+      "body": "负责内部开发平台与分布式基础设施建设。",
+      "highlights": [
+        "通过引入多级缓存将核心接口的高分位延迟降低百分之四十",
+        "建设覆盖多个区域的发布平台并完善故障回滚流程",
+        "帮助三名新成员完成首次生产环境发布"
+      ]
+    },
+    {
+      "title": "软件工程实习生",
+      "subtitle": "示例科技公司",
+      "period": "2021 - 2022",
+      "stack": ["Python", "Django"],
+      "highlights": ["开发供五十余名工程师使用的内部数据面板"]
+    }
+  ],
+  "projects": [
+    {
+      "title": "示例命令行工具",
+      "subtitle": "开源项目",
+      "period": "2024",
+      "stack": ["Bun", "TypeScript"],
+      "links": [{ "label": "代码仓库", "href": "https://github.com/example/sample" }],
+      "highlights": ["使用结构化数据生成 Typst 文档", "提供一致的命令行与浏览器编译体验"]
+    }
+  ],
+  "awards": [
+    { "title": "示例创新竞赛一等奖", "date": "2023", "level": "校级" },
+    { "title": "示例开源贡献奖", "date": "2022" }
+  ],
+  "meta": {
+    "template": "default",
+    "locale": "zh-CN"
+  }
+}

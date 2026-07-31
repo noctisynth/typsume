@@ -86,9 +86,11 @@
 #let item(title, desc, endnote) = {
   v(0.7em)
   grid(
-    columns: (39%, 1fr, auto),
-    gutter: 0em,
-    text(title, size: sizes.item_title * 1pt), text(desc, fill: rgb_of(colors.secondary)), endnote,
+    columns: (1.2fr, 1fr, auto),
+    gutter: 0.8em,
+    text(title, size: sizes.item_title * 1pt),
+    text(desc, fill: rgb_of(colors.secondary)),
+    endnote,
   )
 }
 #let space-between(..items) = {
@@ -176,9 +178,9 @@
         let links = it.at("links", default: ())
         if links.len() > 0 {
           let first = links.at(0)
-          link(first.href, [* #it.title *])
+          link(first.href, strong(it.title))
         } else {
-          [* #it.title *]
+          strong(it.title)
         }
       },
       [* #(it.at("subtitle", default: "")) *],
@@ -201,9 +203,9 @@
         let links = it.at("links", default: ())
         if links.len() > 0 {
           let first = links.at(0)
-          link(first.href, [* #it.title *])
+          link(first.href, strong(it.title))
         } else {
-          [* #it.title *]
+          strong(it.title)
         }
       },
       [* #(it.at("subtitle", default: "")) *],

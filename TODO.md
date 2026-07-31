@@ -82,6 +82,7 @@
 - [x] 把 `templates/default/template.typ` 写成 data-driven 版本（参考 [`docs/data-driven-template.md`](./docs/data-driven-template.md) §5 / §7）
 - [x] 写 `templates/default/meta.toml`（主题色、字体、必需字段；遵守 kebab-case 落盘）
 - [x] 导出 `examples/sample/resume.json`（基于占位数据，覆盖典型结构；通过 schema 校验）
+- [x] 新增 `examples/sample/resume.zh.json`（中文占位数据，覆盖典型结构与长标题换行）
 - [x] 写最小的 typst.ts WASM smoke：通过 core schema → 写 JSON → typst.ts compile → 输出 PDF
 - [x] DoD：default 模板对占位 fixture 成功输出 PDF
 
