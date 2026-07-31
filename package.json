@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "description": "Data-driven Typst resume compiler. CLI + Web share one schema and one WASM compiler.",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "workspaces": [
     "packages/*",
     "templates/*"

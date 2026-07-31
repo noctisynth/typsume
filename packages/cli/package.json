@@ -1,6 +1,6 @@
 {
   "name": "@typsume/cli",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "Data-driven Typst resume compiler — build resume.json/yaml/toml → PDF via WASM (no system typst needed).",
   "license": "MIT",
