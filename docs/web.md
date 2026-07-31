@@ -112,8 +112,9 @@ typst.ts 支持 **incremental rendering**。不是每次都重新编译整个文
 - 网络字体加载：增量传输
 
 模板远程字体遵循 [`docs/data-driven-template.md`](./data-driven-template.md) 的统一资源契约：浏览器
-按镜像顺序下载，在内存中完成可选完整性校验与 ZIP 解压，再把字体字节交给 typst.ts。字体不写入
-IndexedDB、Cache Storage 或 Service Worker；同一页面生命周期可以复用，刷新后重新下载。
+按镜像顺序下载，在内存中完成可选完整性校验与 ZIP 解压，再把字体字节交给 typst.ts。Web 字体
+不写入 IndexedDB、Cache Storage 或 Service Worker；同一页面生命周期可以复用，刷新后重新下载。
+CLI 的项目内 `.typsume/fonts/` 缓存不改变 Web 的零持久字体缓存策略。
 
 浏览器端同样不得静默降级：镜像切换、校验失败、解压失败、无有效字体以及最终继续编译的行为都要
 显示在编辑器状态区，并说明接下来可能使用不同字体或编译失败。当前阶段不调用

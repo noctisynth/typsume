@@ -139,8 +139,18 @@ integrity = "sha256-<base64>" # 可选
 - 响应类型按内容识别，不依赖 URL 后缀或 `Content-Type`。v1 支持直接 `.ttf` / `.otf` 字体和 ZIP 压缩包。
 - ZIP 使用 `fflate` 在内存中解压，只加载其中的 `.ttf` / `.otf` 文件；目录和其他文件不传给 typst.ts。
 - 本地 `fonts/` 与远程字体字节最终一起传给 typst.ts `loadFonts`。
-- 不做磁盘缓存。一次 `build` 下载一次；长驻的 CLI / Web 进程可以在进程或页面生命周期内复用字节，退出或刷新后释放。
+- CLI 把下载响应的原始字节缓存到简历项目的 `.typsume/fonts/`；Web 不做持久缓存，只在页面生命周期内复用字节。
 - `template.typ` 不负责联网、解压或校验，也不得直接引用远程 URL。
+
+CLI 缓存约定：
+
+- project root 从 source 文件所在目录向上查找最近的 `typsume.config.toml`；找不到时使用 source 所在目录。
+- 缓存键是该资源完整声明（有序 `urls` + 可选 `integrity`）的 SHA-256 十六进制摘要，不在文件名中暴露 URL。
+- 下载先写入 `.typsume/fonts/` 内的临时文件；读取完整响应并通过可选 integrity 后，原子重命名为最终缓存文件。只有最终文件存在才算命中。
+- 缓存保留原始 TTF / OTF 或 ZIP，不保存解压结果。命中后仍在内存中识别、校验和解压。
+- 缓存损坏或与 integrity 不符时，明确告知将重新下载；重新取得有效资源后替换损坏缓存。
+- `.typsume/.gitignore` 内容为 `*`，使整个运行时目录不进入 Git。`typsume init` 负责创建它，`build` 在旧项目中缺失时也会补建。
+- 没有 integrity 时，同一 URL 上游内容更新不会自动失效；用户通过删除 `.typsume/fonts/` 显式刷新。
 
 资源加载的非预期行为必须可观察：
 

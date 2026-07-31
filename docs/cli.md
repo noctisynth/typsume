@@ -127,15 +127,20 @@ typsume build resume.json --dry-run
 6. fonts   读取本地字体；按 meta.toml 顺序下载、校验并解压远程字体资源
 7. compile 同进程调用 @myriaddreamin/typst.ts，传入模板路径、resume.json 与字体字节
 8. write   把返回的 PDF bytes 写到 -o 指定路径
-9. clean   释放内存资源；不写字体磁盘缓存
+9. cache   有效下载原子写入项目 `.typsume/fonts/`，供后续 build 复用
 10. exit   0
 ```
 
 WASM init 懒加载：首次 build 才初始化 typst renderer，避免冷启动拖累 help / templates 等元命令。
 
 字体下载默认允许联网，不额外询问。每个资源按 `meta.toml` 的 `urls` 顺序尝试；直接字体和 ZIP
-均在内存中处理。当前版本不做磁盘缓存，因此每次独立执行 `build` 都重新下载。`dev` 可以在当前
-进程内复用已取得的字体，进程退出后释放。
+均在内存中处理。CLI 把原始响应缓存在简历项目的 `.typsume/fonts/`，不缓存解压结果。
+
+简历项目根从 source 文件所在目录向上查找最近的 `typsume.config.toml`；找不到时使用 source 所在
+目录。缓存键由有序 URL 列表和可选 integrity 的 SHA-256 生成。下载使用同目录临时文件并在完整
+读取和校验后原子重命名，因此只有最终文件存在才代表下载完成。缓存损坏时明确告知将重新下载。
+`typsume init` 创建 `.typsume/.gitignore`，内容为 `*`；`build` 兼容旧项目并在缺失时补建。
+没有 integrity 时，上游在同一 URL 更新不会自动失效，删除 `.typsume/fonts/` 即可显式刷新。
 
 任何非预期资源行为都必须写到 stderr，并同时说明下一步。例如：当前镜像失败后将尝试下一个、
 所有镜像失败后将不加载该字体并继续编译。后者可能改变排版，也可能因没有可用字体而编译失败；
