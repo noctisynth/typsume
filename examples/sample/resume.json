@@ -4,7 +4,7 @@
     "name": "Xxx Yyy",
     "title": "Software Engineer",
     "contacts": [
-      { "icon": "email", "text": "name@example.com", "link": "https://example.com" },
+      { "icon": "envelope", "text": "name@example.com", "link": "https://example.com" },
       { "icon": "github", "text": "github.com/example", "link": "https://github.com/example" }
     ]
   },

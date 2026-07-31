@@ -1,9 +1,11 @@
 #let colors = json("cfg_colors.json")
 #let fonts  = json("cfg_fonts.json")
 #let sizes  = json("cfg_sizes.json")
+#let layout_cfg = json("cfg_layout.json")
 #let data   = json("resume.json")
 
 #let rgb_of(c) = rgb(c)
+#let length_of(value) = eval(value, mode: "code")
 
 #let icon(path, width: 0.9em, height: 0.8em) = box(
   text(fill: rgb_of(colors.icon), image(path, alt: path)),
@@ -19,7 +21,7 @@
   fa-code: icon("icons/fa-code.svg"),
 )
 
-#let resume(font-size: 10pt, margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm), gutter-width: 2em, photo: none, header, body) = {
+#let resume(font-size: 10pt, margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm), gutter-width: 2em, side-width: 12em, photo: none, header, body) = {
   set page(paper: "a4", numbering: none, margin: margin)
   set text(font: (fonts.main, fonts.mono), fill: rgb_of(colors.main), size: font-size, lang: "zh")
   show heading: set text(size: sizes.heading * 1pt, fill: rgb_of(colors.theme))
@@ -33,10 +35,16 @@
   show link: set text(fill: rgb_of(colors.link))
   set par(first-line-indent: 0em, spacing: 0.6em, justify: true)
   grid(
-    columns: (1fr, 12em),
+    columns: (auto, side-width),
     gutter: (gutter-width, auto),
     [#body],
-    { header },
+    {
+      if photo != none {
+        set align(center)
+        image(photo, alt: "Profile Image", width: side-width)
+      }
+      header
+    },
   )
 }
 
@@ -226,6 +234,14 @@
 
 #resume(
   font-size: sizes.font * 1pt,
+  margin: (
+    top: length_of(layout_cfg.margin_top),
+    bottom: length_of(layout_cfg.margin_bottom),
+    left: length_of(layout_cfg.margin_left),
+    right: length_of(layout_cfg.margin_right),
+  ),
+  gutter-width: length_of(layout_cfg.gutter_width),
+  side-width: length_of(layout_cfg.side_width),
   photo: photo,
   header,
   body,
