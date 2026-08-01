@@ -2,13 +2,7 @@ import { Download, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   detectResumeFormat,
   parseResumeSource,
@@ -20,12 +14,11 @@ import { useResumeModel } from '@/models/resume-model';
 export function ResumeDataActions() {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [format, setFormat] = useState<ResumeSourceFormat>('toml');
   const [error, setError] = useState<string | null>(null);
   const resume = useResumeModel((state) => state.resume);
   const importResume = useResumeModel((state) => state.importResume);
 
-  function exportResume() {
+  function exportResume(format: ResumeSourceFormat) {
     const blob = new Blob([serializeResume(resume, format)], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
@@ -48,16 +41,6 @@ export function ResumeDataActions() {
 
   return (
     <div className="relative flex items-center gap-1">
-      <Select value={format} onValueChange={(value) => setFormat(value as ResumeSourceFormat)}>
-        <SelectTrigger aria-label={t('data.format')} className="h-7 w-20 text-[10px] uppercase">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="toml">TOML</SelectItem>
-          <SelectItem value="json">JSON</SelectItem>
-          <SelectItem value="yaml">YAML</SelectItem>
-        </SelectContent>
-      </Select>
       <input
         ref={inputRef}
         accept=".json,.yaml,.yml,.toml,application/json,text/yaml,application/toml"
@@ -71,21 +54,48 @@ export function ResumeDataActions() {
       />
       <Button
         aria-label={t('data.import')}
-        size="icon-sm"
+        size="sm"
         type="button"
-        variant="ghost"
+        variant="outline"
         onClick={() => inputRef.current?.click()}
       >
-        <Upload />
+        <Upload data-icon="inline-start" />
+        {t('data.import')}
+      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            aria-label={t('data.downloadToml')}
+            size="sm"
+            type="button"
+            variant="outline"
+            onClick={() => exportResume('toml')}
+          >
+            <Download data-icon="inline-start" />
+            TOML
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-72" side="bottom">
+          {t('data.tomlCliHint')}
+        </TooltipContent>
+      </Tooltip>
+      <Button
+        aria-label={t('data.downloadJson')}
+        size="sm"
+        type="button"
+        variant="outline"
+        onClick={() => exportResume('json')}
+      >
+        JSON
       </Button>
       <Button
-        aria-label={t('data.export')}
-        size="icon-sm"
+        aria-label={t('data.downloadYaml')}
+        size="sm"
         type="button"
-        variant="ghost"
-        onClick={exportResume}
+        variant="outline"
+        onClick={() => exportResume('yaml')}
       >
-        <Download />
+        YAML
       </Button>
       {error ? (
         <p

@@ -48,19 +48,6 @@
   )
 }
 
-#let sidebar(side, content, with-line: true, side-width: 13%) = layout(size => {
-  let side-size = measure(side, height: size.height, width: size.width)
-  let content-size = measure(content, width: size.width * (100% - side-width), height: size.height)
-  let height = calc.max(side-size.height, content-size.height) + 0.5em
-  grid(
-    columns: (side-width, 0%, auto),
-    gutter: 0.6em,
-    { v(0.25em); side; v(0.25em) },
-    if with-line { line(end: (0em, height), stroke: 0.05em) },
-    { v(0.25em); content; v(0.25em) },
-  )
-})
-
 #let info(color: black, ..infos) = {
   set text(font: (fonts.mono, fonts.main), fill: color)
   set par(justify: false)
@@ -154,22 +141,33 @@
     }))
   ]
   == #icons.fa-award 荣誉
-  #sidebar(
-    stack(
-      for a in data.awards [
-        #linebreak()
-        #linebreak()
-        #v(0.8em)
-        #text(size: 0.7em, a.date)
-      ]
-    ),
-    stack(
-      for a in data.awards [
-        #text(size: 0.7em, a.title)
-        #linebreak()
-      ]
-    ),
-  )
+  #let award-dates = ()
+  #for award in data.awards {
+    if not award-dates.contains(award.date) {
+      award-dates.push(award.date)
+    }
+  }
+  #for award-date in award-dates [
+    #let grouped-awards = data.awards.filter(award => award.date == award-date)
+    #grid(
+      columns: (3.2em, 0.5em, 1fr),
+      gutter: 0.4em,
+      align: (right + top, center + top, left + top),
+      text(size: 0.7em, fill: rgb_of(colors.secondary), award-date),
+      circle(radius: 0.12em, fill: rgb_of(colors.theme)),
+      stack(
+        spacing: 0.25em,
+        ..grouped-awards.map(award => [
+          #text(size: 0.7em, award.title)
+          #if award.at("level", default: none) != none [
+            #h(0.3em)
+            #text(size: 0.65em, fill: rgb_of(colors.secondary), award.level)
+          ]
+        ]),
+      ),
+    )
+    #v(0.45em)
+  ]
 ]
 
 #let body = [

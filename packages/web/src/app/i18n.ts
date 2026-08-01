@@ -22,7 +22,13 @@ const resources = {
         saved: '已保存到此浏览器',
         private: '数据不会离开当前设备',
       },
-      data: { format: '导出格式', import: '导入简历数据', export: '导出简历数据' },
+      data: {
+        import: '导入',
+        downloadToml: '下载 TOML',
+        downloadJson: '下载 JSON',
+        downloadYaml: '下载 YAML',
+        tomlCliHint: '保存为 TOML 后，可使用 typsume build resume.toml 在 CLI 中编译 PDF。',
+      },
       section: {
         basics: '基本信息',
         skills: '技能',
@@ -117,7 +123,13 @@ const resources = {
         saved: 'Saved in this browser',
         private: 'Your data never leaves this device',
       },
-      data: { format: 'Export format', import: 'Import resume data', export: 'Export resume data' },
+      data: {
+        import: 'Import',
+        downloadToml: 'Download TOML',
+        downloadJson: 'Download JSON',
+        downloadYaml: 'Download YAML',
+        tomlCliHint: 'Save as TOML, then compile it with typsume build resume.toml in the CLI.',
+      },
       section: {
         basics: 'Basics',
         skills: 'Skills',

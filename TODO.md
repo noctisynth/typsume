@@ -173,6 +173,8 @@
 - [x] Core：共享模板 `config` 覆盖、严格 schema 与 CLI/Web 合并逻辑；样式不进入 ResumeData
 - [x] CLI：`typsume.config.toml[config]` 覆盖模板默认样式并参与编译；`dump` 保持不变
 - [x] Web：独立样式模型覆盖全部 config 字段并实时预览；导入/导出 JSON/YAML/TOML 仅处理简历数据
+- [x] 修复动态 Accordion 新增条目裁切，并把荣誉改为按年份分组的无长线布局
+- [x] 将导入与 TOML/JSON/YAML/PDF 下载统一移到右上角；TOML 提示 CLI 编译用法
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright

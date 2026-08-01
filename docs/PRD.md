@@ -156,6 +156,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R18 | GitHub Pages 项目站点位于仓库子路径，Vite 绝对资源路径和 BrowserRouter 直达路由可能 404 | Pages workflow 将 `configure-pages` 的 `base_path` 注入 Vite，Router 使用 `import.meta.env.BASE_URL`；产物复制 `index.html` 为 `404.html` 提供 SPA fallback | 自定义域名启用后 `base_path` 自动为空，无需改代码 |
 | R19 | Web 当前把字号放在 `ResumeData.meta`，CLI 又忽略它；模板其余颜色、字体、字号和布局只来自 `meta.toml` | core 定义 `config` 覆盖与合并契约；模板 `meta.toml[config]` 提供默认值，CLI 项目 `typsume.config.toml[config]` 覆盖，Web 用独立 Zustand 模型；数据导入导出不携带样式 | custom template 继续遵循同一 config key 契约 |
 | R20 | CLI 使用的 `@iarna/toml` 打入浏览器会引入 Node `stream`、直接 `eval` 警告和额外体积 | Web 运行时 TOML 导入导出使用 ESM `smol-toml`；CLI 与 Vite 构建期继续使用 `@iarna/toml` | 两端以相同 fixture 做语义往返测试，不要求使用同一 parser 实现 |
+| R21 | Radix Accordion 内容层固定首次测量高度会裁切动态新增条目；荣誉时间轴按总高度画线导致单项长线与重复年份 | Accordion 只在动画层使用测量高度，内容保持 auto；荣誉按首次出现顺序按年份分组，每年渲染一次日期与多个奖项，以短标记替代整段高度线 | 动态数组增删必须覆盖展开状态下的容器回流 |
 
 ## 10. 成功指标
 

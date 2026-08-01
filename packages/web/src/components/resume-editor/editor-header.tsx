@@ -1,6 +1,7 @@
 import { Download, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { ResumeDataActions } from '@/components/resume-transfer/resume-data-actions';
 import { TemplatePicker } from '@/components/template-picker/template-picker';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -61,6 +62,7 @@ export function EditorHeader() {
           {i18n.language === 'zh-CN' ? 'Switch to English' : '切换至中文'}
         </TooltipContent>
       </Tooltip>
+      <ResumeDataActions />
       <Button
         disabled={fontPermission === 'unknown' || !artifact || previewState === 'exporting'}
         onClick={() => void downloadPdf()}
