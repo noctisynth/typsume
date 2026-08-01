@@ -141,6 +141,8 @@ push 到 `main` 时运行 `typsume build <source> --allow-downloads`，并通过
 
 > 说明：CLI 不打算支持自定义 DSL / Markdown source。CLI 用户接受 JSON / YAML / TOML。复杂输入请走 Web。
 
+CLI 继续由用户直接维护 JSON/YAML/TOML source；`dump` 保持当前规范化 JSON 输出，不承担格式转换。
+
 ### 4.2 执行流程
 
 ```
@@ -224,6 +226,11 @@ output   = "build/resume.pdf"
 
 [build]
 strict = false     # CLI 全局 --strict 开关
+
+[config]
+# 与模板 meta.toml[config] 使用相同 key；这里只写用户希望覆盖的项目级样式。
+theme-color = "#0b628b"
+font-size = 10
 ```
 
 命令行参数覆盖配置文件。

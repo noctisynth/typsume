@@ -100,7 +100,7 @@ type ResumeData = {
   experience: Item[]
   projects:  Item[]
   awards:    { title, date, level? }[]
-  meta?:     { template?, locale?, fontSize? }
+  meta?:     { template?, locale? }
 }
 
 type Item = {
@@ -115,6 +115,10 @@ type Item = {
 `projects` 中 `title` 表示项目名，`subtitle` 表示项目来源，`stack` 表示技术栈或项目标签。
 default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在原模板 `#tech[...]`
 所在的补充信息行。
+
+Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeData`。渲染样式不属于简历
+内容：模板默认值来自 `meta.toml[config]`，CLI 用户覆盖写入 `typsume.config.toml[config]`，Web
+使用独立的持久化样式模型；不得把样式字段写入 `ResumeData.meta`。
 
 ## 8. 里程碑
 
@@ -150,6 +154,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R16 | private Web workspace 未登记到 Semifold 时，其 changeset 会使发布 CI 校验失败；根 workspace 若被登记则会产生无意义的 GitHub Release | 登记 `@typsume/web`，由 `package.json#private` 阻止 npm 发布；明确不登记 `@typsume/workspace`，避免根 workspace 进入 release 流程 | package workspace 增删后同步配置，并从结果中排除仓库根包 |
 | R17 | Radix vertical Separator 的 stretch 对齐与固定高度组合会贴到 header 顶部；Accordion Content 的 overflow 会裁掉 Card 外扩 ring | header 短分割线显式居中；Accordion 内容为 Card ring 在上、右侧保留 1px 内边距 | 若组件库升级改变默认样式，按实际 box model 复核 |
 | R18 | GitHub Pages 项目站点位于仓库子路径，Vite 绝对资源路径和 BrowserRouter 直达路由可能 404 | Pages workflow 将 `configure-pages` 的 `base_path` 注入 Vite，Router 使用 `import.meta.env.BASE_URL`；产物复制 `index.html` 为 `404.html` 提供 SPA fallback | 自定义域名启用后 `base_path` 自动为空，无需改代码 |
+| R19 | Web 当前把字号放在 `ResumeData.meta`，CLI 又忽略它；模板其余颜色、字体、字号和布局只来自 `meta.toml` | core 定义 `config` 覆盖与合并契约；模板 `meta.toml[config]` 提供默认值，CLI 项目 `typsume.config.toml[config]` 覆盖，Web 用独立 Zustand 模型；数据导入导出不携带样式 | custom template 继续遵循同一 config key 契约 |
 
 ## 10. 成功指标
 

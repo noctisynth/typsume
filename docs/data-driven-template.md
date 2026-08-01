@@ -79,10 +79,13 @@ type ResumeData = {
   meta?: {                              // 文档级控制，不参与渲染样式
     template?: string
     locale?: string                     // 影响排版与字符处理
-    fontSize?: number                   // 字号微调
   }
 }
 ```
+
+样式不进入 ResumeData。模板默认值来自 `meta.toml[config]`；CLI 从项目
+`typsume.config.toml[config]` 读取同名覆盖，Web 保存在独立样式模型中。core 负责校验与合并，
+确保两端向 Typst 注入相同的 `cfg_*.json`。
 
 字段在不同 section 中的语义：
 

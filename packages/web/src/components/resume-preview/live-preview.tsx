@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFontModel } from '@/models/font-model';
 import { usePreviewModel } from '@/models/preview-model';
 import { useResumeModel } from '@/models/resume-model';
+import { useStyleModel } from '@/models/style-model';
 import { FontConsent } from './font-consent';
 import { TypstPreviewDocument } from './typst-preview-document';
 
@@ -18,12 +19,13 @@ export function LivePreview() {
   const setFontPermission = usePreviewModel((model) => model.setFontPermission);
   const compile = usePreviewModel((model) => model.compile);
   const fontRevision = useFontModel((model) => model.revision);
+  const styleRevision = useStyleModel((model) => model.revision);
 
   useEffect(() => {
     if (fontPermission === 'unknown') return;
-    const timer = setTimeout(() => void compile(resume, fontRevision), 300);
+    const timer = setTimeout(() => void compile(resume, fontRevision, styleRevision), 300);
     return () => clearTimeout(timer);
-  }, [compile, fontPermission, fontRevision, resume]);
+  }, [compile, fontPermission, fontRevision, resume, styleRevision]);
 
   if (fontPermission === 'unknown') return <FontConsent />;
 

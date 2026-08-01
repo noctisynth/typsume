@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { parse } from '@iarna/toml';
+import { TemplateConfigOverridesSchema } from '@typsume/core';
 import { z } from 'zod';
 import { ExitCode, formatZodIssues, TypsumeError } from './errors.ts';
 
@@ -10,6 +11,7 @@ const ProjectConfigSchema = z
     template: z.string().min(1).optional(),
     output: z.string().min(1).optional(),
     build: z.object({ strict: z.boolean().optional() }).strict().optional(),
+    config: TemplateConfigOverridesSchema.optional(),
   })
   .strict();
 

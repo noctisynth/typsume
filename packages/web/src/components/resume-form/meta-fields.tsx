@@ -3,7 +3,6 @@ import type { UseFormRegister } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FontSelector } from '@/components/font-manager/font-selector';
 import { Field, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -11,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { StyleFields } from './style-fields';
 
 interface MetaFieldsProps {
   register: UseFormRegister<ResumeInput>;
@@ -35,20 +35,8 @@ export function MetaFields({ register, locale, setLocale }: MetaFieldsProps) {
           </SelectContent>
         </Select>
       </Field>
-      <Field>
-        <FieldLabel htmlFor="meta-font-size">{t('field.fontSize')}</FieldLabel>
-        <Input
-          id="meta-font-size"
-          max="18"
-          min="6"
-          step="0.5"
-          type="number"
-          {...register('meta.fontSize', {
-            setValueAs: (value) => (value === '' ? undefined : Number(value)),
-          })}
-        />
-      </Field>
       <FontSelector />
+      <StyleFields />
       <input type="hidden" value="default" {...register('meta.template')} />
     </div>
   );

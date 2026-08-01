@@ -30,4 +30,13 @@ export {
   type SkillSectionOutput,
   SkillSectionSchema,
 } from './schema.ts';
+export {
+  FALLBACK_TEMPLATE_CONFIG,
+  type ResolvedTemplateConfig,
+  resolveTemplateConfig,
+  type TemplateConfig,
+  type TemplateConfigOverrides,
+  TemplateConfigOverridesSchema,
+  TemplateConfigSchema,
+} from './template-config.ts';
 export type { ResumeData } from './types.ts';

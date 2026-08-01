@@ -258,6 +258,14 @@ Zod schema 是**单一真相**，下面三处共用：
 - v1 只做表单，预留入口
 - YAML 视图给"会写"的用户做快速批量编辑；写完 commit 等同表单 submit
 
+编辑器必须支持导入与导出 JSON、YAML、TOML。导入按扩展名识别、解析后通过共享
+`ResumeSchema`，成功才原子替换当前草稿；失败保持现有草稿并展示解析或 schema 错误。导出使用
+schema 归一化后的完整数据，文件名扩展名与所选格式一致。样式不能形成 Web 私有的 ResumeData
+字段。
+
+样式配置不进入上述文件，也不写入 `ResumeData.meta`。Web 以独立 Zustand 模型持久化与
+`typsume.config.toml[config]` 同语义的覆盖值，和 CLI 共享 core 合并逻辑。
+
 ## 9. 国际化
 
 - react-i18next + i18next，初始 zh-CN、en-US

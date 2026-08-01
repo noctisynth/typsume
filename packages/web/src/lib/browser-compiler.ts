@@ -2,7 +2,7 @@ import { CompileFormatEnum, createTypstCompiler } from '@myriaddreamin/typst.ts/
 import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
 import compilerWasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
-import type { ResumeData } from '@typsume/core';
+import type { ResumeData, TemplateConfigOverrides } from '@typsume/core';
 import type { SelectedFontBundle } from '@/models/font-model';
 import { inspectFontFamilies, selectFontFamily } from './font-inspection';
 import { type FontStatus, loadBrowserFonts, loadLocalFontFallback } from './font-resources';
@@ -131,10 +131,14 @@ async function getRuntime(
   return runtime;
 }
 
-function mapResume(runtime: CompilerRuntime, resume: ResumeData): void {
+function mapResume(
+  runtime: CompilerRuntime,
+  resume: ResumeData,
+  configOverrides: TemplateConfigOverrides,
+): void {
   const browserResume = structuredClone(resume);
   if (browserResume.basics.photo) delete browserResume.basics.photo;
-  const config = DEFAULT_TEMPLATE.config(browserResume);
+  const config = DEFAULT_TEMPLATE.config(configOverrides);
   if (runtime.fontFamilyOverride) {
     config.fonts = {
       main: runtime.fontFamilyOverride,
@@ -168,9 +172,10 @@ async function compile(
   format: CompileFormatEnum,
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
+  configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks,
 ): Promise<Uint8Array> {
-  const preferredFontFamilies = Object.values(DEFAULT_TEMPLATE.config(resume).fonts);
+  const preferredFontFamilies = Object.values(DEFAULT_TEMPLATE.config(configOverrides).fonts);
   if (resume.basics.photo) {
     callbacks.resource?.({
       kind: 'warning',
@@ -193,7 +198,7 @@ async function compile(
 
   runtime.queue = runtime.queue
     .then(async () => {
-      mapResume(runtime, resume);
+      mapResume(runtime, resume, configOverrides);
       callbacks.phase?.(format === CompileFormatEnum.pdf ? 'Compiling PDF' : 'Compiling preview');
       const document = await runtime.compiler.compile({
         mainFilePath: `${VIRTUAL_ROOT}template.typ`,
@@ -222,16 +227,32 @@ export function compilePreview(
   resume: ResumeData,
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
+  configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
-  return compile(resume, CompileFormatEnum.vector, allowFontDownloads, selectedFont, callbacks);
+  return compile(
+    resume,
+    CompileFormatEnum.vector,
+    allowFontDownloads,
+    selectedFont,
+    configOverrides,
+    callbacks,
+  );
 }
 
 export function compilePdf(
   resume: ResumeData,
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
+  configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
-  return compile(resume, CompileFormatEnum.pdf, allowFontDownloads, selectedFont, callbacks);
+  return compile(
+    resume,
+    CompileFormatEnum.pdf,
+    allowFontDownloads,
+    selectedFont,
+    configOverrides,
+    callbacks,
+  );
 }

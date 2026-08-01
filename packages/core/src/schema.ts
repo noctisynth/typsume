@@ -64,7 +64,6 @@ export const AwardSchema = z.object({
 export const ResumeMetaSchema = z.object({
   template: z.string().optional(),
   locale: z.string().optional(),
-  fontSize: z.number().positive().optional(),
 });
 
 export const ResumeSchema = z.object({

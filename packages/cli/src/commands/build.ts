@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, extname, relative, resolve } from 'node:path';
+import { resolveTemplateConfig } from '@typsume/core';
 import { defineCommand } from 'citty';
 import { type CompileOptions, type CompileResult, compileWithTemplate } from '../compiler.ts';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
@@ -72,32 +73,7 @@ export async function buildResume(
     return { outputPath: normalizedPath, bytes: 0, dryRun: true };
   }
 
-  const cfg = resolved.meta.config ?? {};
-  const colors = {
-    theme: (cfg['theme-color'] as string) ?? '#0b628b',
-    main: (cfg['main-color'] as string) ?? '#343434',
-    secondary: (cfg['secondary-color'] as string) ?? '#808080',
-    link: (cfg['link-color'] as string) ?? '#1e6485',
-    icon: (cfg['icon-color'] as string) ?? '#0b628b',
-  };
-  const fonts = {
-    main: (cfg.font as string) ?? 'Maple Mono NF',
-    mono: (cfg['mono-font'] as string) ?? 'Maple Mono NF',
-  };
-  const sizes = {
-    font: (cfg['font-size'] as number) ?? 10,
-    heading: (cfg['heading-size'] as number) ?? 13,
-    list: (cfg['list-size'] as number) ?? 8.5,
-    item_title: (cfg['item-title-size'] as number) ?? 11,
-  };
-  const layout = {
-    margin_top: (cfg['margin-top'] as string) ?? '1.5cm',
-    margin_bottom: (cfg['margin-bottom'] as string) ?? '1.5cm',
-    margin_left: (cfg['margin-left'] as string) ?? '1.5cm',
-    margin_right: (cfg['margin-right'] as string) ?? '1.5cm',
-    gutter_width: (cfg['gutter-width'] as string) ?? '2em',
-    side_width: (cfg['side-width'] as string) ?? '12em',
-  };
+  const renderConfig = resolveTemplateConfig(resolved.meta.config, config.project?.config);
 
   const compile = context.compile ?? compileWithTemplate;
   const compileOptions: CompileOptions = {
@@ -105,7 +81,7 @@ export async function buildResume(
     resumeJson: JSON.stringify(data),
     fontCacheDir: ensureProjectRuntime(projectRoot),
     fontResources: resolved.meta.resources?.fonts ?? [],
-    config: { colors, fonts, sizes, layout },
+    config: renderConfig,
   };
   if (context.reportProgress) compileOptions.reportProgress = context.reportProgress;
   if (context.confirmFontDownload) compileOptions.confirmFontDownload = context.confirmFontDownload;

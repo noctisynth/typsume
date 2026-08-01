@@ -1,4 +1,8 @@
-import type { ResumeData } from '@typsume/core';
+import {
+  resolveTemplateConfig,
+  type TemplateConfigOverrides,
+  TemplateConfigOverridesSchema,
+} from '@typsume/core';
 import { z } from 'zod';
 import metaValue from '../../../../templates/default/meta.toml?toml';
 import templateSource from '../../../../templates/default/template.typ?raw';
@@ -33,7 +37,8 @@ export interface BrowserTemplate {
   source: string;
   assets: Record<string, string>;
   fontResources: FontResource[];
-  config: (resume: ResumeData) => TemplateConfig;
+  configDefaults: TemplateConfigOverrides;
+  config: (overrides?: TemplateConfigOverrides) => TemplateConfig;
 }
 
 const rawIcons = import.meta.glob('../../../../templates/default/icons/*.svg', {
@@ -50,7 +55,7 @@ const icons = Object.fromEntries(
 );
 
 const meta = TemplateMetaSchema.parse(metaValue);
-const cfg = meta.config ?? {};
+const configDefaults = TemplateConfigOverridesSchema.parse(meta.config ?? {});
 
 export const DEFAULT_TEMPLATE: BrowserTemplate = {
   name: meta.name,
@@ -58,33 +63,8 @@ export const DEFAULT_TEMPLATE: BrowserTemplate = {
   source: templateSource,
   assets: icons,
   fontResources: meta.resources?.fonts ?? [],
-  config: (resume) => ({
-    colors: {
-      theme: (cfg['theme-color'] as string) ?? '#0b628b',
-      main: (cfg['main-color'] as string) ?? '#343434',
-      secondary: (cfg['secondary-color'] as string) ?? '#808080',
-      link: (cfg['link-color'] as string) ?? '#1e6485',
-      icon: (cfg['icon-color'] as string) ?? '#0b628b',
-    },
-    fonts: {
-      main: (cfg.font as string) ?? 'Maple Mono NF',
-      mono: (cfg['mono-font'] as string) ?? 'Maple Mono NF',
-    },
-    sizes: {
-      font: resume.meta?.fontSize ?? (cfg['font-size'] as number) ?? 10,
-      heading: (cfg['heading-size'] as number) ?? 13,
-      list: (cfg['list-size'] as number) ?? 8.5,
-      item_title: (cfg['item-title-size'] as number) ?? 11,
-    },
-    layout: {
-      margin_top: (cfg['margin-top'] as string) ?? '1.5cm',
-      margin_bottom: (cfg['margin-bottom'] as string) ?? '1.5cm',
-      margin_left: (cfg['margin-left'] as string) ?? '1.5cm',
-      margin_right: (cfg['margin-right'] as string) ?? '1.5cm',
-      gutter_width: (cfg['gutter-width'] as string) ?? '2em',
-      side_width: (cfg['side-width'] as string) ?? '12em',
-    },
-  }),
+  configDefaults,
+  config: (overrides) => resolveTemplateConfig(configDefaults, overrides),
 };
 
 export const TEMPLATE_REGISTRY = new Map([[DEFAULT_TEMPLATE.name, DEFAULT_TEMPLATE]]);

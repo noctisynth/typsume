@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import type { CompilePhase } from '@/lib/browser-compiler';
 import type { FontStatus } from '@/lib/font-resources';
 import { getSelectedFontBundle } from '@/models/font-model';
+import { getStyleOverrides } from '@/models/style-model';
 
 export type FontPermission = 'unknown' | 'allowed' | 'denied';
 export type PreviewStateKind = 'idle' | 'loading' | 'ready' | 'error' | 'exporting';
@@ -16,7 +17,7 @@ interface PreviewState {
   error: string | null;
   latencyMs: number | null;
   setFontPermission: (permission: Exclude<FontPermission, 'unknown'>) => void;
-  compile: (resume: ResumeData, fontRevision?: number) => Promise<void>;
+  compile: (resume: ResumeData, fontRevision?: number, styleRevision?: number) => Promise<void>;
   exportPdf: (resume: ResumeData) => Promise<Uint8Array>;
 }
 
@@ -46,7 +47,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
   setFontPermission(fontPermission) {
     set({ fontPermission, state: 'idle', warnings: [], error: null });
   },
-  async compile(resume, fontRevision) {
+  async compile(resume, fontRevision, styleRevision) {
     const permission = get().fontPermission;
     if (permission === 'unknown') return;
     const sequence = ++compileSequence;
@@ -58,6 +59,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
         resume,
         permission === 'allowed',
         getSelectedFontBundle(fontRevision),
+        getStyleOverrides(styleRevision),
         {
           phase: setPhase,
           resource: appendStatus,
@@ -85,10 +87,16 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
     set({ state: 'exporting', phase: 'Compiling PDF', error: null });
     try {
       const { compilePdf } = await import('@/lib/browser-compiler');
-      const pdf = await compilePdf(resume, permission === 'allowed', getSelectedFontBundle(), {
-        phase: setPhase,
-        resource: appendStatus,
-      });
+      const pdf = await compilePdf(
+        resume,
+        permission === 'allowed',
+        getSelectedFontBundle(),
+        getStyleOverrides(),
+        {
+          phase: setPhase,
+          resource: appendStatus,
+        },
+      );
       set({ state: 'ready', phase: null });
       return pdf;
     } catch (error) {

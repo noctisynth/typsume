@@ -112,6 +112,29 @@ describe('CLI command workflows', () => {
     expect(JSON.parse(readFileSync(dryRun.outputPath, 'utf-8')).awards).toEqual([]);
   });
 
+  test('project template configuration overrides metadata defaults', async () => {
+    const root = temporaryDirectory();
+    writeFileSync(resolve(root, 'resume.json'), JSON.stringify(minimalResume));
+    writeFileSync(
+      resolve(root, 'typsume.config.toml'),
+      '[config]\ntheme-color = "#112233"\nheading-size = 16\n',
+    );
+    let compileOptions: CompileOptions | undefined;
+    await buildResume(
+      { source: 'resume.json' },
+      {
+        cwd: root,
+        configEnvironment: { homeDir: root },
+        compile: async (options) => {
+          compileOptions = options;
+          return fakeCompile(options);
+        },
+      },
+    );
+    expect(compileOptions?.config.colors.theme).toBe('#112233');
+    expect(compileOptions?.config.sizes.heading).toBe(16);
+  });
+
   test('project strict can be overridden and reports missing template fields', async () => {
     const root = temporaryDirectory();
     writeFileSync(resolve(root, 'resume.json'), JSON.stringify(minimalResume));

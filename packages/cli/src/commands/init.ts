@@ -63,6 +63,9 @@ output  = "resume.pdf"
 
 [build]
 strict = false
+
+[config]
+# Override any values declared by the selected template's meta.toml[config].
 `;
 
 const SOURCE_FILENAMES: Record<SourceFormat, string> = {

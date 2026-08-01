@@ -54,7 +54,6 @@
   "awards": [{ "title": "Sample Award", "date": "2023" }],
   "meta": {
     "template": "default",
-    "locale": "zh-CN",
-    "fontSize": 10
+    "locale": "zh-CN"
   }
 }
