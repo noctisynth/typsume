@@ -49,13 +49,10 @@ W4 的数据模型。
 packages/web/src/
 ├── app/                    # 入口、路由、全局 Provider
 │   └── router.tsx          # 路由表
-├── pages/                  # 页面级组件
-│   ├── home-page.tsx       # 创建/打开/导入 简历
-│   ├── editor-page.tsx     # 三栏布局：表单 / 预览 / 配置
-│   └── settings-page.tsx   # 全局偏好
 ├── components/
 │   ├── ui/                 # shadcn CLI 生成的元组件
-│   ├── resume-editor/      # 编辑器布局、TopBar、Outline
+│   ├── home/               # 首页页面组件
+│   ├── resume-editor/      # 编辑器页面、布局、TopBar、Outline
 │   ├── resume-form/        # 基于 schema + react-hook-form + zod
 │   ├── resume-preview/     # typst.react 预览、编译状态、PDF 导出
 │   └── template-picker/    # 模板切换 UI
@@ -66,8 +63,9 @@ packages/web/src/
 └── main.tsx
 ```
 
-原则：组件按 `components/<feature-name>/` 切分，状态统一进入 `models/`，非 React 工具进入
-`lib/`。不得重新引入 `features/` 或 `shared/ui/` 目录。
+原则：包括页面组件在内的所有 React 组件都按 `components/<feature-name>/` 切分，状态统一进入
+`models/`，非 React 工具进入 `lib/`。不得重新引入 `pages/`、`features/` 或 `shared/ui/`
+目录。
 
 ## 4. 三栏编辑器布局
 

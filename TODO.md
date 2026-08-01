@@ -145,9 +145,9 @@
 
 ## W4 — `packages/web`
 
-- [~] Vite + React 19 + shadcn-react + TailwindCSS 骨架；首页与编辑器异步分包
-- [ ] Web 工程约定：所有文件 kebab-case；组件仅在 `components/`；Zustand 仅在 `models/`
-- [ ] shadcn CLI 初始化并按需生成 `components/ui` 元组件；业务样式仅用 Tailwind utilities
+- [x] Vite + React 19 + shadcn-react + TailwindCSS 骨架；首页与编辑器异步分包
+- [x] Web 工程约定：所有文件 kebab-case；组件仅在 `components/`；Zustand 仅在 `models/`
+- [x] shadcn CLI 初始化并按需生成 `components/ui` 元组件；业务样式仅用 Tailwind utilities
 - [ ] 三栏布局（左表单 / 中预览 / 右大纲）与桌面端设计系统
 - [ ] Zustand + persist：当前简历草稿写入 IndexedDB，恢复时重新校验 schema
 - [ ] react-hook-form + zodResolver：覆盖 basics / skills / education / experience / projects / awards / meta

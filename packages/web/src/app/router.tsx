@@ -1,12 +1,18 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import { HomePage } from '@/pages/HomePage';
+import { HomePage } from '@/components/home/home-page';
 
-const EditorPage = lazy(() => import('@/pages/EditorPage'));
+const EditorPage = lazy(() => import('@/components/resume-editor/editor-page'));
 
 function EditorRoute() {
   return (
-    <Suspense fallback={<div className="route-loading">Opening the studio…</div>}>
+    <Suspense
+      fallback={
+        <div className="grid min-h-svh place-items-center bg-muted text-sm text-muted-foreground">
+          Opening the studio…
+        </div>
+      }
+    >
       <EditorPage />
     </Suspense>
   );
