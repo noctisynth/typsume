@@ -15,11 +15,13 @@ afterEach(() => {
 });
 
 async function runCli(args: string[], cwd = packageRoot) {
+  const home = mkdtempSync(resolve(tmpdir(), 'typsume-cli-home-'));
+  directories.push(home);
   const subprocess = Bun.spawn([bunExecutable, mainPath, ...args], {
     cwd,
     stdout: 'pipe',
     stderr: 'pipe',
-    env: { ...Bun.env, HOME: cwd, XDG_CONFIG_HOME: resolve(cwd, '.xdg') },
+    env: { ...Bun.env, HOME: home, XDG_CONFIG_HOME: resolve(home, '.config') },
   });
   const [exitCode, stdout, stderr] = await Promise.all([
     subprocess.exited,
@@ -35,6 +37,8 @@ describe('CLI smoke', () => {
     for (const command of ['build', 'validate', 'dump', 'templates', 'init', 'dev']) {
       expect((await runCli([command, '--help'])).exitCode).toBe(ExitCode.success);
     }
+    expect(existsSync(resolve(packageRoot, 'Library'))).toBe(false);
+    expect(existsSync(resolve(packageRoot, '.xdg'))).toBe(false);
   });
 
   test('validate and dump accept the shared sample', async () => {
