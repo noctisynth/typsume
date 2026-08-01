@@ -148,10 +148,10 @@
 - [x] Vite + React 19 + shadcn-react + TailwindCSS 骨架；首页与编辑器异步分包
 - [x] Web 工程约定：所有文件 kebab-case；组件仅在 `components/`；Zustand 仅在 `models/`
 - [x] shadcn CLI 初始化并按需生成 `components/ui` 元组件；业务样式仅用 Tailwind utilities
-- [ ] 三栏布局（左表单 / 中预览 / 右大纲）与桌面端设计系统
-- [ ] Zustand + persist：当前简历草稿写入 IndexedDB，恢复时重新校验 schema
-- [ ] react-hook-form + zodResolver：覆盖 basics / skills / education / experience / projects / awards / meta
-- [ ] react-i18next：zh-CN / en-US 基础界面文案，简历内容保持原样
+- [x] 三栏布局（左表单 / 中预览 / 右大纲）与桌面端设计系统
+- [x] Zustand + persist：当前简历草稿写入 IndexedDB，恢复时重新校验 schema
+- [x] react-hook-form + zodResolver：覆盖 basics / skills / education / experience / projects / awards / meta
+- [x] react-i18next：zh-CN / en-US 基础界面文案，简历内容保持原样
 - [ ] `typst.ts` 浏览器端集成 + `<TypstDocument />` 实时预览 + PDF 导出
 - [ ] 默认模板构建时打包；模板注册表为 W5 第二套模板预留扩展点
 - [ ] 复用 CLI 字体资源契约：浏览器内下载、校验、ZIP 解压、页面生命周期复用和可见状态提示
