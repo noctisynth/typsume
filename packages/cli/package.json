@@ -4,6 +4,11 @@
   "type": "module",
   "description": "Data-driven Typst resume compiler — build resume.json/yaml/toml → PDF via WASM (no system typst needed).",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noctisynth/typsume.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "typsume": "./src/main.ts"
   },

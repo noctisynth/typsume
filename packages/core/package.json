@@ -4,6 +4,11 @@
   "type": "module",
   "description": "Shared Zod schema, derived TS types, and JSON Schema for typst-resume.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noctisynth/typsume.git",
+    "directory": "packages/core"
+  },
   "sideEffects": false,
   "exports": {
     ".": {

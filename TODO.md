@@ -129,6 +129,7 @@
   - [x] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
 - [~] DoD：CI 使用 Bun canary、执行 check/typecheck/test/build；等待线上新包发布流程验收
 - [x] `semifold-ci` 通过 setup Action 锁定 Semifold CLI `v0.3.0-beta.3`
+- [x] 修复 npm OIDC 发布环境：固定受支持的 Node/npm、移除发布步骤传统 token、补齐发布包仓库元数据
 
 ## W4 — `packages/web`
 
