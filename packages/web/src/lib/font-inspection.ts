@@ -1,6 +1,7 @@
 import { createTypstFontBuilder } from '@myriaddreamin/typst.ts/compiler';
 import compilerWasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
 import { createSerialTaskQueue } from './serial-task-queue';
+import { wasmModuleInput } from './wasm-module';
 
 interface RawFontInfo {
   info?: Array<{ family?: unknown }>;
@@ -12,7 +13,7 @@ let builderPromise: ReturnType<typeof createBuilder> | null = null;
 
 async function createBuilder() {
   const builder = createTypstFontBuilder();
-  await builder.init({ getModule: () => compilerWasmUrl });
+  await builder.init({ getModule: () => wasmModuleInput(compilerWasmUrl) as never });
   return builder;
 }
 

@@ -33,9 +33,11 @@ interface PersistedResumeState {
 interface ResumeState extends PersistedResumeState {
   hydrated: boolean;
   revision: number;
+  sectionNavigationRevision: number;
   replaceResume: (value: unknown) => boolean;
   resetResume: () => void;
   selectSection: (section: ResumeSection) => void;
+  navigateSection: (section: ResumeSection) => void;
   markHydrated: () => void;
 }
 
@@ -61,6 +63,7 @@ export const useResumeModel = create<ResumeState>()(
       selectedSection: 'basics',
       hydrated: false,
       revision: 0,
+      sectionNavigationRevision: 0,
       replaceResume(value) {
         const parsed = ResumeSchema.safeParse(value);
         if (!parsed.success) return false;
@@ -72,6 +75,12 @@ export const useResumeModel = create<ResumeState>()(
       },
       selectSection(selectedSection) {
         set({ selectedSection });
+      },
+      navigateSection(selectedSection) {
+        set((state) => ({
+          selectedSection,
+          sectionNavigationRevision: state.sectionNavigationRevision + 1,
+        }));
       },
       markHydrated() {
         set({ hydrated: true });

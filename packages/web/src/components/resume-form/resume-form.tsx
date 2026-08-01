@@ -18,6 +18,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { findNewlyOpenedSection } from '@/lib/accordion-state';
 import { DEFAULT_RESUME, RESUME_SECTIONS, useResumeModel } from '@/models/resume-model';
 import { AwardsFields } from './awards-fields';
 import { BasicsFields } from './basics-fields';
@@ -29,10 +30,11 @@ export function ResumeForm() {
   const { t } = useTranslation();
   const resume = useResumeModel((state) => state.resume);
   const selectedSection = useResumeModel((state) => state.selectedSection);
+  const sectionNavigationRevision = useResumeModel((state) => state.sectionNavigationRevision);
   const replaceResume = useResumeModel((state) => state.replaceResume);
   const resetResume = useResumeModel((state) => state.resetResume);
   const selectSection = useResumeModel((state) => state.selectSection);
-  const [openSections, setOpenSections] = useState<string[]>(['basics']);
+  const [openSections, setOpenSections] = useState<string[]>([selectedSection]);
   const form = useForm<ResumeInput, unknown, ResumeOutput>({
     resolver: zodResolver(ResumeSchema),
     defaultValues: resume,
@@ -42,10 +44,10 @@ export function ResumeForm() {
   const locale = useWatch({ control: form.control, name: 'meta.locale' });
 
   useEffect(() => {
-    setOpenSections((current) =>
-      current.includes(selectedSection) ? current : [...current, selectedSection],
-    );
-  }, [selectedSection]);
+    if (sectionNavigationRevision === 0) return;
+    const section = useResumeModel.getState().selectedSection;
+    setOpenSections((current) => (current.includes(section) ? current : [...current, section]));
+  }, [sectionNavigationRevision]);
 
   useEffect(() => {
     const timer = setTimeout(() => replaceResume(values), 300);
@@ -55,6 +57,17 @@ export function ResumeForm() {
   function resetToSample() {
     form.reset(DEFAULT_RESUME);
     resetResume();
+  }
+
+  function changeOpenSections(nextSections: string[]) {
+    const openedSection = findNewlyOpenedSection(openSections, nextSections);
+    setOpenSections(nextSections);
+    if (
+      openedSection &&
+      RESUME_SECTIONS.includes(openedSection as (typeof RESUME_SECTIONS)[number])
+    ) {
+      selectSection(openedSection as (typeof RESUME_SECTIONS)[number]);
+    }
   }
 
   return (
@@ -72,14 +85,11 @@ export function ResumeForm() {
         className="w-full"
         type="multiple"
         value={openSections}
-        onValueChange={setOpenSections}
+        onValueChange={changeOpenSections}
       >
         {RESUME_SECTIONS.map((section, index) => (
           <AccordionItem id={`section-${section}`} key={section} value={section}>
-            <AccordionTrigger
-              className="py-4 hover:no-underline"
-              onClick={() => selectSection(section)}
-            >
+            <AccordionTrigger className="py-4 hover:no-underline">
               <span className="flex items-center gap-3">
                 <span className="font-mono text-[10px] text-muted-foreground">
                   {String(index + 1).padStart(2, '0')}

@@ -8,10 +8,10 @@ import { RESUME_SECTIONS, type ResumeSection, useResumeModel } from '@/models/re
 export function ResumeOutline() {
   const { t } = useTranslation();
   const selectedSection = useResumeModel((state) => state.selectedSection);
-  const selectSection = useResumeModel((state) => state.selectSection);
+  const navigateSection = useResumeModel((state) => state.navigateSection);
 
   function navigate(section: ResumeSection) {
-    selectSection(section);
+    navigateSection(section);
     const viewport = document.querySelector<HTMLElement>(
       '#resume-form-scroll-area [data-slot="scroll-area-viewport"]',
     );

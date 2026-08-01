@@ -7,6 +7,7 @@ import type { SelectedFontBundle } from '@/models/font-model';
 import { inspectFontFamilies, selectFontFamily } from './font-inspection';
 import { type FontStatus, loadBrowserFonts, loadLocalFontFallback } from './font-resources';
 import { DEFAULT_TEMPLATE } from './template-registry';
+import { wasmModuleInput } from './wasm-module';
 
 const VIRTUAL_ROOT = '/@memory/';
 const encoder = new TextEncoder();
@@ -97,7 +98,7 @@ async function createRuntime(
   const compiler = createTypstCompiler();
   await compiler.init({
     workspace: VIRTUAL_ROOT,
-    getModule: () => compilerWasmUrl,
+    getModule: () => wasmModuleInput(compilerWasmUrl),
     beforeBuild: [loadFonts(fonts, { assets: false }), withAccessModel(accessModel)],
   } as never);
   return { compiler, fontFamilyOverride, queue: Promise.resolve() };

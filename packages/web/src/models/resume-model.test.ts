@@ -27,4 +27,12 @@ describe('resume model', () => {
     await write;
     expect(await storage.getItem('test-draft')).toBe(JSON.stringify(DEFAULT_RESUME));
   });
+
+  test('records every outline navigation even when the selected section is unchanged', () => {
+    const before = useResumeModel.getState().sectionNavigationRevision;
+    const section = useResumeModel.getState().selectedSection;
+    useResumeModel.getState().navigateSection(section);
+    useResumeModel.getState().navigateSection(section);
+    expect(useResumeModel.getState().sectionNavigationRevision).toBe(before + 2);
+  });
 });

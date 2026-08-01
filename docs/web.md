@@ -195,6 +195,16 @@ renderer WASM 实例不是可重入对象，且 `renderToSvg()` 会在 Rust 借�
 effect 仍有效时才替换当前预览。任何 renderer 调用失败后必须丢弃该实例，下一任务重新初始化。
 不得通过关闭 StrictMode 掩盖 renderer 生命周期问题。
 
+简历预览是静态 SVG，只请求 renderer 的 body、defs 与 CSS，不携带 renderer JavaScript，避免无关的
+运行时脚本、控制台日志和主线程 message handler。compiler、font builder 与 renderer 的 WASM
+初始化统一使用 wasm-bindgen 的 `{ module_or_path }` 单对象参数，项目控制范围内不得产生弃用警告。
+Vite 连接、React DevTools 提示和浏览器扩展日志不属于生产应用告警；Chrome `[Violation]` 是性能诊断，
+必须以 production profile 判断，不能通过拦截 `console` 隐藏。
+
+左侧多选 Accordion 的用户点击直接决定展开集合；点击已展开 section 必须一次收起。右侧结构导航通过
+独立的 section 选择状态请求定位与展开。Accordion trigger 不得先写入选择状态再由 effect 强制回填，
+否则首次收起会被撤销。
+
 artifact 是 `typst.ts` 编译器产出的二进制包，由 Zustand store 派生：
 
 ```tsx
@@ -280,4 +290,6 @@ Zod schema 是**单一真相**，下面三处共用：
 - [x] 本地字体 fallback 以 typst.ts 解析出的内部 family 注入，不产生 unknown font family
 - [x] 重复点击结构导航只滚动左侧表单，不移动页面根；浏览器不可访问的照片路径可见告警并安全降级
 - [x] SVG 预览不在 Rust 借用期间直接操作 DOM；renderer panic 后重建实例且 StrictMode 重放安全
+- [x] WASM 初始化无项目侧弃用警告；静态 SVG 不携带 renderer JavaScript
+- [x] 左侧 section 首次点击即可收起，右侧结构导航仍会展开并定位目标 section
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

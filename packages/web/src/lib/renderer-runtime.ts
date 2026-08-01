@@ -1,6 +1,7 @@
 import { createTypstRenderer, type TypstRenderer } from '@myriaddreamin/typst.ts';
 import rendererWasmUrl from '@myriaddreamin/typst-ts-renderer/wasm?url';
 import { createSerialTaskQueue } from './serial-task-queue';
+import { wasmModuleInput } from './wasm-module';
 
 let rendererPromise: Promise<TypstRenderer> | null = null;
 const enqueue = createSerialTaskQueue();
@@ -11,7 +12,7 @@ function getRenderer(): Promise<TypstRenderer> {
       const renderer = createTypstRenderer();
       await renderer.init({
         beforeBuild: [],
-        getModule: () => rendererWasmUrl,
+        getModule: () => wasmModuleInput(rendererWasmUrl) as never,
       });
       return renderer;
     })().catch((error) => {
@@ -39,6 +40,12 @@ export function renderArtifact(artifact: Uint8Array): Promise<string> {
   return enqueueRendererTask((renderer) =>
     renderer.renderSvg({
       artifactContent: artifactCopy,
+      data_selection: {
+        body: true,
+        defs: true,
+        css: true,
+        js: false,
+      },
       format: 'vector',
     }),
   );
