@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { unzipSync } from 'fflate';
+import { logger } from './logger.ts';
 import type { FontResource } from './meta.ts';
 
 const ZIP_SIGNATURES = [
@@ -104,7 +105,7 @@ export async function loadRemoteFonts(
   options: FontResourceOptions,
 ): Promise<Uint8Array[]> {
   const fetcher = options.fetcher ?? fetch;
-  const warn = options.warn ?? console.warn;
+  const warn = options.warn ?? ((message: string) => logger.warn(message));
   const loaded: Uint8Array[] = [];
 
   for (const [resourceIndex, resource] of resources.entries()) {

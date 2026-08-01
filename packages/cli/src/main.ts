@@ -7,6 +7,7 @@ import init from './commands/init.ts';
 import templates from './commands/templates.ts';
 import validate from './commands/validate.ts';
 import { ExitCode, TypsumeError } from './errors.ts';
+import { logger } from './logger.ts';
 
 const main = defineCommand({
   meta: {
@@ -20,9 +21,9 @@ const main = defineCommand({
 
 await runMain(main).catch((err: unknown) => {
   if (err instanceof TypsumeError) {
-    console.error(err.message);
+    logger.error(err.message);
     process.exit(err.exitCode);
   }
-  console.error(`Unexpected error: ${(err as Error).message}`);
+  logger.error(`Unexpected error: ${(err as Error).message}`);
   process.exit(ExitCode.general);
 });

@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
+import { logger } from '../logger.ts';
 import { loadResume } from '../resume.ts';
 import { handleErrors } from '../utils.ts';
 
@@ -17,6 +18,6 @@ export default defineCommand({
 
     loadResume(sourcePath);
 
-    console.log('OK: schema validation passed');
+    logger.success('Schema validation passed');
   }),
 });

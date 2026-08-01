@@ -118,6 +118,7 @@
 - [x] `templates` 合并内置与全局自定义模板
 - [x] `init → build`、`dev` 防抖与失败恢复验收
   - [x] `init` 默认生成 `resume.toml`，支持 `--format json|yaml|toml`
+  - [x] 使用 `consola` 统一人类可读的 CLI 状态、警告与错误输出
 - [x] 发布包：`@typsume/cli` + `typsume` bin + pack 内置模板；pnpm/npm/Bun 执行入口已对齐
 - [x] 远程字体资源
   - [x] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）

@@ -19,6 +19,7 @@
   - 通过 `package.json#workspaces` 管理 monorepo
   - 后续可用 `bun build --compile` 打包成单 binary 分发（v1.x 考虑）
 - **CLI 框架**：[`citty`](https://github.com/unjs/citty)（unjs 出品，声明式 + ESM-first，体积小）
+- **终端交互与日志**：`consola`；人类可读状态使用 success/info/warn/error，JSON 等机器输出保持纯 stdout
 - **与 Web 共享**：`packages/core`（Zod schema + types），通过 workspace 软链
 - **typst 编译**：[`@myriaddreamin/typst.ts`](https://github.com/Myriad-Dreamin/typst.ts) Node.js 端 WASM  
   - **关键收益**：用户零外部依赖。`bun add -g typsume` 即装即用，**不需要系统装 typst**

@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
+import { writeOutput } from '../logger.ts';
 import { loadResume } from '../resume.ts';
 import { handleErrors } from '../utils.ts';
 
@@ -15,6 +16,6 @@ export default defineCommand({
   run: handleErrors(async ({ args }) => {
     const sourcePath = resolve(process.cwd(), args.source);
 
-    console.log(JSON.stringify(loadResume(sourcePath), null, 2));
+    writeOutput(JSON.stringify(loadResume(sourcePath), null, 2));
   }),
 });

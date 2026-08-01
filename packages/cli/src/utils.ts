@@ -1,4 +1,5 @@
 import { ExitCode, TypsumeError } from './errors.ts';
+import { logger } from './logger.ts';
 
 /** Wrap a command handler so TypsumeError prints cleanly with the correct exit code. */
 export function handleErrors<TContext>(
@@ -9,10 +10,10 @@ export function handleErrors<TContext>(
       await fn(context);
     } catch (err: unknown) {
       if (err instanceof TypsumeError) {
-        console.error(err.message);
+        logger.error(err.message);
         process.exit(err.exitCode);
       }
-      console.error(`Unexpected error: ${(err as Error).message}`);
+      logger.error(`Unexpected error: ${(err as Error).message}`);
       process.exit(ExitCode.general);
     }
   };

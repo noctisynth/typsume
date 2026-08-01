@@ -30,6 +30,7 @@
     "@myriaddreamin/typst.ts": "^0.7.0",
     "@typsume/core": "^0.1.1",
     "citty": "^0.1.6",
+    "consola": "^3.4.2",
     "fflate": "^0.8.3",
     "js-yaml": "^4.1.0",
     "zod": "^4.4.3"

@@ -2,6 +2,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
+import { logger, writeOutput } from '../logger.ts';
 import { readMeta } from '../meta.ts';
 import { getBuiltInTemplatesDir, getCustomTemplatesDir } from '../resolver.ts';
 import { handleErrors } from '../utils.ts';
@@ -58,19 +59,19 @@ export default defineCommand({
   run: handleErrors(async ({ args }) => {
     const templates = listTemplates();
     if (args.json) {
-      console.log(JSON.stringify(templates, null, 2));
+      writeOutput(JSON.stringify(templates, null, 2));
       return;
     }
     if (templates.length === 0) {
-      console.log('No templates found.');
+      logger.info('No templates found.');
       return;
     }
-    console.log(
+    logger.log(
       `${'NAME'.padEnd(14)}${'DISPLAY'.padEnd(16)}${'REQUIRED FIELDS'.padEnd(24)}THEME COLOR`,
     );
-    console.log('-'.repeat(70));
+    logger.log('-'.repeat(70));
     for (const template of templates) {
-      console.log(
+      logger.log(
         `${template.name.padEnd(14)}${template.display.padEnd(16)}${template.required.join(', ').padEnd(24)}${template.theme}`,
       );
     }

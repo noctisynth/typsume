@@ -2,6 +2,7 @@ import { type FSWatcher, watch } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
 import { ExitCode } from '../errors.ts';
+import { logger } from '../logger.ts';
 import { type BuildOptions, buildResume } from './build.ts';
 
 export interface WatchReport {
@@ -47,7 +48,7 @@ export default defineCommand({
   },
   run({ args }) {
     const sourcePath = resolve(process.cwd(), args.source);
-    console.log(`Watching ${sourcePath} for changes...`);
+    logger.info(`Watching ${sourcePath} for changes...`);
     const buildOptions: BuildOptions = { source: args.source };
     if (args.template !== undefined) buildOptions.template = args.template;
     if (args.output !== undefined) buildOptions.output = args.output;
@@ -59,8 +60,8 @@ export default defineCommand({
       },
       ({ durationMs, error }) => {
         const timestamp = new Date().toLocaleTimeString();
-        if (error) console.error(`[${timestamp}] Build failed: ${error.message}`);
-        else console.log(`[${timestamp}] Rebuilt in ${durationMs}ms`);
+        if (error) logger.error(`[${timestamp}] Build failed: ${error.message}`);
+        else logger.success(`[${timestamp}] Rebuilt in ${durationMs}ms`);
       },
     );
 

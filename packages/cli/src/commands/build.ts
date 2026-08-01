@@ -4,6 +4,7 @@ import { defineCommand } from 'citty';
 import { type CompileOptions, type CompileResult, compileWithTemplate } from '../compiler.ts';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
 import { ExitCode, TypsumeError } from '../errors.ts';
+import { logger } from '../logger.ts';
 import { ensureProjectRuntime, findProjectRoot } from '../project.ts';
 import { resolveTemplate } from '../resolver.ts';
 import { getRequiredField, loadResume } from '../resume.ts';
@@ -133,7 +134,7 @@ export default defineCommand({
       strict: args.strict,
       dryRun: args['dry-run'],
     });
-    if (result.dryRun) console.log(`Dry-run OK. Normalized data written to ${result.outputPath}`);
-    else console.log(`OK: ${result.outputPath} (${result.bytes} bytes)`);
+    if (result.dryRun) logger.success(`Normalized data written to ${result.outputPath}`);
+    else logger.success(`${result.outputPath} (${result.bytes} bytes)`);
   }),
 });
