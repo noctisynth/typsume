@@ -36,14 +36,5 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('@myriaddreamin')) return 'typst-runtime';
-          if (id.includes('react-hook-form') || id.includes('@hookform')) return 'form-runtime';
-          return undefined;
-        },
-      },
-    },
   },
 });
