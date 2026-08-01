@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.1.2
+
+### New Features
+
+- [`a9e881e`](https://github.com/noctisynth/typsume/commit/a9e881ead52ef726163cf87de6dcda8256d1eeb2): Add source format selection to project initialization
+
+    `typsume init` now creates `resume.toml` by default and accepts `--format json|yaml|toml` for
+    projects that prefer another supported source format.
+
+- [`8cc6f96`](https://github.com/noctisynth/typsume/commit/8cc6f96132d9528861504c9449f17edf3cdc3e42): Improve CLI output with consola
+
+    Human-readable command status, warnings, and errors now use consola while structured JSON output
+    remains clean on stdout for shell pipelines.
+
 ## v0.1.1
 
 ### Bug Fixes
