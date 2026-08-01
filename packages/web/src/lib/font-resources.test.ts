@@ -1,6 +1,12 @@
 import { zipSync } from 'fflate';
 import { beforeEach, describe, expect, test } from 'vitest';
-import { clearFontPageCache, displayUrl, extractFonts, loadBrowserFonts } from './font-resources';
+import {
+  clearFontPageCache,
+  displayUrl,
+  extractFonts,
+  loadBrowserFonts,
+  loadLocalFontFallback,
+} from './font-resources';
 
 const TTF_BYTES = new Uint8Array([0x00, 0x01, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74]);
 
@@ -55,5 +61,35 @@ describe('browser font resources', () => {
     expect(warnings.join('\n')).not.toContain('token=private');
     expect(warnings.join('\n')).toContain('Trying the next mirror');
     expect(displayUrl('not a url')).toBe('<invalid URL>');
+  });
+
+  test('prefers the requested local family and loads all of its font faces', async () => {
+    const localBlob = () => Promise.resolve(new Blob([TTF_BYTES.slice().buffer]));
+    const fallback = await loadLocalFontFallback(['Maple Mono NF'], {
+      queryLocalFonts: async () => [
+        { family: 'PingFang SC', blob: localBlob },
+        { family: 'Maple Mono NF', blob: localBlob },
+        { family: 'Maple Mono NF', blob: localBlob },
+      ],
+    });
+
+    expect(fallback?.family).toBe('Maple Mono NF');
+    expect(fallback?.fonts).toHaveLength(2);
+  });
+
+  test('reports denied local font access without hiding the fallback behavior', async () => {
+    const warnings: string[] = [];
+    const fallback = await loadLocalFontFallback(['Maple Mono NF'], {
+      queryLocalFonts: async () => {
+        throw new DOMException('Denied', 'NotAllowedError');
+      },
+      report: (status) => {
+        if (status.kind === 'warning') warnings.push(status.message);
+      },
+    });
+
+    expect(fallback).toBeNull();
+    expect(warnings.join('\n')).toContain('denied or failed');
+    expect(warnings.join('\n')).toContain('continue without a local fallback font');
   });
 });

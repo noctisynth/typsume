@@ -19,6 +19,32 @@ interface LoadFontOptions {
   report?: (status: FontStatus) => void;
 }
 
+interface LocalFontData {
+  family: string;
+  blob: () => Promise<Blob>;
+}
+
+type QueryLocalFonts = () => Promise<LocalFontData[]>;
+
+interface LoadLocalFontOptions {
+  queryLocalFonts?: QueryLocalFonts;
+  report?: (status: FontStatus) => void;
+}
+
+export interface LocalFontFallback {
+  family: string;
+  fonts: Uint8Array[];
+}
+
+export const LOCAL_FONT_FAMILY_CANDIDATES = [
+  'Maple Mono NF CN',
+  'Maple Mono CN',
+  'PingFang SC',
+  'Microsoft YaHei',
+  'Noto Sans CJK SC',
+  'Source Han Sans SC',
+] as const;
+
 function startsWith(bytes: Uint8Array, signature: readonly number[]): boolean {
   return signature.every((value, index) => bytes[index] === value);
 }
@@ -178,6 +204,90 @@ export async function loadBrowserFonts(
     loaded.push(...(await pending));
   }
   return loaded;
+}
+
+function browserLocalFontQuery(): QueryLocalFonts | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const candidate = (window as typeof window & { queryLocalFonts?: () => Promise<LocalFontData[]> })
+    .queryLocalFonts;
+  return candidate?.bind(window);
+}
+
+function normalizeFamily(family: string): string {
+  return family.trim().toLocaleLowerCase();
+}
+
+export async function loadLocalFontFallback(
+  preferredFamilies: string[],
+  options: LoadLocalFontOptions = {},
+): Promise<LocalFontFallback | null> {
+  const report = options.report ?? (() => undefined);
+  const queryLocalFonts = options.queryLocalFonts ?? browserLocalFontQuery();
+  if (!queryLocalFonts) {
+    report({
+      kind: 'warning',
+      message:
+        'Local Font Access is unavailable in this browser. Compilation will continue without a local fallback font.',
+    });
+    return null;
+  }
+
+  let available: LocalFontData[];
+  try {
+    report({ kind: 'info', message: 'Requesting access to compatible local fonts.' });
+    available = await queryLocalFonts();
+  } catch {
+    report({
+      kind: 'warning',
+      message:
+        'Local font access was denied or failed. Compilation will continue without a local fallback font.',
+    });
+    return null;
+  }
+
+  const candidates = [...preferredFamilies, ...LOCAL_FONT_FAMILY_CANDIDATES].filter(
+    (family, index, families) =>
+      families.findIndex((candidate) => normalizeFamily(candidate) === normalizeFamily(family)) ===
+      index,
+  );
+  const selectedFamily = candidates.find((candidate) =>
+    available.some((font) => normalizeFamily(font.family) === normalizeFamily(candidate)),
+  );
+  if (!selectedFamily) {
+    report({
+      kind: 'warning',
+      message:
+        'No compatible local fallback font was found. Compilation will continue without a local fallback font.',
+    });
+    return null;
+  }
+
+  const fonts: Uint8Array[] = [];
+  for (const font of available) {
+    if (normalizeFamily(font.family) !== normalizeFamily(selectedFamily)) continue;
+    try {
+      fonts.push(new Uint8Array(await (await font.blob()).arrayBuffer()));
+    } catch {
+      report({
+        kind: 'warning',
+        message: `A local font face from ${selectedFamily} could not be read and was skipped.`,
+      });
+    }
+  }
+
+  if (fonts.length === 0) {
+    report({
+      kind: 'warning',
+      message: `Local font ${selectedFamily} was found but none of its font faces could be read. Compilation will continue without it.`,
+    });
+    return null;
+  }
+
+  report({
+    kind: 'warning',
+    message: `Using local font ${selectedFamily} because the template font could not be downloaded; layout may differ.`,
+  });
+  return { family: selectedFamily, fonts };
 }
 
 export function clearFontPageCache(): void {

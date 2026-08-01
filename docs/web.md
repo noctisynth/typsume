@@ -132,8 +132,15 @@ typst.ts 支持 **incremental rendering**。不是每次都重新编译整个文
 CLI 的项目内 `.typsume/fonts/` 缓存不改变 Web 的零持久字体缓存策略。
 
 浏览器端同样不得静默降级：镜像切换、校验失败、解压失败、无有效字体以及最终继续编译的行为都要
-显示在编辑器状态区，并说明接下来可能使用不同字体或编译失败。当前阶段不调用
-`queryLocalFonts()`；系统字体发现与权限交互属于后续任务。
+显示在编辑器状态区，并说明接下来可能使用不同字体或编译失败。远程资源全部失败后，在支持桌面
+Local Font Access API 的浏览器中调用 `queryLocalFonts()`；浏览器权限提示不可绕过。先匹配模板声明
+的字体 family，再依次尝试 `Maple Mono NF CN`、`Maple Mono CN`、`PingFang SC`、
+`Microsoft YaHei`、`Noto Sans CJK SC` 与 `Source Han Sans SC`。只加载首个匹配 family 的全部字重，
+并把该 family 注入 Typst 配置。API 不可用、用户拒绝或无候选时继续无模板字体编译并显示警告。
+
+`@chinese-fonts/maple-mono-cn` 是供浏览器 CSS 使用的 `unicode-range` WOFF2 分片集合；其
+`dist/MapleMono-CN-Regular/result.css` 可以直接由 CDN 引入，但任一哈希 WOFF2 都不是完整字体，
+Typst 也不会按 CSS 规则组合这些分片，因此不得把它作为模板远程字体资源。
 
 第一次加载 typst.ts WASM 体积较大（~5MB 量级），W4 需做：
 

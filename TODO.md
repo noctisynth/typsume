@@ -156,7 +156,7 @@
 - [x] 默认模板构建时打包；模板注册表为 W5 第二套模板预留扩展点
 - [x] 复用 CLI 字体资源契约：浏览器内下载、校验、ZIP 解压、页面生命周期复用和可见状态提示
 - [x] 字体资源警告按问题列表垂直展示；保留 React StrictMode 并通过串行适配层防止 WASM renderer 重入
-- [ ] 为 Web 确认允许 CORS 的字体托管来源；GitHub Release 下载端点不能由纯静态前端直接读取
+- [x] Web 远程字体失败后经 `queryLocalFonts()` 权限读取本地候选字体，并把实际 family 注入 Typst
 - [x] Vitest 覆盖 store / 表单数据转换 / 字体资源异常路径，仓库 check/typecheck/test/build 全绿
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
@@ -201,4 +201,4 @@
 - [ ] 账户 + 云同步（opt-in）
 - [ ] 单 binary 分发（`bun build --compile`）
 - [ ] CLI `--offline`：显式跳过远程字体并提示后续行为
-- [ ] 跨平台系统字体发现：CLI 扫描系统字体，Web 评估 `queryLocalFonts()` 权限与兼容性；不可静默 fallback
+- [ ] 跨平台系统字体发现：CLI 扫描系统字体；Web 扩展 Local Font Access API 的候选与兼容性；不可静默 fallback

@@ -138,8 +138,8 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R4 | 多端 schema drift | `packages/core` 是 workspace 公共依赖，monorepo 强约束 | 包版本锁 + CI 校验 |
 | R5 | 自定义模板上传 v1 不做 | 模板作者通过 PR 贡献 | v2 做模板市集 |
 | R6 | CLI 分发/单 binary | 发布包 `@typsume/cli`，bin 名 `typsume`；pnpm/npm/Bun 均可安装或执行，运行时仍需 Bun；pack 时把根 `templates/` 暂存进包（**用户无需安装 typst**） | v1.1 用 `bun build --compile` 出单 binary；v2 可选 Rust 重写 |
-| R7 | 中文字体文件体积过大，不适合进入 Git 历史 | 模板在 `meta.toml` 声明远程字体资源；CLI 下载到简历项目内的 `.typsume/fonts/`，Web 只在页面生命周期内复用 | 后续增加 `--offline` 与跨平台系统字体发现 |
-| R8 | 远程字体不可用会改变排版或导致编译失败 | 每个异常步骤必须说明原因与接下来的行为；镜像全部失败后继续尝试编译，并明确提示当前阶段不保证系统字体可用 | 后续实现 CLI / Web 系统字体加载 |
+| R7 | 中文字体文件体积过大，不适合进入 Git 历史 | 模板在 `meta.toml` 声明远程字体资源；CLI 下载到简历项目内的 `.typsume/fonts/`，Web 先按页面生命周期复用，失败后经浏览器权限读取本地候选字体 | 后续增加 CLI `--offline` 与跨平台系统字体发现 |
+| R8 | 远程字体不可用会改变排版或导致编译失败 | 每个异常步骤必须说明原因与接下来的行为；Web 远程失败后用 `queryLocalFonts()` 按显式候选顺序选择本地字体并注入实际 family，API 不可用、拒绝授权或无匹配时继续编译并告警 | CLI 后续实现系统字体加载 |
 | R9 | Semifold latest 变化导致发布 CI 行为漂移 | `semifold-ci` 通过 setup Action 的 `version` 输入锁定 `v0.3.0-beta.3` | 经验证后显式升级固定版本 |
 | R10 | npm Trusted Publishing 未触发会回退到传统 token 并以 `ENEEDAUTH` 失败；CLI 的 npm lifecycle 依赖 Bun | 发布 job 固定 Node 24（npm 11.5.1+）并安装 Bun canary，授予 `id-token: write`，发布步骤不注入写 token；每个发布包声明与 workflow 仓库一致的 `repository` | 私有依赖安装可单独使用只读 token，但不得传入发布步骤 |
 | R11 | CLI 不应静默联网，CI 又不能等待交互 | 本地字体下载前确认；`--allow-downloads` 或 `GITHUB_ACTIONS=true` 显式/环境授权；`init` 可生成 main push 构建并上传 PDF artifact 的 workflow | Web 端另行设计权限提示 |

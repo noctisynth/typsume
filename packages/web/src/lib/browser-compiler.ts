@@ -3,7 +3,7 @@ import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
 import compilerWasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
 import type { ResumeData } from '@typsume/core';
-import { type FontStatus, loadBrowserFonts } from './font-resources';
+import { type FontStatus, loadBrowserFonts, loadLocalFontFallback } from './font-resources';
 import { DEFAULT_TEMPLATE } from './template-registry';
 
 const VIRTUAL_ROOT = '/@memory/';
@@ -18,6 +18,7 @@ export type CompilePhase =
 
 interface CompilerRuntime {
   compiler: ReturnType<typeof createTypstCompiler>;
+  fontFamilyOverride: string | null;
   queue: Promise<void>;
 }
 
@@ -26,7 +27,7 @@ interface CompileCallbacks {
   resource?: (status: FontStatus) => void;
 }
 
-const runtimes = new Map<boolean, Promise<CompilerRuntime>>();
+const runtimes = new Map<string, Promise<CompilerRuntime>>();
 
 function insert(accessModel: MemoryAccessModel, path: string, content: string): void {
   accessModel.insertFile(`${VIRTUAL_ROOT}${path}`, encoder.encode(content), new Date());
@@ -34,6 +35,7 @@ function insert(accessModel: MemoryAccessModel, path: string, content: string): 
 
 async function createRuntime(
   allowFontDownloads: boolean,
+  preferredFontFamilies: string[],
   callbacks: CompileCallbacks,
 ): Promise<CompilerRuntime> {
   callbacks.phase?.('Loading template');
@@ -44,12 +46,23 @@ async function createRuntime(
   }
 
   let fonts: Uint8Array[] = [];
+  let fontFamilyOverride: string | null = null;
   if (allowFontDownloads) {
     callbacks.phase?.('Loading font resources');
     fonts = await loadBrowserFonts(
       DEFAULT_TEMPLATE.fontResources,
       callbacks.resource ? { report: callbacks.resource } : {},
     );
+    if (fonts.length === 0) {
+      const fallback = await loadLocalFontFallback(
+        preferredFontFamilies,
+        callbacks.resource ? { report: callbacks.resource } : {},
+      );
+      if (fallback) {
+        fonts = fallback.fonts;
+        fontFamilyOverride = fallback.family;
+      }
+    }
   } else {
     callbacks.resource?.({
       kind: 'warning',
@@ -65,26 +78,34 @@ async function createRuntime(
     getModule: () => compilerWasmUrl,
     beforeBuild: [loadFonts(fonts, { assets: false }), withAccessModel(accessModel)],
   } as never);
-  return { compiler, queue: Promise.resolve() };
+  return { compiler, fontFamilyOverride, queue: Promise.resolve() };
 }
 
 async function getRuntime(
   allowFontDownloads: boolean,
+  preferredFontFamilies: string[],
   callbacks: CompileCallbacks,
 ): Promise<CompilerRuntime> {
-  let runtime = runtimes.get(allowFontDownloads);
+  const key = JSON.stringify([allowFontDownloads, preferredFontFamilies]);
+  let runtime = runtimes.get(key);
   if (!runtime) {
-    runtime = createRuntime(allowFontDownloads, callbacks).catch((error) => {
-      runtimes.delete(allowFontDownloads);
+    runtime = createRuntime(allowFontDownloads, preferredFontFamilies, callbacks).catch((error) => {
+      runtimes.delete(key);
       throw error;
     });
-    runtimes.set(allowFontDownloads, runtime);
+    runtimes.set(key, runtime);
   }
   return runtime;
 }
 
 function mapResume(runtime: CompilerRuntime, resume: ResumeData): void {
   const config = DEFAULT_TEMPLATE.config(resume);
+  if (runtime.fontFamilyOverride) {
+    config.fonts = {
+      main: runtime.fontFamilyOverride,
+      mono: runtime.fontFamilyOverride,
+    };
+  }
   runtime.compiler.mapShadow(`${VIRTUAL_ROOT}resume.json`, encoder.encode(JSON.stringify(resume)));
   runtime.compiler.mapShadow(
     `${VIRTUAL_ROOT}cfg_colors.json`,
@@ -110,7 +131,8 @@ async function compile(
   allowFontDownloads: boolean,
   callbacks: CompileCallbacks,
 ): Promise<Uint8Array> {
-  const runtime = await getRuntime(allowFontDownloads, callbacks);
+  const preferredFontFamilies = Object.values(DEFAULT_TEMPLATE.config(resume).fonts);
+  const runtime = await getRuntime(allowFontDownloads, preferredFontFamilies, callbacks);
   let resolveResult: (value: Uint8Array) => void = () => undefined;
   let rejectResult: (reason: unknown) => void = () => undefined;
   const result = new Promise<Uint8Array>((resolve, reject) => {
@@ -136,7 +158,7 @@ async function compile(
       resolveResult(document.result);
     })
     .catch((error) => {
-      runtimes.delete(allowFontDownloads);
+      runtimes.delete(JSON.stringify([allowFontDownloads, preferredFontFamilies]));
       rejectResult(error);
     });
 
