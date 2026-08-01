@@ -148,6 +148,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R14 | renderer WASM 的 `renderToSvg()` 在 Rust 借用期间直接回调 DOM，StrictMode 重放或 SVG DOM 操作可能触发 wasm-bindgen 所有权 panic | 预览使用串行 `renderSvg()` 只取得 SVG 字符串，每个任务复制 artifact 字节；Rust 调用结束后再由 React 侧挂载到 detached DOM。任何 renderer 异常后丢弃该实例 | 上游修复并验证后再评估直接 DOM renderer |
 | R15 | typst.ts 0.7.0 仍以旧位置参数调用新版 wasm-bindgen 初始化器，且完整 SVG 默认携带运行时脚本 | Web 通过 `getModule()` 传入 `{ module_or_path }` 单对象；静态简历预览只请求 body / defs / CSS，不包含 renderer JavaScript | 升级 typst.ts 后复核并移除兼容层 |
 | R16 | private Web workspace 未登记到 Semifold 时，其 changeset 会使发布 CI 校验失败；根 workspace 若被登记则会产生无意义的 GitHub Release | 登记 `@typsume/web`，由 `package.json#private` 阻止 npm 发布；明确不登记 `@typsume/workspace`，避免根 workspace 进入 release 流程 | package workspace 增删后同步配置，并从结果中排除仓库根包 |
+| R17 | Radix vertical Separator 的 stretch 对齐与固定高度组合会贴到 header 顶部；Accordion Content 的 overflow 会裁掉 Card 外扩 ring | header 短分割线显式居中；Accordion 内容为 Card ring 在上、右侧保留 1px 内边距 | 若组件库升级改变默认样式，按实际 box model 复核 |
 
 ## 10. 成功指标
 

@@ -45,7 +45,7 @@ export function EditorHeader() {
         </p>
       </div>
       <TemplatePicker />
-      <Separator className="h-6" orientation="vertical" />
+      <Separator className="h-6 data-vertical:self-center" orientation="vertical" />
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

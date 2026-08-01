@@ -93,6 +93,9 @@ packages/web/src/
 - 左侧：表单，按 `ResumeData` 字段分组
 - 中间：实时预览（WASM 编译）
 - 右侧：结构跳转（点击跳到对应 section 表单 + 预览位置）
+- 顶栏模板选择器与语言按钮之间的短垂直分割线必须在 header 内垂直居中。
+- 左侧 Accordion 动画容器保留 `overflow-hidden`，但内容区域必须为 Card 外扩 ring 在上、右侧
+  预留 1px，不能裁掉卡片边缘。
 
 结构跳转只能滚动左侧 Radix ScrollArea viewport，不得调用可能连带滚动 document root 的
 `scrollIntoView()`；重复点击不能改变页面根滚动位置或编辑器整体布局。
@@ -295,4 +298,5 @@ Zod schema 是**单一真相**，下面三处共用：
 - [x] SVG 预览不在 Rust 借用期间直接操作 DOM；renderer panic 后重建实例且 StrictMode 重放安全
 - [x] WASM 初始化无项目侧弃用警告；静态 SVG 不携带 renderer JavaScript
 - [x] 左侧 section 首次点击即可收起，右侧结构导航仍会展开并定位目标 section
+- [x] 顶栏短分割线垂直居中，左侧 Card ring 不被 Accordion 动画容器裁切
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

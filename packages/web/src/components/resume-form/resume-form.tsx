@@ -97,7 +97,7 @@ export function ResumeForm() {
                 <span>{t(`section.${section}`)}</span>
               </span>
             </AccordionTrigger>
-            <AccordionContent className="pb-5 pl-7">
+            <AccordionContent className="pt-px pr-px pb-5 pl-7">
               {section === 'basics' ? (
                 <BasicsFields control={form.control} register={form.register} />
               ) : null}
