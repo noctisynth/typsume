@@ -120,6 +120,7 @@
   - [x] `init` 默认生成 `resume.toml`，支持 `--format json|yaml|toml`
   - [x] 使用 `consola` 统一人类可读的 CLI 状态、警告与错误输出
   - [x] `build` 为长耗时的字体/WASM/Typst 阶段提供持续可见的进度反馈
+  - [x] 使用 `colorette` 为人类可读输出的路径、耗时和结果信息局部着色
 - [x] 发布包：`@typsume/cli` + `typsume` bin + pack 内置模板；pnpm/npm/Bun 执行入口已对齐
 - [x] 远程字体资源
   - [x] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）

@@ -2,7 +2,7 @@ import { type FSWatcher, watch } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
 import { ExitCode } from '../errors.ts';
-import { logger } from '../logger.ts';
+import { formatDetail, formatPath, formatStage, logger } from '../logger.ts';
 import { type BuildOptions, buildResume } from './build.ts';
 
 export interface WatchReport {
@@ -48,7 +48,7 @@ export default defineCommand({
   },
   run({ args }) {
     const sourcePath = resolve(process.cwd(), args.source);
-    logger.info(`Watching ${sourcePath} for changes...`);
+    logger.info(`Watching ${formatPath(sourcePath)} for changes...`);
     const buildOptions: BuildOptions = { source: args.source };
     if (args.template !== undefined) buildOptions.template = args.template;
     if (args.output !== undefined) buildOptions.output = args.output;
@@ -56,12 +56,17 @@ export default defineCommand({
     const watcher = watchSource(
       sourcePath,
       async () => {
-        await buildResume(buildOptions, { reportProgress: (message) => logger.info(message) });
+        await buildResume(buildOptions, {
+          reportProgress: (message) => logger.info(formatStage(message)),
+        });
       },
       ({ durationMs, error }) => {
         const timestamp = new Date().toLocaleTimeString();
         if (error) logger.error(`[${timestamp}] Build failed: ${error.message}`);
-        else logger.success(`[${timestamp}] Rebuilt in ${durationMs}ms`);
+        else
+          logger.success(
+            `${formatDetail(`[${timestamp}]`)} Rebuilt in ${formatDetail(`${durationMs}ms`)}`,
+          );
       },
     );
 

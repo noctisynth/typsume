@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
-import { logger, writeOutput } from '../logger.ts';
+import { formatDetail, formatPath, formatStage, logger, writeOutput } from '../logger.ts';
 import { readMeta } from '../meta.ts';
 import { getBuiltInTemplatesDir, getCustomTemplatesDir } from '../resolver.ts';
 import { handleErrors } from '../utils.ts';
@@ -67,12 +67,14 @@ export default defineCommand({
       return;
     }
     logger.log(
-      `${'NAME'.padEnd(14)}${'DISPLAY'.padEnd(16)}${'REQUIRED FIELDS'.padEnd(24)}THEME COLOR`,
+      formatStage(
+        `${'NAME'.padEnd(14)}${'DISPLAY'.padEnd(16)}${'REQUIRED FIELDS'.padEnd(24)}THEME COLOR`,
+      ),
     );
-    logger.log('-'.repeat(70));
+    logger.log(formatDetail('-'.repeat(70)));
     for (const template of templates) {
       logger.log(
-        `${template.name.padEnd(14)}${template.display.padEnd(16)}${template.required.join(', ').padEnd(24)}${template.theme}`,
+        `${formatPath(template.name.padEnd(14))}${template.display.padEnd(16)}${template.required.join(', ').padEnd(24)}${template.theme}`,
       );
     }
   }),

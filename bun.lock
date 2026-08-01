@@ -14,7 +14,7 @@
     },
     "packages/cli": {
       "name": "@typsume/cli",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "bin": {
         "typsume": "./src/main.ts",
       },
@@ -24,6 +24,7 @@
         "@myriaddreamin/typst.ts": "^0.7.0",
         "@typsume/core": "^0.1.1",
         "citty": "^0.1.6",
+        "colorette": "^2.0.20",
         "consola": "^3.4.2",
         "fflate": "^0.8.3",
         "js-yaml": "^4.1.0",
@@ -168,6 +169,8 @@
     "chai": ["chai@6.2.2", "", {}, "sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg=="],
 
     "citty": ["citty@0.1.6", "", { "dependencies": { "consola": "^3.2.3" } }, "sha512-tskPPKEs8D2KPafUypv2gxwJP8h/OaJmC82QQGGDQcHvXX43xF2VDACcJVmZ0EuSxkpO9Kc4MlrA3q0+FG58AQ=="],
+
+    "colorette": ["colorette@2.0.20", "", {}, "sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w=="],
 
     "consola": ["consola@3.4.2", "", {}, "sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA=="],
 

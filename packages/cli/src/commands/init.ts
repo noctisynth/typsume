@@ -5,7 +5,7 @@ import { defineCommand } from 'citty';
 import { dump as stringifyYaml } from 'js-yaml';
 import { ExitCode, TypsumeError } from '../errors.ts';
 import type { SourceFormat } from '../format.ts';
-import { logger } from '../logger.ts';
+import { formatPath, formatResult, formatStage, logger } from '../logger.ts';
 import { ensureProjectRuntime } from '../project.ts';
 
 const SAMPLE_RESUME = {
@@ -107,10 +107,10 @@ export default defineCommand({
     const format = parseInitFormat(args.format);
     const { targetDir, resumePath, configPath } = initProject(args.dir, process.cwd(), format);
 
-    logger.success(`Scaffolded resume project in ${targetDir}`);
-    logger.info(resumePath);
-    logger.info(configPath);
-    logger.info(`Run: typsume build ${SOURCE_FILENAMES[format]}`);
+    logger.success(`Scaffolded resume project in ${formatResult(targetDir)}`);
+    logger.info(formatPath(resumePath));
+    logger.info(formatPath(configPath));
+    logger.info(`Run: ${formatStage(`typsume build ${SOURCE_FILENAMES[format]}`)}`);
   },
 });
 

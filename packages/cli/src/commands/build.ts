@@ -4,7 +4,7 @@ import { defineCommand } from 'citty';
 import { type CompileOptions, type CompileResult, compileWithTemplate } from '../compiler.ts';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
 import { ExitCode, TypsumeError } from '../errors.ts';
-import { logger } from '../logger.ts';
+import { formatDetail, formatPath, formatResult, formatStage, logger } from '../logger.ts';
 import { ensureProjectRuntime, findProjectRoot } from '../project.ts';
 import { resolveTemplate } from '../resolver.ts';
 import { getRequiredField, loadResume } from '../resume.ts';
@@ -133,7 +133,7 @@ export default defineCommand({
     },
   },
   run: handleErrors(async ({ args }) => {
-    logger.start(`Building ${args.source}`);
+    logger.start(`Building ${formatPath(args.source)}`);
     const result = await buildResume(
       {
         source: args.source,
@@ -142,9 +142,13 @@ export default defineCommand({
         strict: args.strict,
         dryRun: args['dry-run'],
       },
-      { reportProgress: (message) => logger.info(message) },
+      { reportProgress: (message) => logger.info(formatStage(message)) },
     );
-    if (result.dryRun) logger.success(`Normalized data written to ${result.outputPath}`);
-    else logger.success(`${result.outputPath} (${result.bytes} bytes)`);
+    if (result.dryRun)
+      logger.success(`Normalized data written to ${formatResult(result.outputPath)}`);
+    else
+      logger.success(
+        `${formatResult(result.outputPath)} ${formatDetail(`(${result.bytes} bytes)`)}`,
+      );
   }),
 });
