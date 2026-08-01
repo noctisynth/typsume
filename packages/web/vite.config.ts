@@ -1,13 +1,38 @@
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { parse } from '@iarna/toml';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      '@': new URL('./src', import.meta.url).pathname,
+function tomlModule() {
+  return {
+    name: 'typsume-toml-module',
+    async load(id: string) {
+      if (!id.endsWith('.toml?toml')) return null;
+      const source = await readFile(id.slice(0, -'?toml'.length), 'utf8');
+      return `export default ${JSON.stringify(parse(source))};`;
     },
+  };
+}
+
+export default defineConfig({
+  plugins: [tomlModule(), react(), tailwindcss()],
+  resolve: {
+    alias: [
+      {
+        find: '@myriaddreamin/typst.react',
+        // The modular 0.7.0 entry references a CSS file omitted from its npm package;
+        // the package's official bundled entry embeds the same renderer CSS.
+        replacement: fileURLToPath(
+          new URL(
+            './node_modules/@myriaddreamin/typst.react/dist/typst.react.mjs',
+            import.meta.url,
+          ),
+        ),
+      },
+      { find: '@', replacement: new URL('./src', import.meta.url).pathname },
+    ],
   },
   build: {
     target: 'es2022',

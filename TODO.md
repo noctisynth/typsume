@@ -152,10 +152,10 @@
 - [x] Zustand + persist：当前简历草稿写入 IndexedDB，恢复时重新校验 schema
 - [x] react-hook-form + zodResolver：覆盖 basics / skills / education / experience / projects / awards / meta
 - [x] react-i18next：zh-CN / en-US 基础界面文案，简历内容保持原样
-- [ ] `typst.ts` 浏览器端集成 + `<TypstDocument />` 实时预览 + PDF 导出
-- [ ] 默认模板构建时打包；模板注册表为 W5 第二套模板预留扩展点
-- [ ] 复用 CLI 字体资源契约：浏览器内下载、校验、ZIP 解压、页面生命周期复用和可见状态提示
-- [ ] Vitest 覆盖 store / 表单数据转换 / 字体资源异常路径，仓库 check/typecheck/test/build 全绿
+- [x] `typst.ts` 浏览器端集成 + `<TypstDocument />` 实时预览 + PDF 导出
+- [x] 默认模板构建时打包；模板注册表为 W5 第二套模板预留扩展点
+- [x] 复用 CLI 字体资源契约：浏览器内下载、校验、ZIP 解压、页面生命周期复用和可见状态提示
+- [x] Vitest 覆盖 store / 表单数据转换 / 字体资源异常路径，仓库 check/typecheck/test/build 全绿
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright

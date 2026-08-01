@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { ResumeForm } from '@/components/resume-form/resume-form';
-import { PreviewPlaceholder } from '@/components/resume-preview/preview-placeholder';
+import { LivePreview } from '@/components/resume-preview/live-preview';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usePreviewModel } from '@/models/preview-model';
 import { useResumeModel } from '@/models/resume-model';
 import { EditorHeader } from './editor-header';
 import { EditorStatusBar } from './editor-status-bar';
@@ -11,6 +12,8 @@ import { ResumeOutline } from './resume-outline';
 export default function EditorPage() {
   const { t } = useTranslation();
   const hydrated = useResumeModel((state) => state.hydrated);
+  const previewState = usePreviewModel((state) => state.state);
+  const phase = usePreviewModel((state) => state.phase);
 
   if (!hydrated) {
     return (
@@ -40,13 +43,21 @@ export default function EditorPage() {
         <section className="min-h-0 min-w-0">
           <div className="flex h-11 items-center justify-between border-b px-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-2 font-medium text-foreground">
-              <i className="size-1.5 rounded-full bg-amber-500" />
+              <i
+                className={
+                  previewState === 'ready'
+                    ? 'size-1.5 rounded-full bg-emerald-600'
+                    : previewState === 'error'
+                      ? 'size-1.5 rounded-full bg-destructive'
+                      : 'size-1.5 rounded-full bg-amber-500'
+                }
+              />
               {t('editor.preview')}
             </span>
-            <span>100%</span>
+            <span>{phase ?? '100%'}</span>
           </div>
           <ScrollArea className="h-[calc(100%-2.75rem)]">
-            <PreviewPlaceholder />
+            <LivePreview />
           </ScrollArea>
         </section>
         <aside className="min-h-0 border-l bg-background">
