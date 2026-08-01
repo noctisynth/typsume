@@ -28,7 +28,7 @@ export interface CompileOptions {
   resumeJson: string;
   fontCacheDir: string;
   fontResources?: FontResource[];
-  reportProgress?: (message: string) => void;
+  reportProgress?: (message: string) => void | Promise<void>;
   confirmFontDownload?: () => Promise<boolean>;
   config: {
     colors: Record<string, string>;
@@ -44,10 +44,10 @@ export interface CompileResult {
 }
 
 export async function compileWithTemplate(opts: CompileOptions): Promise<CompileResult> {
-  opts.reportProgress?.('Initializing Typst WASM compiler');
+  await opts.reportProgress?.('Initializing Typst WASM compiler');
   await ensureWasm();
 
-  opts.reportProgress?.('Preparing the in-memory template workspace');
+  await opts.reportProgress?.('Preparing the in-memory template workspace');
   const fsAcc = new MemoryAccessModel();
 
   function insert(absPath: string, content: Uint8Array | string): void {
@@ -85,7 +85,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
       fontBlobs.push(readFileSync(resolve(fontsDir, entry)));
     }
   }
-  opts.reportProgress?.('Loading font resources');
+  await opts.reportProgress?.('Loading font resources');
   const fontOptions: FontResourceOptions = { cacheDir: opts.fontCacheDir };
   if (opts.confirmFontDownload) fontOptions.confirmDownload = opts.confirmFontDownload;
   fontBlobs.push(...(await loadRemoteFonts(opts.fontResources ?? [], fontOptions)));
@@ -93,7 +93,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
   if (!compiler) throw new Error('compiler not initialized');
 
   try {
-    opts.reportProgress?.('Initializing the Typst WASM workspace');
+    await opts.reportProgress?.('Initializing the Typst WASM workspace');
     await compiler.init({
       workspace: VROOT,
       beforeBuild: [loadFonts(fontBlobs, { assets: false }), withAccessModel(fsAcc)],
@@ -107,7 +107,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
 
   let doc: Awaited<ReturnType<typeof compiler.compile>>;
   try {
-    opts.reportProgress?.('Compiling the PDF with Typst');
+    await opts.reportProgress?.('Compiling the PDF with Typst');
     doc = await compiler.compile({
       mainFilePath: `${VROOT}template.typ`,
       format: CompileFormatEnum.pdf,

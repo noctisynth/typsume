@@ -22,7 +22,7 @@ afterEach(() => {
 
 const minimalResume = { schema: 'typst-resume/1.0', basics: { name: 'Xxx Yyy' } };
 const fakeCompile = async (options: CompileOptions) => {
-  options.reportProgress?.('Compiling the PDF with Typst');
+  await options.reportProgress?.('Compiling the PDF with Typst');
   return { pdf: new Uint8Array([0x25, 0x50, 0x44, 0x46]), bytes: 4 };
 };
 

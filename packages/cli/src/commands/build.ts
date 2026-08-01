@@ -25,7 +25,7 @@ export interface BuildContext {
   homeDir?: string;
   configEnvironment?: ConfigEnvironment;
   compile?: (options: CompileOptions) => Promise<CompileResult>;
-  reportProgress?: (message: string) => void;
+  reportProgress?: (message: string) => void | Promise<void>;
   confirmFontDownload?: () => Promise<boolean>;
 }
 
@@ -46,11 +46,11 @@ export async function buildResume(
 ): Promise<BuildResult> {
   const cwd = context.cwd ?? process.cwd();
   const sourcePath = resolve(cwd, options.source);
-  context.reportProgress?.('Reading configuration and validating resume data');
+  await context.reportProgress?.('Reading configuration and validating resume data');
   const projectRoot = findProjectRoot(sourcePath);
   const config = loadConfig(projectRoot, context.configEnvironment);
   const data = loadResume(sourcePath);
-  context.reportProgress?.('Resolving the resume template');
+  await context.reportProgress?.('Resolving the resume template');
   const resolved = resolveTemplate(options.template, config, projectRoot, cwd, context.homeDir);
 
   const strict = options.strict ?? config.project?.build?.strict ?? false;
@@ -118,7 +118,7 @@ export async function buildResume(
       ? resolve(projectRoot, configuredOutput)
       : sourceOutputPath(sourcePath);
   mkdirSync(dirname(outputPath), { recursive: true });
-  context.reportProgress?.('Writing the generated PDF');
+  await context.reportProgress?.('Writing the generated PDF');
   writeFileSync(outputPath, result.pdf);
   return { outputPath, bytes: result.bytes, dryRun: false };
 }
@@ -157,7 +157,10 @@ export default defineCommand({
           dryRun: args['dry-run'],
         },
         {
-          reportProgress: (message) => progress.message(formatStage(message)),
+          reportProgress: async (message) => {
+            progress.message(formatStage(message));
+            await progress.render();
+          },
           confirmFontDownload: async () => {
             progress.suspend();
             try {
