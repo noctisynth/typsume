@@ -127,7 +127,7 @@
   - [x] 与模板本地字体合并后传给 typst.ts；ZIP 只在内存解压
   - [x] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
   - [x] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
-- [~] DoD：CI 已固定 Bun、执行 check/typecheck/test/build；等待线上新包发布流程验收
+- [~] DoD：CI 使用 Bun canary、执行 check/typecheck/test/build；等待线上新包发布流程验收
 
 ## W4 — `packages/web`
 

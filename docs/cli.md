@@ -243,7 +243,7 @@ GitHub Actions：
 - uses: actions/checkout@v4
 - uses: oven-sh/setup-bun@v2
   with:
-    bun-version: 1.4.0
+    bun-version: canary
 - run: bun install
 - run: bun run typsume build resume.yaml -t modern
 - uses: actions/upload-artifact@v4
