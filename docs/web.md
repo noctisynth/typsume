@@ -13,6 +13,10 @@
 - **核心价值**：零安装、零登录、隐私（数据不上传任何服务器）
 - **不做**：账号体系、云同步、协作编辑（v1.x 之前都不做）
 
+W4 交付一份当前简历的完整编辑闭环：表单、浏览器内编译、预览、PDF 导出和 IndexedDB
+草稿恢复。多简历/多版本管理、第二套模板、分享链接和 Playwright e2e 属于 W5，不提前混入
+W4 的数据模型。
+
 ## 2. 技术栈
 
 | 维度 | 选型 | 理由 |
@@ -41,7 +45,7 @@ packages/web/src/
 ├── features/               # 业务功能（每功能独立 slice）
 │   ├── resume-form/        # 表单系统，基于 schema + react-hook-form + zod
 │   ├── resume-preview/     # 嵌 typst.react 预览组件
-│   ├── resume-storage/     # IndexedDB 多简历管理（zustand persist）
+│   ├── resume-storage/     # IndexedDB 当前草稿持久化（zustand persist）
 │   └── template-picker/    # 模板切换 UI
 ├── shared/
 │   ├── schema/             # re-export from core（typed 二次封装）
@@ -120,14 +124,11 @@ CLI 的项目内 `.typsume/fonts/` 缓存不改变 Web 的零持久字体缓存�
 显示在编辑器状态区，并说明接下来可能使用不同字体或编译失败。当前阶段不调用
 `queryLocalFonts()`；系统字体发现与权限交互属于后续任务。
 
-第一次加载 typst.ts WASM 体积较大（~5MB 量级），需做：
+第一次加载 typst.ts WASM 体积较大（~5MB 量级），W4 需做：
 
-- `vite-plugin-compression` 预压缩（gzip/brotli）
-- 拆 `node_modules/@myriaddreamin/typst.ts/dist/` 中字体子集
 - 进入编辑器页再按需加载（首页只渲染首页）
 - React 端用 `React.lazy + Suspense` 包裹编辑器页 chunk
-
-### 5.2 PDF 导出
+- Vite 将编译器和渲染器拆入独立异步 chunk；静态宿主的 gzip/brotli 由部署层配置
 
 ### 5.2 PDF 导出
 
@@ -159,15 +160,16 @@ useEffect(() => { void loadArtifact() }, [resumeData, template]);
 
 ### 5.4 持久化
 
-- IndexedDB 存 `ResumeData[]`（通过 `zustand/middleware/persist` 自定义 storage）
+- W4 在 IndexedDB 存当前 `ResumeData` 草稿（通过 `zustand/middleware/persist` 自定义 storage）
 - 自动保存：表单 commit 后 1s 防抖落盘
-- 导出：`localStorage` 标记最近编辑；`Share Link` 用 URL hash 编码（lz-string 压缩 + base64），不依赖服务器
+- W5 再把存储模型升级为多简历/多版本，并加入分享链接；W4 不写入 `localStorage`
 
 ## 6. 模板切换
 
-- 内置模板：`templates/default/`、`templates/modern/`
-- 在构建阶段把这两个模板的 `template.typ` + `meta.toml` + `preview.png` 作为静态资源打包
+- W4 内置模板只有 `templates/default/`
+- 在构建阶段把默认模板的 `template.typ` + `meta.toml` + 图标作为静态资源打包
 - 切换模板：reload typst 编译器参数，使用新模板根目录
+- 第二套内置模板在 W5 加入；W4 的选择器保留扩展接口，但不得展示不存在的模板
 - 自定义模板（v1.1）：用户上传 zip，IndexedDB 存 base64；预算风险较大，先不做
 
 ## 7. 表单 Schema 派生
@@ -185,7 +187,8 @@ Zod schema 是**单一真相**，下面三处共用：
 2. Web 表单 UI（`zodResolver(ResumeSchema)`）
 3. Web YAML 视图（再 lint JSON Schema）
 
-> 注意：Zod → JSON Schema 转换用 `zod-to-json-schema`。两份 schema 同步在构建时校验。
+> 注意：Zod → JSON Schema 转换使用 Zod 4 内置 `z.toJSONSchema()`；不得再引入与 Zod 4
+> 不兼容的 `zod-to-json-schema`。派生 schema 由 `packages/core` 统一导出并在 CI 校验。
 
 ## 8. 高级模式：YAML 视图
 
@@ -222,8 +225,9 @@ Zod schema 是**单一真相**，下面三处共用：
 
 - [ ] 首屏不加载 WASM，进入编辑器后按需加载（`React.lazy + Suspense`）
 - [ ] 表单提交 → 实时预览；典型简历（10 个项目）首编译 < 1s
-- [ ] 切模板无需刷新页面
+- [ ] 默认模板通过可扩展的模板注册表加载；W5 加入第二套模板后切换无需刷新页面
 - [ ] PDF 输出与 CLI 同 fixture 的 PDF 在像素级不可区分（同一份数据）
-- [ ] 关闭浏览器再打开，简历列表 + 当前编辑状态恢复
+- [ ] 关闭浏览器再打开，当前简历草稿与编辑状态恢复
 - [ ] React DevTools 中预览组件不引起表单 re-render
-- [ ] lhci + Playwright e2e 通过 CI
+- [ ] Vitest 覆盖存储、数据更新和编译资源异常路径
+- [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

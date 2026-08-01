@@ -124,8 +124,8 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 |---|------|------|------|
 | W1 | packages/core 起架 + Zod schema + types（Bun workspace） | 单元测试通过 | ✅ |
 | W2 | templates/default 改造 + typst.ts WASM smoke | 占位 JSON 成功输出 PDF | ✅ |
-| W3 | packages/cli MVP（Bun + citty） | `typsume build / validate / dump / templates / init / dev` 可用 | ▶ |
-| W4 | packages/web 起架 + typst.ts 集成 + 表单 + 实时预览 | 浏览器填表出 PDF | |
+| W3 | packages/cli MVP（Bun + citty） | `typsume build / validate / dump / templates / init / dev` 可用 | ✅ |
+| W4 | packages/web 起架 + typst.ts 集成 + 表单 + 实时预览 | 浏览器填表出 PDF | ▶ |
 | W5 | 第二个模板 + IndexedDB 多版本 + 国际化 + e2e | 提 PR 给简历圈 | |
 
 ## 9. 风险与决策记录

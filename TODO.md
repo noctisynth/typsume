@@ -138,19 +138,22 @@
   - [x] 与模板本地字体合并后传给 typst.ts；ZIP 只在内存解压
   - [x] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
   - [x] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
-- [~] DoD：CI 使用 Bun canary、执行 check/typecheck/test/build；等待线上新包发布流程验收
+- [x] DoD：CI 使用 Bun canary、执行 check/typecheck/test/build；线上发布流程由用户验收
 - [x] `semifold-ci` 通过 setup Action 锁定 Semifold CLI `v0.3.0-beta.3`
 - [x] 修复 npm OIDC 发布环境：固定受支持的 Node/npm、移除发布步骤传统 token、补齐发布包仓库元数据
 - [x] 在 `semifold-ci` 安装 Bun canary，支持 CLI 的 `prepack` / `postpack` lifecycle
 
 ## W4 — `packages/web`
 
-- [ ] Vite + React 19 + shadcn/ui 骨架
-- [ ] 三栏布局（左表单 / 中预览 / 右大纲）
-- [ ] Zustand + persist (IndexedDB)
-- [ ] react-hook-form + zodResolver
-- [ ] `typst.ts` 浏览器端集成 + `<TypstDocument />`
+- [~] Vite + React 19 + shadcn/ui + TailwindCSS 骨架；首页与编辑器异步分包
+- [ ] 三栏布局（左表单 / 中预览 / 右大纲）与桌面端设计系统
+- [ ] Zustand + persist：当前简历草稿写入 IndexedDB，恢复时重新校验 schema
+- [ ] react-hook-form + zodResolver：覆盖 basics / skills / education / experience / projects / awards / meta
+- [ ] react-i18next：zh-CN / en-US 基础界面文案，简历内容保持原样
+- [ ] `typst.ts` 浏览器端集成 + `<TypstDocument />` 实时预览 + PDF 导出
+- [ ] 默认模板构建时打包；模板注册表为 W5 第二套模板预留扩展点
 - [ ] 复用 CLI 字体资源契约：浏览器内下载、校验、ZIP 解压、页面生命周期复用和可见状态提示
+- [ ] Vitest 覆盖 store / 表单数据转换 / 字体资源异常路径，仓库 check/typecheck/test/build 全绿
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
