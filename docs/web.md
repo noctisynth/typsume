@@ -188,10 +188,12 @@ renderer：
 <TypstPreviewDocument fill="#343541" artifact={artifact} />
 ```
 
-renderer WASM 实例不是可重入对象。适配层必须通过单一 Promise 队列串行执行 render，并先渲染到
-脱离 DOM 的 staging container；effect 仍有效时才替换当前预览。这样既保留 React StrictMode 的
-双 effect 检查，也避免并发 artifact 更新触发 WASM unsafe aliasing。不得通过关闭 StrictMode
-掩盖 renderer 生命周期问题。
+renderer WASM 实例不是可重入对象，且 `renderToSvg()` 会在 Rust 借用 renderer/session 期间直接操作
+浏览器 DOM，可能因 DOM 回调或 StrictMode effect 重放触发 wasm-bindgen 所有权 panic。适配层必须通过
+单一 Promise 队列串行调用 `renderSvg()`：每个任务使用独立 artifact 字节副本，只让 WASM 返回 SVG
+字符串；Rust 调用和 session 释放完成后，React 侧再把字符串解析到 detached staging container，
+effect 仍有效时才替换当前预览。任何 renderer 调用失败后必须丢弃该实例，下一任务重新初始化。
+不得通过关闭 StrictMode 掩盖 renderer 生命周期问题。
 
 artifact 是 `typst.ts` 编译器产出的二进制包，由 Zustand store 派生：
 
@@ -277,4 +279,5 @@ Zod schema 是**单一真相**，下面三处共用：
 - [x] 用户上传完整字体后可按字体内部 family 选择，预览与 PDF 导出使用同一页面生命周期字体
 - [x] 本地字体 fallback 以 typst.ts 解析出的内部 family 注入，不产生 unknown font family
 - [x] 重复点击结构导航只滚动左侧表单，不移动页面根；浏览器不可访问的照片路径可见告警并安全降级
+- [x] SVG 预览不在 Rust 借用期间直接操作 DOM；renderer panic 后重建实例且 StrictMode 重放安全
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

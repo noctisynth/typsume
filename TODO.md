@@ -163,6 +163,8 @@
 - [x] 浏览器资源边界：空照片路径归一化；不可访问路径显式告警并从本次预览数据移除
 - [x] 结构导航只滚动左侧 ScrollArea viewport，重复点击不再移动 document root
 - [x] 字体目录 / picker 调研结论同步：W4 不接入 WebFont CSS 分片，后续目录需完整字体与许可证设计
+- [x] renderer 所有权修复：串行 `renderSvg()` 返回字符串、复制 artifact、WASM 调用结束后挂载 DOM
+- [x] renderer 异常恢复：panic 后丢弃实例并由后续预览重新初始化，保留 StrictMode
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
@@ -194,6 +196,7 @@
 | 2026-08-01 | CLI 保留 `MemoryAccessModel`；不实现磁盘临时 workspace、`--debug` 或 `typsume.log`，编译错误直接输出 stderr | 用户 |
 | 2026-08-01 | CLI 发布包保持 `@typsume/cli`，bin 名为 `typsume`；pack 时从根 `templates/` 暂存内置模板，运行时保持 Bun | 用户 |
 | 2026-08-01 | Web 支持页面生命周期字体上传/选择；Typst 字体配置以字体文件内部 family 为准，不直接采用浏览器展示名称 | 用户 |
+| 2026-08-01 | Web SVG 预览保留 StrictMode；renderer 仅返回字符串，Rust 调用结束后再挂载 DOM，panic 后重建实例 | 用户反馈 |
 
 ---
 

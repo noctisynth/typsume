@@ -23,14 +23,22 @@ function getRenderer(): Promise<TypstRenderer> {
 }
 
 export function enqueueRendererTask<T>(task: (renderer: TypstRenderer) => Promise<T>): Promise<T> {
-  return enqueue(async () => task(await getRenderer()));
+  return enqueue(async () => {
+    const renderer = await getRenderer();
+    try {
+      return await task(renderer);
+    } catch (error) {
+      rendererPromise = null;
+      throw error;
+    }
+  });
 }
 
-export function renderArtifact(artifact: Uint8Array, container: HTMLElement): Promise<boolean> {
+export function renderArtifact(artifact: Uint8Array): Promise<string> {
+  const artifactCopy = artifact.slice();
   return enqueueRendererTask((renderer) =>
-    renderer.renderToSvg({
-      artifactContent: artifact,
-      container,
+    renderer.renderSvg({
+      artifactContent: artifactCopy,
       format: 'vector',
     }),
   );

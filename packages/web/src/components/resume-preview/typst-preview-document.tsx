@@ -18,9 +18,12 @@ export function TypstPreviewDocument({ artifact, fill }: TypstPreviewDocumentPro
 
     setError(null);
     setRendering(true);
-    void renderArtifact(artifact, staging)
-      .then(() => {
+    void renderArtifact(artifact)
+      .then((svg) => {
         if (!active || !containerRef.current) return;
+        const template = document.createElement('template');
+        template.innerHTML = svg;
+        staging.replaceChildren(template.content.cloneNode(true));
         containerRef.current.replaceChildren(...staging.childNodes);
         setRendering(false);
       })

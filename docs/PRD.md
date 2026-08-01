@@ -145,6 +145,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R11 | CLI 不应静默联网，CI 又不能等待交互 | 本地字体下载前确认；`--allow-downloads` 或 `GITHUB_ACTIONS=true` 显式/环境授权；`init` 可生成 main push 构建并上传 PDF artifact 的 workflow | Web 端另行设计权限提示 |
 | R12 | 浏览器 WebFont CDN 通常提供 CSS 与 unicode-range WOFF2 分片，不能直接作为完整 Typst 字体 | W4 支持用户上传完整 TTF / OTF / TTC 并选择由 typst.ts 识别出的内部 family；字节只保留在页面生命周期。字体目录可参考 Fontsource / Google Fonts 元数据，但不在 W4 引入第三方 picker 或把 CSS 分片交给 Typst | 后续设计带许可证、完整字体文件与缓存策略的字体目录 |
 | R13 | `basics.photo` 的本地文件路径不在浏览器 WASM 虚拟工程内，会触发 access denied | Web 把空字符串归一化为未设置；非空路径在浏览器预览中显式告警并暂不渲染，CLI 继续按模板工程资源契约处理路径 | 后续增加图片上传并挂载到页面生命周期虚拟工程 |
+| R14 | renderer WASM 的 `renderToSvg()` 在 Rust 借用期间直接回调 DOM，StrictMode 重放或 SVG DOM 操作可能触发 wasm-bindgen 所有权 panic | 预览使用串行 `renderSvg()` 只取得 SVG 字符串，每个任务复制 artifact 字节；Rust 调用结束后再由 React 侧挂载到 detached DOM。任何 renderer 异常后丢弃该实例 | 上游修复并验证后再评估直接 DOM renderer |
 
 ## 10. 成功指标
 
