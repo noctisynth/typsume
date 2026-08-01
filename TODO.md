@@ -121,6 +121,7 @@
   - [x] 使用 `consola` 统一人类可读的 CLI 状态、警告与错误输出
   - [x] `build` 为长耗时的字体/WASM/Typst 阶段提供持续可见的进度反馈
   - [x] 构建阶段改为完成后输出 tick，最终产物使用相对路径展示
+  - [x] 使用 `@clack/prompts` 将多行 tick 替换为 indicatif 式单行动态 spinner
   - [x] 使用 `colorette` 为人类可读输出的路径、耗时和结果信息局部着色
   - [x] CLI 子进程测试使用独立临时 HOME/XDG，禁止把 Bun 缓存写入源码目录
   - [x] 交互策略测试隔离 `GITHUB_ACTIONS`，本地复现并覆盖 CI 环境

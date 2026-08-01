@@ -5,7 +5,8 @@ import { type CompileOptions, type CompileResult, compileWithTemplate } from '..
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
 import { ExitCode, TypsumeError } from '../errors.ts';
 import { createFontDownloadConsent } from '../interaction.ts';
-import { formatDetail, formatPath, formatResult, formatStage, logger } from '../logger.ts';
+import { formatDetail, formatPath, formatResult, formatStage } from '../logger.ts';
+import { createBuildProgress } from '../progress.ts';
 import { ensureProjectRuntime, findProjectRoot } from '../project.ts';
 import { resolveTemplate } from '../resolver.ts';
 import { getRequiredField, loadResume } from '../resume.ts';
@@ -45,12 +46,12 @@ export async function buildResume(
 ): Promise<BuildResult> {
   const cwd = context.cwd ?? process.cwd();
   const sourcePath = resolve(cwd, options.source);
+  context.reportProgress?.('Reading configuration and validating resume data');
   const projectRoot = findProjectRoot(sourcePath);
   const config = loadConfig(projectRoot, context.configEnvironment);
   const data = loadResume(sourcePath);
-  context.reportProgress?.('Validated configuration and resume data');
+  context.reportProgress?.('Resolving the resume template');
   const resolved = resolveTemplate(options.template, config, projectRoot, cwd, context.homeDir);
-  context.reportProgress?.('Resolved the resume template');
 
   const strict = options.strict ?? config.project?.build?.strict ?? false;
   if (strict) {
@@ -117,8 +118,8 @@ export async function buildResume(
       ? resolve(projectRoot, configuredOutput)
       : sourceOutputPath(sourcePath);
   mkdirSync(dirname(outputPath), { recursive: true });
+  context.reportProgress?.('Writing the generated PDF');
   writeFileSync(outputPath, result.pdf);
-  context.reportProgress?.('Wrote the generated PDF');
   return { outputPath, bytes: result.bytes, dryRun: false };
 }
 
@@ -141,26 +142,42 @@ export default defineCommand({
     },
   },
   run: handleErrors(async ({ args }) => {
-    logger.start(`Building ${formatPath(args.source)}`);
-    const result = await buildResume(
-      {
-        source: args.source,
-        template: args.template,
-        output: args.output,
-        strict: args.strict,
-        dryRun: args['dry-run'],
-      },
-      {
-        reportProgress: (message) => logger.success(formatStage(message)),
-        confirmFontDownload: createFontDownloadConsent({
-          allowDownloads: args['allow-downloads'],
-        }),
-      },
-    );
-    const displayedOutput = relative(process.cwd(), result.outputPath) || '.';
-    if (result.dryRun)
-      logger.success(`Normalized data written to ${formatResult(displayedOutput)}`);
-    else
-      logger.success(`${formatResult(displayedOutput)} ${formatDetail(`(${result.bytes} bytes)`)}`);
+    const progress = createBuildProgress();
+    const confirmFontDownload = createFontDownloadConsent({
+      allowDownloads: args['allow-downloads'],
+    });
+    progress.start(`Building ${formatPath(args.source)}`);
+    try {
+      const result = await buildResume(
+        {
+          source: args.source,
+          template: args.template,
+          output: args.output,
+          strict: args.strict,
+          dryRun: args['dry-run'],
+        },
+        {
+          reportProgress: (message) => progress.message(formatStage(message)),
+          confirmFontDownload: async () => {
+            progress.suspend();
+            try {
+              return await confirmFontDownload();
+            } finally {
+              progress.resume(formatStage('Loading font resources'));
+            }
+          },
+        },
+      );
+      const displayedOutput = relative(process.cwd(), result.outputPath) || '.';
+      if (result.dryRun)
+        progress.stop(`Normalized data written to ${formatResult(displayedOutput)}`);
+      else
+        progress.stop(
+          `${formatResult(displayedOutput)} ${formatDetail(`(${result.bytes} bytes)`)}`,
+        );
+    } catch (error) {
+      progress.error('Build failed');
+      throw error;
+    }
   }),
 });

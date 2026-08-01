@@ -25,6 +25,7 @@
     "postpack": "bun run scripts/package-templates.ts clean"
   },
   "dependencies": {
+    "@clack/prompts": "^1.7.0",
     "@iarna/toml": "^2.2.5",
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",

@@ -44,9 +44,10 @@ export interface CompileResult {
 }
 
 export async function compileWithTemplate(opts: CompileOptions): Promise<CompileResult> {
+  opts.reportProgress?.('Initializing Typst WASM compiler');
   await ensureWasm();
-  opts.reportProgress?.('Initialized Typst WASM compiler');
 
+  opts.reportProgress?.('Preparing the in-memory template workspace');
   const fsAcc = new MemoryAccessModel();
 
   function insert(absPath: string, content: Uint8Array | string): void {
@@ -75,7 +76,6 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
   insert(`${VROOT}cfg_fonts.json`, JSON.stringify(opts.config.fonts));
   insert(`${VROOT}cfg_sizes.json`, JSON.stringify(opts.config.sizes));
   insert(`${VROOT}cfg_layout.json`, JSON.stringify(opts.config.layout));
-  opts.reportProgress?.('Prepared the in-memory template workspace');
 
   const fontsDir = resolve(opts.templateDir, 'fonts');
   const fontBlobs: Uint8Array[] = [];
@@ -85,14 +85,15 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
       fontBlobs.push(readFileSync(resolve(fontsDir, entry)));
     }
   }
+  opts.reportProgress?.('Loading font resources');
   const fontOptions: FontResourceOptions = { cacheDir: opts.fontCacheDir };
   if (opts.confirmFontDownload) fontOptions.confirmDownload = opts.confirmFontDownload;
   fontBlobs.push(...(await loadRemoteFonts(opts.fontResources ?? [], fontOptions)));
-  opts.reportProgress?.('Loaded font resources');
 
   if (!compiler) throw new Error('compiler not initialized');
 
   try {
+    opts.reportProgress?.('Initializing the Typst WASM workspace');
     await compiler.init({
       workspace: VROOT,
       beforeBuild: [loadFonts(fontBlobs, { assets: false }), withAccessModel(fsAcc)],
@@ -103,10 +104,10 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
       ExitCode.wasmInit,
     );
   }
-  opts.reportProgress?.('Initialized the Typst WASM workspace');
 
   let doc: Awaited<ReturnType<typeof compiler.compile>>;
   try {
+    opts.reportProgress?.('Compiling the PDF with Typst');
     doc = await compiler.compile({
       mainFilePath: `${VROOT}template.typ`,
       format: CompileFormatEnum.pdf,
@@ -122,7 +123,6 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
     const diag = doc.diagnostics ? JSON.stringify(doc.diagnostics, null, 2) : 'no diagnostics';
     throw new TypsumeError(`Typst compilation failed:\n${diag}`, ExitCode.compile);
   }
-  opts.reportProgress?.('Compiled the PDF with Typst');
 
   return { pdf: doc.result, bytes: doc.result.byteLength };
 }
