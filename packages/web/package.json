@@ -16,7 +16,6 @@
     "@iarna/toml": "^2.2.5",
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
-    "@myriaddreamin/typst.react": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
     "@typsume/core": "workspace:*",
     "class-variance-authority": "^0.7.1",

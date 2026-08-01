@@ -1,5 +1,3 @@
-import { TypstDocument } from '@myriaddreamin/typst.react';
-import rendererWasmUrl from '@myriaddreamin/typst-ts-renderer/wasm?url';
 import { CircleAlert, LoaderCircle, RefreshCw, Type } from 'lucide-react';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -7,11 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePreviewModel } from '@/models/preview-model';
 import { useResumeModel } from '@/models/resume-model';
 import { FontConsent } from './font-consent';
-
-TypstDocument.setWasmModuleInitOptions({
-  beforeBuild: [],
-  getModule: () => rendererWasmUrl,
-});
+import { TypstPreviewDocument } from './typst-preview-document';
 
 export function LivePreview() {
   const resume = useResumeModel((state) => state.resume);
@@ -75,7 +69,7 @@ export function LivePreview() {
       ) : null}
       {artifact ? (
         <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-sm bg-white shadow-xl [&_.typst-app]:!h-auto">
-          <TypstDocument artifact={artifact} fill="#ffffff" />
+          <TypstPreviewDocument artifact={artifact} fill="#ffffff" />
         </div>
       ) : null}
     </div>

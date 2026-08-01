@@ -27,7 +27,7 @@ W4 的数据模型。
 | 状态 | Zustand + `zustand/middleware/persist` (IndexedDB) | 比 Redux 轻，与 shadcn 配套 |
 | 表单 | React Hook Form + `@hookform/resolvers/zod` + Zod | 与 `packages/core` 的 schema 共享 Zod 实例 |
 | 代码编辑器（高级模式） | CodeMirror 6 + YAML lang | 轻量、易接 schema 校验 |
-| 编译 | `@myriaddreamin/typst.react` + `@myriaddreamin/typst.ts` WASM | 浏览器内编译零后端 |
+| 编译 | `@myriaddreamin/typst.ts` compiler + renderer WASM | 浏览器内编译零后端 |
 | 路由 | React Router DOM 7 | 标准 |
 | 国际化 | react-i18next + i18next | 至少 zh-CN / en-US |
 | 测试 | Vitest（单测）+ Playwright（e2e） | 复用 monorepo |
@@ -54,7 +54,7 @@ packages/web/src/
 │   ├── home/               # 首页页面组件
 │   ├── resume-editor/      # 编辑器页面、布局、TopBar、Outline
 │   ├── resume-form/        # 基于 schema + react-hook-form + zod
-│   ├── resume-preview/     # typst.react 预览、编译状态、PDF 导出
+│   ├── resume-preview/     # Typst renderer 适配层、编译状态、PDF 导出
 │   └── template-picker/    # 模板切换 UI
 ├── models/
 │   ├── resume-model.ts     # 当前草稿 + IndexedDB persist
@@ -154,11 +154,17 @@ saveAs(blob, `${resumeName}.pdf`);
 
 ### 5.3 React 集成
 
-用 `@myriaddreamin/typst.react` 暴露的 `<TypstDocument />` 组件：
+React 侧使用项目内的 `<TypstPreviewDocument />` 适配组件调用 `@myriaddreamin/typst.ts`
+renderer：
 
 ```tsx
-<TypstDocument fill="#343541" artifact={artifact} className="preview-pane" />
+<TypstPreviewDocument fill="#343541" artifact={artifact} />
 ```
+
+renderer WASM 实例不是可重入对象。适配层必须通过单一 Promise 队列串行执行 render，并先渲染到
+脱离 DOM 的 staging container；effect 仍有效时才替换当前预览。这样既保留 React StrictMode 的
+双 effect 检查，也避免并发 artifact 更新触发 WASM unsafe aliasing。不得通过关闭 StrictMode
+掩盖 renderer 生命周期问题。
 
 artifact 是 `typst.ts` 编译器产出的二进制包，由 Zustand store 派生：
 

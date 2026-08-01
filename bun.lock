@@ -60,7 +60,6 @@
         "@iarna/toml": "^2.2.5",
         "@myriaddreamin/typst-ts-renderer": "^0.7.0",
         "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
-        "@myriaddreamin/typst.react": "^0.7.0",
         "@myriaddreamin/typst.ts": "^0.7.0",
         "@typsume/core": "workspace:*",
         "class-variance-authority": "^0.7.1",
@@ -216,8 +215,6 @@
     "@myriaddreamin/typst-ts-renderer": ["@myriaddreamin/typst-ts-renderer@0.7.0", "", {}, "sha512-3sXIGxZn9MufPrPn6251DeuLf2FIEILYNzY5lX0XOJmaIYqgvQ3qpfqkCjgQD+splBvt5R1N3BuuNFrZKsHhMw=="],
 
     "@myriaddreamin/typst-ts-web-compiler": ["@myriaddreamin/typst-ts-web-compiler@0.7.0", "", {}, "sha512-nMwMcfOBy5pABPDuVM7/u8425SxhPUM+OJe6daqqgVOT3+neCTz4JKwx2L8XasfEHTNvd0cUI07LR9q5ADo7Gw=="],
-
-    "@myriaddreamin/typst.react": ["@myriaddreamin/typst.react@0.7.0", "", { "peerDependencies": { "@myriaddreamin/typst-ts-renderer": "^0.7.0", "@myriaddreamin/typst.ts": "^0.7.0", "react": "^17.0.1 || ^18.x || ^19.x", "react-dom": "^17.0.1 || ^18.x || ^19.x" } }, "sha512-7ml1F174RJx9S7i2tTTLXZV+2IsG0UCOq3e2Ckh1u2FTmbFLJCyK6blJ3PMgQtSQylsdBXSwP4krIhQOua9+WQ=="],
 
     "@myriaddreamin/typst.ts": ["@myriaddreamin/typst.ts@0.7.0", "", { "dependencies": { "idb": "^7.1.1" }, "peerDependencies": { "@myriaddreamin/typst-ts-renderer": "^0.7.0", "@myriaddreamin/typst-ts-web-compiler": "^0.7.0" }, "optionalPeers": ["@myriaddreamin/typst-ts-renderer", "@myriaddreamin/typst-ts-web-compiler"] }, "sha512-JtO5Td/1QesH1IBKAZtbayFNK8u2sl3iz18Y67uYqBEdcXiu3z+wpZcDDKlmVJvAcCgSjHTnuk6ZLfkYclrGGQ=="],
 

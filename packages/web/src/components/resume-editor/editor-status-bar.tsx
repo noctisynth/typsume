@@ -20,9 +20,15 @@ export function EditorStatusBar() {
               <TriangleAlert className="size-3" />
               {warnings.length} resource warning{warnings.length === 1 ? '' : 's'}
             </TooltipTrigger>
-            <TooltipContent className="max-w-md space-y-2">
+            <TooltipContent className="w-[min(32rem,var(--radix-tooltip-content-available-width))] max-w-none flex-col items-stretch gap-0 p-1">
               {warnings.map((warning) => (
-                <p key={warning}>{warning}</p>
+                <div
+                  className="flex items-start gap-2 rounded-sm px-2 py-1.5 leading-relaxed"
+                  key={warning}
+                >
+                  <TriangleAlert className="mt-0.5 size-3 shrink-0 text-amber-400" />
+                  <p className="min-w-0 flex-1 text-left">{warning}</p>
+                </div>
               ))}
             </TooltipContent>
           </Tooltip>
