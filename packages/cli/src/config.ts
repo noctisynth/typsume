@@ -2,33 +2,78 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { parse } from '@iarna/toml';
+import { z } from 'zod';
+import { ExitCode, formatZodIssues, TypsumeError } from './errors.ts';
 
-export interface CliConfig {
-  template?: string;
-  output?: string;
-  build?: {
-    strict?: boolean;
-  };
-}
+const ProjectConfigSchema = z
+  .object({
+    template: z.string().min(1).optional(),
+    output: z.string().min(1).optional(),
+    build: z.object({ strict: z.boolean().optional() }).strict().optional(),
+  })
+  .strict();
 
-function parseTomlFile(filePath: string): Record<string, unknown> | null {
-  if (!existsSync(filePath)) return null;
-  const raw = readFileSync(filePath, 'utf-8');
-  return parse(raw) as unknown as Record<string, unknown>;
-}
+const GlobalConfigSchema = z.object({ 'templates-dir': z.string().min(1).optional() }).strict();
 
-const XDG_CONFIG_HOME = process.env.XDG_CONFIG_HOME
-  ? resolve(process.env.XDG_CONFIG_HOME, 'typsume', 'config.toml')
-  : resolve(homedir(), '.config', 'typsume', 'config.toml');
+export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
+export type GlobalConfig = z.infer<typeof GlobalConfigSchema>;
 
 export interface LoadedConfig {
-  project: CliConfig | null;
-  global: CliConfig | null;
+  project: ProjectConfig | null;
+  global: GlobalConfig | null;
+  projectPath: string;
+  globalPath: string;
 }
 
-export function loadConfig(cwd: string): LoadedConfig {
-  const projectFile = resolve(cwd, 'typsume.config.toml');
-  const project = parseTomlFile(projectFile) as CliConfig | null;
-  const global = parseTomlFile(XDG_CONFIG_HOME) as CliConfig | null;
-  return { project, global };
+export interface ConfigEnvironment {
+  homeDir?: string;
+  xdgConfigHome?: string;
+}
+
+export function expandHomePath(value: string, homeDir = homedir()): string {
+  if (value === '~') return homeDir;
+  if (value.startsWith('~/')) return resolve(homeDir, value.slice(2));
+  return value;
+}
+
+export function getGlobalConfigPath(environment: ConfigEnvironment = {}): string {
+  const homeDir = environment.homeDir ?? homedir();
+  const configRoot = environment.xdgConfigHome
+    ? expandHomePath(environment.xdgConfigHome, homeDir)
+    : resolve(homeDir, '.config');
+  return resolve(configRoot, 'typsume', 'config.toml');
+}
+
+function parseConfigFile<T>(filePath: string, schema: z.ZodType<T>): T | null {
+  if (!existsSync(filePath)) return null;
+
+  let value: unknown;
+  try {
+    value = parse(readFileSync(filePath, 'utf-8'));
+  } catch (error) {
+    throw new TypsumeError(
+      `Failed to parse configuration ${filePath}: ${(error as Error).message}`,
+      ExitCode.parse,
+    );
+  }
+
+  const result = schema.safeParse(value);
+  if (!result.success) {
+    throw new TypsumeError(
+      `Invalid configuration ${filePath}:\n${formatZodIssues(result.error.issues)}`,
+      ExitCode.schema,
+    );
+  }
+  return result.data;
+}
+
+export function loadConfig(projectRoot: string, environment: ConfigEnvironment = {}): LoadedConfig {
+  const projectPath = resolve(projectRoot, 'typsume.config.toml');
+  const globalPath = getGlobalConfigPath(environment);
+  return {
+    project: parseConfigFile(projectPath, ProjectConfigSchema),
+    global: parseConfigFile(globalPath, GlobalConfigSchema),
+    projectPath,
+    globalPath,
+  };
 }

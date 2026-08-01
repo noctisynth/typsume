@@ -1,12 +1,12 @@
 import { ExitCode, TypsumeError } from './errors.ts';
 
 /** Wrap a command handler so TypsumeError prints cleanly with the correct exit code. */
-export function handleErrors<T extends (...args: never[]) => unknown>(
-  fn: T,
-): (...args: Parameters<T>) => Promise<void> {
-  return async (...args: Parameters<T>) => {
+export function handleErrors<TContext>(
+  fn: (context: TContext) => unknown | Promise<unknown>,
+): (context: TContext) => Promise<void> {
+  return async (context: TContext) => {
     try {
-      await (fn(...args) as ReturnType<T>);
+      await fn(context);
     } catch (err: unknown) {
       if (err instanceof TypsumeError) {
         console.error(err.message);

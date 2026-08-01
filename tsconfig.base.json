@@ -5,7 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["bun-types"],
+    "types": ["bun"],
 
     "strict": true,
     "noUncheckedIndexedAccess": true,

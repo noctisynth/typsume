@@ -4,18 +4,30 @@
   "type": "module",
   "description": "Data-driven Typst resume compiler — build resume.json/yaml/toml → PDF via WASM (no system typst needed).",
   "license": "MIT",
-  "bin": "./src/main.ts",
+  "bin": {
+    "typsume": "./src/main.ts"
+  },
+  "files": [
+    "src",
+    "templates",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "typsume": "bun run src/main.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "prepack": "bun run scripts/package-templates.ts stage",
+    "postpack": "bun run scripts/package-templates.ts clean"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
-    "@typsume/core": "workspace:*",
+    "@typsume/core": "^0.1.0",
     "citty": "^0.1.6",
     "fflate": "^0.8.3",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -23,7 +35,6 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "bun": ">=1.4.0",
-    "node": ">=20.0.0"
+    "bun": ">=1.4.0"
   }
 }

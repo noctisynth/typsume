@@ -18,7 +18,7 @@ const main = defineCommand({
   subCommands: { build, validate, dump, templates, init, dev },
 });
 
-runMain(main).catch((err: unknown) => {
+await runMain(main).catch((err: unknown) => {
   if (err instanceof TypsumeError) {
     console.error(err.message);
     process.exit(err.exitCode);

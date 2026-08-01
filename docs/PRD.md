@@ -137,7 +137,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R3 | Zod → JSON Schema 同步偏移 | CI 中 `schema.test.ts` 双向校验 | Zod 4 内置 `z.toJSONSchema()`，直接推导，无 drift 风险 |
 | R4 | 多端 schema drift | `packages/core` 是 workspace 公共依赖，monorepo 强约束 | 包版本锁 + CI 校验 |
 | R5 | 自定义模板上传 v1 不做 | 模板作者通过 PR 贡献 | v2 做模板市集 |
-| R6 | CLI 分发/单 binary | Bun runtime + WASM artifact 单一目标；v1 通过 `bun add typsume` 即可（**用户无需安装 typst**） | v1.1 用 `bun build --compile` 出单 binary；v2 可选 Rust 重写 |
+| R6 | CLI 分发/单 binary | 发布包 `@typsume/cli`，bin 名 `typsume`；pnpm/npm/Bun 均可安装或执行，运行时仍需 Bun；pack 时把根 `templates/` 暂存进包（**用户无需安装 typst**） | v1.1 用 `bun build --compile` 出单 binary；v2 可选 Rust 重写 |
 | R7 | 中文字体文件体积过大，不适合进入 Git 历史 | 模板在 `meta.toml` 声明远程字体资源；CLI 下载到简历项目内的 `.typsume/fonts/`，Web 只在页面生命周期内复用 | 后续增加 `--offline` 与跨平台系统字体发现 |
 | R8 | 远程字体不可用会改变排版或导致编译失败 | 每个异常步骤必须说明原因与接下来的行为；镜像全部失败后继续尝试编译，并明确提示当前阶段不保证系统字体可用 | 后续实现 CLI / Web 系统字体加载 |
 

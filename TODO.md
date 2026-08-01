@@ -106,10 +106,18 @@
 
 ## W3 — `packages/cli`
 
-- [ ] citty 命令脚手架
-- [ ] `typsume build / validate / dump / templates / dev / init / help`
-- [ ] TOML 配置加载（项目 + `~/.config/typsume/config.toml`）
-- [ ] WASM 编译通道同进程
+- [x] citty 命令脚手架
+- [x] `typsume build / validate / dump / templates / dev / init / help`
+  - [x] 六个子命令与 citty 自动 help 已接入
+  - [x] 命令级 smoke 与端到端测试
+- [x] TOML 配置加载（项目 + `~/.config/typsume/config.toml`）
+  - [x] 项目与 XDG 全局配置读取
+  - [x] Zod 严格校验、配置覆盖顺序、`templates-dir` 与 `~` 展开
+- [x] WASM 编译通道同进程（`MemoryAccessModel`，不创建磁盘临时 workspace）
+- [x] 错误码 2–7 与可读 schema diagnostics 完整落实
+- [x] `templates` 合并内置与全局自定义模板
+- [x] `init → build`、`dev` 防抖与失败恢复验收
+- [x] 发布包：`@typsume/cli` + `typsume` bin + pack 内置模板；pnpm/npm/Bun 执行入口已对齐
 - [x] 远程字体资源
   - [x] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）
   - [x] 下载直接 TTF / OTF，使用 `fflate` 在内存中解压 ZIP 中的全部 TTF / OTF
@@ -119,7 +127,7 @@
   - [x] 与模板本地字体合并后传给 typst.ts；ZIP 只在内存解压
   - [x] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
   - [x] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
-- [ ] DoD：CI 在 ubuntu-latest 全新镜像除 bun 外不装任何东西，build 通过
+- [~] DoD：CI 已固定 Bun、执行 check/typecheck/test/build；等待线上新包发布流程验收
 
 ## W4 — `packages/web`
 
@@ -157,6 +165,8 @@
 | 2026-08-01 | CLI 字体原始响应缓存到简历项目 `.typsume/fonts/`；声明摘要作键、原子写入、内联 `.gitignore`；Web 不持久缓存字体 | 用户 |
 | 2026-08-01 | W2 不做主观视觉或像素级验收；以占位 fixture 成功输出 PDF 作为退出条件 | 用户 |
 | 2026-08-01 | `ItemBlock.department?` 表示工作经历的部门/业务线；experience 渲染 department，projects 渲染 stack | 用户 |
+| 2026-08-01 | CLI 保留 `MemoryAccessModel`；不实现磁盘临时 workspace、`--debug` 或 `typsume.log`，编译错误直接输出 stderr | 用户 |
+| 2026-08-01 | CLI 发布包保持 `@typsume/cli`，bin 名为 `typsume`；pack 时从根 `templates/` 暂存内置模板，运行时保持 Bun | 用户 |
 
 ---
 

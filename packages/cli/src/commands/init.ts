@@ -34,6 +34,7 @@ const SAMPLE_RESUME = {
     {
       title: '某科技有限公司',
       subtitle: '前端开发实习生',
+      department: '示例业务线',
       period: '2022.06 – 2022.09',
       highlights: ['负责某某项目前端开发', '使用 React + TypeScript 重构核心模块'],
     },
@@ -68,19 +69,7 @@ export default defineCommand({
     },
   },
   run({ args }) {
-    const targetDir = resolve(process.cwd(), args.dir);
-    mkdirSync(targetDir, { recursive: true });
-    ensureProjectRuntime(targetDir);
-
-    const resumePath = resolve(targetDir, 'resume.json');
-    if (!existsSync(resumePath)) {
-      writeFileSync(resumePath, `${JSON.stringify(SAMPLE_RESUME, null, 2)}\n`, 'utf-8');
-    }
-
-    const configPath = resolve(targetDir, 'typsume.config.toml');
-    if (!existsSync(configPath)) {
-      writeFileSync(configPath, SAMPLE_CONFIG, 'utf-8');
-    }
+    const { targetDir, resumePath, configPath } = initProject(args.dir);
 
     console.log(`OK: scaffolded resume project in ${targetDir}`);
     console.log(`  ${resumePath}`);
@@ -88,3 +77,18 @@ export default defineCommand({
     console.log('Run: typsume build resume.json');
   },
 });
+
+export function initProject(directory: string, cwd = process.cwd()) {
+  const targetDir = resolve(cwd, directory);
+  mkdirSync(targetDir, { recursive: true });
+  ensureProjectRuntime(targetDir);
+
+  const resumePath = resolve(targetDir, 'resume.json');
+  if (!existsSync(resumePath)) {
+    writeFileSync(resumePath, `${JSON.stringify(SAMPLE_RESUME, null, 2)}\n`, 'utf-8');
+  }
+
+  const configPath = resolve(targetDir, 'typsume.config.toml');
+  if (!existsSync(configPath)) writeFileSync(configPath, SAMPLE_CONFIG, 'utf-8');
+  return { targetDir, resumePath, configPath };
+}

@@ -12,8 +12,9 @@ jobs:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: canary
+          bun-version: 1.4.0
       - run: bun install --frozen-lockfile
       - run: bun run check
+      - run: bun run typecheck
       - run: bun run test
       - run: bun run typsume build examples/sample/resume.json

@@ -58,13 +58,12 @@ import build from "./commands/build"
 import validate from "./commands/validate"
 import dump from "./commands/dump"
 import templates from "./commands/templates"
-import templateInfo from "./commands/template-info"
 import dev from "./commands/dev"
 import init from "./commands/init"
 
 const main = defineCommand({
   meta: { name: "typsume", version: "0.1.0", description: "..." },
-  subCommands: { build, validate, dump, templates, dev, init, template: templateInfo },
+  subCommands: { build, validate, dump, templates, dev, init },
 })
 
 runMain(main)
@@ -76,12 +75,19 @@ runMain(main)
 bun run typsume <command> [options]
 ```
 
-用户安装全局包后：
+用户安装或临时执行发布包（运行时仍需 Bun）：
 
 ```bash
-bun add -g typsume            # 首选 Bun 全局安装
+pnpm add -g @typsume/cli
+pnpm dlx @typsume/cli --help
+npx @typsume/cli --help
+bunx @typsume/cli --help
 typsume build resume.json
 ```
+
+发布包通过 `package.json#bin.typsume` 固定命令名。根目录 `templates/` 是内置模板单一源码；
+`prepack` 把它暂存到 CLI 包内，`postpack` 清理暂存目录。resolver 在发布包中读取包内
+`templates/`，monorepo 开发时回退仓库根目录。
 
 ## 4. `typsume build` 详细规范
 
@@ -156,17 +162,14 @@ WASM init 懒加载：首次 build 才初始化 typst renderer，避免冷启动
   received: "略懂"
 ```
 
-### 4.3 临时目录布局
+### 4.3 内存 workspace
 
-CLI 不在用户当前目录写中间产物。运行时在 `os.tmpdir()/typsume-<hash>/` 下创建：
+CLI 使用 typst.ts 的 `MemoryAccessModel` 构建虚拟 workspace。normalized `resume.json`、模板文件、
+图标以及 `cfg_*.json` 只写入内存，不创建磁盘临时目录。字体字节通过 `loadFonts` 注入；只有远程
+字体原始响应按资源缓存契约写入项目 `.typsume/fonts/`。
 
-```
-typsume-<hash>/
-├── resume.json     # normalized 后的数据
-└── template/       # 模板副本（如果源模板在仓库内）
-```
-
-typst.ts WASM 在编译失败时抛出的错误信息统一在 `typsume.log` 收集（如果 --debug 开启时落盘）。`--debug` 默认 false，错误直接打到 stderr。
+CLI 不提供 `--debug` 或 `typsume.log`。编译失败时把可读 diagnostics 直接写到 stderr；需要额外
+诊断信息时通过 issue 提供复现输入和环境信息。
 
 ## 5. `typsume dev` watch 模式
 

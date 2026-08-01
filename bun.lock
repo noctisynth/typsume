@@ -14,15 +14,19 @@
     },
     "packages/cli": {
       "name": "@typsume/cli",
-      "version": "0.0.0",
-      "bin": "./src/main.ts",
+      "version": "0.1.0",
+      "bin": {
+        "typsume": "./src/main.ts",
+      },
       "dependencies": {
         "@iarna/toml": "^2.2.5",
+        "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
         "@myriaddreamin/typst.ts": "^0.7.0",
-        "@typsume/core": "workspace:*",
+        "@typsume/core": "^0.1.0",
         "citty": "^0.1.6",
         "fflate": "^0.8.3",
         "js-yaml": "^4.1.0",
+        "zod": "^4.4.3",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -32,7 +36,7 @@
     },
     "packages/core": {
       "name": "@typsume/core",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "zod": "^4.4.3",
       },

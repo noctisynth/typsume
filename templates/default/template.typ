@@ -68,8 +68,9 @@
     box({
       item.icon
       h(0.5em)
-      if "link" in item {
-        link(item.link, item.content)
+      let item-link = item.at("link", default: none)
+      if item-link != none {
+        link(item-link, item.content)
       } else {
         item.content
       }

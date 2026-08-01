@@ -19,8 +19,16 @@ export class TypsumeError extends Error {
   }
 }
 
-export function formatSchemaError(errors: { path: string; message: string }[]): string {
-  return errors
-    .map((e) => `  ✗ schema validation failed at ${e.path}\n    ${e.message}`)
-    .join('\n');
+function formatPath(path: readonly PropertyKey[]): string {
+  if (path.length === 0) return '<root>';
+  return path.reduce<string>((result, segment) => {
+    if (typeof segment === 'number') return `${result}[${segment}]`;
+    return result ? `${result}.${String(segment)}` : String(segment);
+  }, '');
+}
+
+export function formatZodIssues(
+  errors: readonly { path: readonly PropertyKey[]; message: string }[],
+): string {
+  return errors.map((error) => `  ✗ ${formatPath(error.path)}\n    ${error.message}`).join('\n');
 }

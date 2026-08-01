@@ -3,6 +3,7 @@ import { relative, resolve, sep } from 'node:path';
 import { CompileFormatEnum, createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
+import { ExitCode, TypsumeError } from './errors.ts';
 import { loadRemoteFonts } from './font-resources.ts';
 import type { FontResource } from './meta.ts';
 
@@ -12,7 +13,14 @@ let compiler: ReturnType<typeof createTypstCompiler> | null = null;
 
 async function ensureWasm(): Promise<void> {
   if (compiler) return;
-  compiler = createTypstCompiler();
+  try {
+    compiler = createTypstCompiler();
+  } catch (error) {
+    throw new TypsumeError(
+      `Failed to initialize typst.ts WASM compiler: ${(error as Error).message}`,
+      ExitCode.wasmInit,
+    );
+  }
 }
 
 export interface CompileOptions {
@@ -79,19 +87,34 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
 
   if (!compiler) throw new Error('compiler not initialized');
 
-  await compiler.init({
-    workspace: VROOT,
-    beforeBuild: [loadFonts(fontBlobs, { assets: false }), withAccessModel(fsAcc)],
-  });
+  try {
+    await compiler.init({
+      workspace: VROOT,
+      beforeBuild: [loadFonts(fontBlobs, { assets: false }), withAccessModel(fsAcc)],
+    } as never);
+  } catch (error) {
+    throw new TypsumeError(
+      `Failed to initialize typst.ts WASM workspace: ${(error as Error).message}`,
+      ExitCode.wasmInit,
+    );
+  }
 
-  const doc = await compiler.compile({
-    mainFilePath: `${VROOT}template.typ`,
-    format: CompileFormatEnum.pdf,
-  });
+  let doc: Awaited<ReturnType<typeof compiler.compile>>;
+  try {
+    doc = await compiler.compile({
+      mainFilePath: `${VROOT}template.typ`,
+      format: CompileFormatEnum.pdf,
+    });
+  } catch (error) {
+    throw new TypsumeError(
+      `Typst compilation failed: ${(error as Error).message}`,
+      ExitCode.compile,
+    );
+  }
 
   if (!(doc.result instanceof Uint8Array)) {
     const diag = doc.diagnostics ? JSON.stringify(doc.diagnostics, null, 2) : 'no diagnostics';
-    throw new Error(`typst compile failed:\n${diag}`);
+    throw new TypsumeError(`Typst compilation failed:\n${diag}`, ExitCode.compile);
   }
 
   return { pdf: doc.result, bytes: doc.result.byteLength };
