@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.1.3
+
+### New Features
+
+- [`36d26e3`](https://github.com/noctisynth/typsume/commit/36d26e35f94ff90af5b2960527b3a7f65f63a5f6): Colorize important CLI output details
+
+    Paths, build stages, generated artifacts, byte counts, and rebuild timings now use terminal-aware
+    colorette styling while structured output remains free of ANSI formatting.
+
+- [`9b16d00`](https://github.com/noctisynth/typsume/commit/9b16d00ab6a7cc78ea5ce9660226aebf8ddd89f0): Report progress throughout resume builds
+
+    The build command now reports validation, template resolution, font loading, WASM initialization,
+    Typst compilation, and PDF writing so long-running builds no longer appear idle.
+
 ## v0.1.2
 
 ### New Features
