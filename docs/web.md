@@ -32,6 +32,17 @@ W4 的数据模型。
 | 国际化 | react-i18next + i18next | 至少 zh-CN / en-US |
 | 测试 | Vitest（单测）+ Playwright（e2e） | 复用 monorepo |
 
+### 2.1 工程约定
+
+- 所有文件名使用 kebab-case（React 组件导出仍使用 PascalCase）。
+- 样式使用 TailwindCSS utilities；除 `src/index.css` 中的 Tailwind/shadcn theme token 与全局
+  基线外，不维护手写业务 class stylesheet。
+- UI 元组件必须通过 shadcn CLI 增加，生成到 `src/components/ui/`；不得手写另一套按钮、
+  输入框、卡片等基础组件。
+- 所有 React 组件放在 `src/components/`：shadcn 元组件位于 `components/ui/`，业务组件按
+  `components/<feature-name>/` 分组。
+- 所有 Zustand 模型放在 `src/models/`；组件目录不得夹带 store/model。
+
 ## 3. 模块划分
 
 ```
@@ -39,22 +50,24 @@ packages/web/src/
 ├── app/                    # 入口、路由、全局 Provider
 │   └── router.tsx          # 路由表
 ├── pages/                  # 页面级组件
-│   ├── HomePage.tsx        # 创建/打开/导入 简历
-│   ├── EditorPage.tsx      # 三栏布局：表单 / 预览 / 配置
-│   └── SettingsPage.tsx    # 全局偏好
-├── features/               # 业务功能（每功能独立 slice）
-│   ├── resume-form/        # 表单系统，基于 schema + react-hook-form + zod
-│   ├── resume-preview/     # 嵌 typst.react 预览组件
-│   ├── resume-storage/     # IndexedDB 当前草稿持久化（zustand persist）
+│   ├── home-page.tsx       # 创建/打开/导入 简历
+│   ├── editor-page.tsx     # 三栏布局：表单 / 预览 / 配置
+│   └── settings-page.tsx   # 全局偏好
+├── components/
+│   ├── ui/                 # shadcn CLI 生成的元组件
+│   ├── resume-editor/      # 编辑器布局、TopBar、Outline
+│   ├── resume-form/        # 基于 schema + react-hook-form + zod
+│   ├── resume-preview/     # typst.react 预览、编译状态、PDF 导出
 │   └── template-picker/    # 模板切换 UI
-├── shared/
-│   ├── schema/             # re-export from core（typed 二次封装）
-│   ├── ui/                 # shadcn/ui 组件（Radix 包装）
-│   └── hooks/              # useResume / useTemplate / usePreview
+├── models/
+│   ├── resume-model.ts     # 当前草稿 + IndexedDB persist
+│   └── preview-model.ts    # 浏览器编译与预览状态
+├── lib/                    # 非组件工具（shadcn cn、资源加载等）
 └── main.tsx
 ```
 
-原则：业务按 `features/` 切分，跨 feature 共享只在 `shared/`。
+原则：组件按 `components/<feature-name>/` 切分，状态统一进入 `models/`，非 React 工具进入
+`lib/`。不得重新引入 `features/` 或 `shared/ui/` 目录。
 
 ## 4. 三栏编辑器布局
 
