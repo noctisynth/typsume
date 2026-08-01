@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.1.4
+
+### Chores
+
+- [`2a14bef`](https://github.com/noctisynth/typsume/commit/2a14befa7e3d23d729c9d467239f8e33a61eb772): Isolate CLI subprocess test homes
+
+    CLI subprocess tests now use temporary HOME and XDG directories so Bun caches and test
+    configuration never pollute the package source directory.
+
+- [`03343e2`](https://github.com/noctisynth/typsume/commit/03343e2b854d96fa818c45fa10a2f951a93decc9): Isolate interaction tests from CI authorization
+
+    Tests for declined and non-interactive font downloads now use an explicit environment so the
+    GitHub Actions authorization variable cannot change their expected policy branch.
+
+
+### New Features
+
+- [`cbf7abe`](https://github.com/noctisynth/typsume/commit/cbf7abe94732bfd61dc0a22e12d537c6ddd61568): Add GitHub Actions scaffolding and download consent
+
+    Project initialization can now generate a main-branch PDF artifact workflow, and remote font
+    downloads require interactive consent unless explicitly allowed or running in GitHub Actions.
+
 ## v0.1.3
 
 ### New Features
