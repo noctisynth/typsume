@@ -4,7 +4,7 @@ import { CompileFormatEnum, createTypstCompiler } from '@myriaddreamin/typst.ts/
 import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
 import { ExitCode, TypsumeError } from './errors.ts';
-import { loadRemoteFonts } from './font-resources.ts';
+import { type FontResourceOptions, loadRemoteFonts } from './font-resources.ts';
 import type { FontResource } from './meta.ts';
 
 const VROOT = '/@memory/';
@@ -29,6 +29,7 @@ export interface CompileOptions {
   fontCacheDir: string;
   fontResources?: FontResource[];
   reportProgress?: (message: string) => void;
+  confirmFontDownload?: () => Promise<boolean>;
   config: {
     colors: Record<string, string>;
     fonts: { main: string; mono: string };
@@ -85,9 +86,9 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
     }
   }
   opts.reportProgress?.('Loading font resources');
-  fontBlobs.push(
-    ...(await loadRemoteFonts(opts.fontResources ?? [], { cacheDir: opts.fontCacheDir })),
-  );
+  const fontOptions: FontResourceOptions = { cacheDir: opts.fontCacheDir };
+  if (opts.confirmFontDownload) fontOptions.confirmDownload = opts.confirmFontDownload;
+  fontBlobs.push(...(await loadRemoteFonts(opts.fontResources ?? [], fontOptions)));
 
   if (!compiler) throw new Error('compiler not initialized');
 

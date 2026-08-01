@@ -145,6 +145,7 @@ integrity = "sha256-<base64>" # 可选
 
 - 一个模板可以声明多组 `[[resources.fonts]]`；每组资源的 `urls` 至少包含一个 URL。
 - 同一组资源的 URL 是镜像关系。compiler 按声明顺序尝试，成功取得有效字体后停止尝试该组的后续 URL。
+- CLI 在缓存未命中且即将联网前请求确认；`--allow-downloads` 或 `GITHUB_ACTIONS=true` 跳过交互并授权下载。
 - `integrity` 可选，格式固定为 `sha256-<base64>`，校验对象是下载响应的原始字节。校验失败等同该 URL 失败。
 - 响应类型按内容识别，不依赖 URL 后缀或 `Content-Type`。v1 支持直接 `.ttf` / `.otf` 字体和 ZIP 压缩包。
 - ZIP 使用 `fflate` 在内存中解压，只加载其中的 `.ttf` / `.otf` 文件；目录和其他文件不传给 typst.ts。

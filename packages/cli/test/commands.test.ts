@@ -80,6 +80,19 @@ describe('CLI command workflows', () => {
     }
   });
 
+  test('init can generate a main-branch GitHub Actions PDF artifact workflow', () => {
+    const root = temporaryDirectory();
+    const result = initProject('.', root, 'yaml', true);
+    expect(result.workflowPath).toBe(resolve(root, '.github', 'workflows', 'resume.yml'));
+    const workflow = readFileSync(result.workflowPath as string, 'utf-8');
+    expect(workflow).toContain('branches: [main]');
+    expect(workflow).toContain(
+      'bunx @typsume/cli@latest build resume.yaml --output resume.pdf --allow-downloads',
+    );
+    expect(workflow).toContain('actions/upload-artifact@v4');
+    expect(workflow).toContain('path: resume.pdf');
+  });
+
   test('CLI output overrides project output and dry-run writes normalized JSON', async () => {
     const root = temporaryDirectory();
     writeFileSync(resolve(root, 'resume.json'), JSON.stringify(minimalResume));

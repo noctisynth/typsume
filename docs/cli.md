@@ -101,6 +101,7 @@ Options:
   -o, --output <file>          输出 PDF 路径，默认 <source-stem>.pdf
   --strict                     严格模式：缺任何 meta.toml.requiredFields 即报错
   --dry-run                    只跑 schema 校验 + dump 中间产物（resume.json）
+  --allow-downloads            无交互授权远程字体下载（GitHub Actions 环境自动授权）
 ```
 
 **示例**：
@@ -114,12 +115,17 @@ typsume build resume.json --dry-run
 ### 4.1 `typsume init`
 
 ```text
-typsume init [dir] [--format json|yaml|toml]
+typsume init [dir] [--format json|yaml|toml] [--github-actions|--no-github-actions]
 ```
 
 `init` 默认生成 `resume.toml`；`--format` 可以改为 `resume.json` 或 `resume.yaml`。三种文件
 表达相同的 `ResumeData`，并共用同一份 Zod schema。命令同时创建 `typsume.config.toml` 与
 `.typsume/.gitignore`，且不覆盖已经存在的目标文件。
+
+交互终端中，`init` 询问是否生成 `.github/workflows/resume.yml`。确认后，workflow 在每次
+push 到 `main` 时运行 `typsume build <source> --allow-downloads`，并通过
+`actions/upload-artifact@v4` 上传 `resume.pdf`。脚本或非交互环境使用
+`--github-actions` / `--no-github-actions` 显式选择；未指定时不生成 workflow。
 
 ### 4.1 源文件格式
 
@@ -151,8 +157,10 @@ typsume init [dir] [--format json|yaml|toml]
 
 WASM init 懒加载：首次 build 才初始化 typst renderer，避免冷启动拖累 help / templates 等元命令。
 
-字体下载默认允许联网，不额外询问。每个资源按 `meta.toml` 的 `urls` 顺序尝试；直接字体和 ZIP
-均在内存中处理。CLI 把原始响应缓存在简历项目的 `.typsume/fonts/`，不缓存解压结果。
+远程字体在首次实际下载前请求用户确认；已有有效缓存时不询问。`--allow-downloads` 显式授权
+脚本环境下载；检测到 `GITHUB_ACTIONS=true` 时同样自动授权并跳过交互。其他非交互环境若没有
+显式授权则报错，不静默联网。每个资源按 `meta.toml` 的 `urls` 顺序尝试；直接字体和 ZIP 均在
+内存中处理。CLI 把原始响应缓存在简历项目的 `.typsume/fonts/`，不缓存解压结果。
 
 简历项目根从 source 文件所在目录向上查找最近的 `typsume.config.toml`；找不到时使用 source 所在
 目录。缓存键由有序 URL 列表和可选 integrity 的 SHA-256 生成。下载使用同目录临时文件并在完整

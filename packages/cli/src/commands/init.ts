@@ -5,6 +5,7 @@ import { defineCommand } from 'citty';
 import { dump as stringifyYaml } from 'js-yaml';
 import { ExitCode, TypsumeError } from '../errors.ts';
 import type { SourceFormat } from '../format.ts';
+import { resolveGitHubActionsChoice } from '../interaction.ts';
 import { formatPath, formatResult, formatStage, logger } from '../logger.ts';
 import { ensureProjectRuntime } from '../project.ts';
 
@@ -70,6 +71,33 @@ const SOURCE_FILENAMES: Record<SourceFormat, string> = {
   toml: 'resume.toml',
 };
 
+function githubActionsWorkflow(sourceFilename: string): string {
+  return `name: Build resume
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: canary
+      - run: bunx @typsume/cli@latest build ${sourceFilename} --output resume.pdf --allow-downloads
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resume
+          path: resume.pdf
+          if-no-files-found: error
+`;
+}
+
 function parseInitFormat(value: string): SourceFormat {
   if (value === 'json' || value === 'yaml' || value === 'toml') return value;
   throw new TypsumeError(
@@ -102,19 +130,35 @@ export default defineCommand({
       default: 'toml',
       description: 'Resume source format: json, yaml, or toml',
     },
+    'github-actions': {
+      type: 'boolean',
+      description: 'Generate a GitHub Actions workflow',
+    },
   },
-  run({ args }) {
+  async run({ args }) {
     const format = parseInitFormat(args.format);
-    const { targetDir, resumePath, configPath } = initProject(args.dir, process.cwd(), format);
+    const githubActions = await resolveGitHubActionsChoice({ value: args['github-actions'] });
+    const { targetDir, resumePath, configPath, workflowPath } = initProject(
+      args.dir,
+      process.cwd(),
+      format,
+      githubActions,
+    );
 
     logger.success(`Scaffolded resume project in ${formatResult(targetDir)}`);
     logger.info(formatPath(resumePath));
     logger.info(formatPath(configPath));
+    if (workflowPath) logger.info(formatPath(workflowPath));
     logger.info(`Run: ${formatStage(`typsume build ${SOURCE_FILENAMES[format]}`)}`);
   },
 });
 
-export function initProject(directory: string, cwd = process.cwd(), format: SourceFormat = 'toml') {
+export function initProject(
+  directory: string,
+  cwd = process.cwd(),
+  format: SourceFormat = 'toml',
+  githubActions = false,
+) {
   const targetDir = resolve(cwd, directory);
   mkdirSync(targetDir, { recursive: true });
   ensureProjectRuntime(targetDir);
@@ -126,5 +170,13 @@ export function initProject(directory: string, cwd = process.cwd(), format: Sour
 
   const configPath = resolve(targetDir, 'typsume.config.toml');
   if (!existsSync(configPath)) writeFileSync(configPath, SAMPLE_CONFIG, 'utf-8');
-  return { targetDir, resumePath, configPath };
+
+  const workflowPath = githubActions
+    ? resolve(targetDir, '.github', 'workflows', 'resume.yml')
+    : null;
+  if (workflowPath && !existsSync(workflowPath)) {
+    mkdirSync(resolve(targetDir, '.github', 'workflows'), { recursive: true });
+    writeFileSync(workflowPath, githubActionsWorkflow(SOURCE_FILENAMES[format]), 'utf-8');
+  }
+  return { targetDir, resumePath, configPath, workflowPath };
 }

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from 'bun:test';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -66,6 +66,22 @@ describe('CLI smoke', () => {
     expect(
       JSON.parse(result.stdout).some((template: { name: string }) => template.name === 'default'),
     ).toBe(true);
+  });
+
+  test('init supports explicit GitHub Actions workflow choices', async () => {
+    const enabledRoot = mkdtempSync(resolve(tmpdir(), 'typsume-cli-test-'));
+    const disabledRoot = mkdtempSync(resolve(tmpdir(), 'typsume-cli-test-'));
+    directories.push(enabledRoot, disabledRoot);
+
+    expect((await runCli(['init', '.', '--github-actions'], enabledRoot)).exitCode).toBe(
+      ExitCode.success,
+    );
+    expect(existsSync(resolve(enabledRoot, '.github', 'workflows', 'resume.yml'))).toBe(true);
+
+    expect((await runCli(['init', '.', '--no-github-actions'], disabledRoot)).exitCode).toBe(
+      ExitCode.success,
+    );
+    expect(existsSync(resolve(disabledRoot, '.github', 'workflows', 'resume.yml'))).toBe(false);
   });
 
   test('build applies project strict configuration when the flag is absent', async () => {

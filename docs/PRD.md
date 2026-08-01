@@ -142,6 +142,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R8 | 远程字体不可用会改变排版或导致编译失败 | 每个异常步骤必须说明原因与接下来的行为；镜像全部失败后继续尝试编译，并明确提示当前阶段不保证系统字体可用 | 后续实现 CLI / Web 系统字体加载 |
 | R9 | Semifold latest 变化导致发布 CI 行为漂移 | `semifold-ci` 通过 setup Action 的 `version` 输入锁定 `v0.3.0-beta.3` | 经验证后显式升级固定版本 |
 | R10 | npm Trusted Publishing 未触发会回退到传统 token 并以 `ENEEDAUTH` 失败；CLI 的 npm lifecycle 依赖 Bun | 发布 job 固定 Node 24（npm 11.5.1+）并安装 Bun canary，授予 `id-token: write`，发布步骤不注入写 token；每个发布包声明与 workflow 仓库一致的 `repository` | 私有依赖安装可单独使用只读 token，但不得传入发布步骤 |
+| R11 | CLI 不应静默联网，CI 又不能等待交互 | 本地字体下载前确认；`--allow-downloads` 或 `GITHUB_ACTIONS=true` 显式/环境授权；`init` 可生成 main push 构建并上传 PDF artifact 的 workflow | Web 端另行设计权限提示 |
 
 ## 10. 成功指标
 

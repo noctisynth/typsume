@@ -14,6 +14,7 @@ export interface FontResourceOptions {
   cacheDir: string;
   fetcher?: typeof fetch;
   warn?: (message: string) => void;
+  confirmDownload?: () => Promise<boolean>;
 }
 
 function startsWith(bytes: Uint8Array, signature: readonly number[]): boolean {
@@ -150,6 +151,13 @@ export async function loadRemoteFonts(
           `The invalid font cache could not be removed. Downloading will continue, but the refreshed resource may not be cached.`,
         );
       }
+    }
+
+    if (options.confirmDownload && !(await options.confirmDownload())) {
+      warn(
+        `Font resource ${resourceIndex + 1} was not downloaded because permission was declined. Compilation will continue without it.`,
+      );
+      continue;
     }
 
     let resourceLoaded = false;

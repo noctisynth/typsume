@@ -121,8 +121,10 @@
   - [x] 使用 `consola` 统一人类可读的 CLI 状态、警告与错误输出
   - [x] `build` 为长耗时的字体/WASM/Typst 阶段提供持续可见的进度反馈
   - [x] 使用 `colorette` 为人类可读输出的路径、耗时和结果信息局部着色
+  - [x] `init` 交互询问并可生成 main push 构建、上传 PDF artifact 的 GitHub Actions workflow
 - [x] 发布包：`@typsume/cli` + `typsume` bin + pack 内置模板；pnpm/npm/Bun 执行入口已对齐
 - [x] 远程字体资源
+  - [x] 下载前交互确认；`--allow-downloads` 与 `GITHUB_ACTIONS=true` 跳过交互并授权
   - [x] `meta.toml` 解析 `[[resources.fonts]]`（顺序镜像 + 可选 `sha256-<base64>`）
   - [x] 下载直接 TTF / OTF，使用 `fflate` 在内存中解压 ZIP 中的全部 TTF / OTF
   - [x] 从 source 定位项目根；以资源声明 SHA-256 为键缓存原始响应到 `.typsume/fonts/`

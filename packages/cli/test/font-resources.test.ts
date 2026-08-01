@@ -31,19 +31,43 @@ describe('remote font resources', () => {
   test('loads a direct font and reuses the raw project cache', async () => {
     const cacheDir = temporaryDirectory();
     let fetchCount = 0;
+    let confirmationCount = 0;
     const fetcher = async () => {
       fetchCount += 1;
       return new Response(fakeTtf(1));
     };
     const resources = [{ urls: ['https://fonts.example.com/main.ttf'] }];
 
-    const first = await loadRemoteFonts(resources, { cacheDir, fetcher });
-    const second = await loadRemoteFonts(resources, { cacheDir, fetcher });
+    const confirmDownload = async () => {
+      confirmationCount += 1;
+      return true;
+    };
+    const first = await loadRemoteFonts(resources, { cacheDir, fetcher, confirmDownload });
+    const second = await loadRemoteFonts(resources, { cacheDir, fetcher, confirmDownload });
 
     expect(first).toHaveLength(1);
     expect(second).toHaveLength(1);
     expect(fetchCount).toBe(1);
+    expect(confirmationCount).toBe(1);
     expect(readdirSync(cacheDir)).toHaveLength(1);
+  });
+
+  test('does not make a network request when download permission is declined', async () => {
+    const warnings: string[] = [];
+    let fetchCount = 0;
+    const fonts = await loadRemoteFonts([{ urls: ['https://fonts.example.com/font.ttf'] }], {
+      cacheDir: temporaryDirectory(),
+      confirmDownload: async () => false,
+      warn: (message) => warnings.push(message),
+      fetcher: async () => {
+        fetchCount += 1;
+        return new Response(fakeTtf());
+      },
+    });
+
+    expect(fonts).toHaveLength(0);
+    expect(fetchCount).toBe(0);
+    expect(warnings.join('\n')).toContain('permission was declined');
   });
 
   test('extracts every valid TTF and OTF from a ZIP', async () => {

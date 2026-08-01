@@ -4,6 +4,7 @@ import { defineCommand } from 'citty';
 import { type CompileOptions, type CompileResult, compileWithTemplate } from '../compiler.ts';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
 import { ExitCode, TypsumeError } from '../errors.ts';
+import { createFontDownloadConsent } from '../interaction.ts';
 import { formatDetail, formatPath, formatResult, formatStage, logger } from '../logger.ts';
 import { ensureProjectRuntime, findProjectRoot } from '../project.ts';
 import { resolveTemplate } from '../resolver.ts';
@@ -24,6 +25,7 @@ export interface BuildContext {
   configEnvironment?: ConfigEnvironment;
   compile?: (options: CompileOptions) => Promise<CompileResult>;
   reportProgress?: (message: string) => void;
+  confirmFontDownload?: () => Promise<boolean>;
 }
 
 export interface BuildResult {
@@ -105,6 +107,7 @@ export async function buildResume(
     config: { colors, fonts, sizes, layout },
   };
   if (context.reportProgress) compileOptions.reportProgress = context.reportProgress;
+  if (context.confirmFontDownload) compileOptions.confirmFontDownload = context.confirmFontDownload;
   const result = await compile(compileOptions);
 
   const configuredOutput = config.project?.output;
@@ -131,6 +134,11 @@ export default defineCommand({
       default: false,
       description: 'Validate and dump normalized JSON',
     },
+    'allow-downloads': {
+      type: 'boolean',
+      default: false,
+      description: 'Allow remote font downloads without prompting',
+    },
   },
   run: handleErrors(async ({ args }) => {
     logger.start(`Building ${formatPath(args.source)}`);
@@ -142,7 +150,12 @@ export default defineCommand({
         strict: args.strict,
         dryRun: args['dry-run'],
       },
-      { reportProgress: (message) => logger.info(formatStage(message)) },
+      {
+        reportProgress: (message) => logger.info(formatStage(message)),
+        confirmFontDownload: createFontDownloadConsent({
+          allowDownloads: args['allow-downloads'],
+        }),
+      },
     );
     if (result.dryRun)
       logger.success(`Normalized data written to ${formatResult(result.outputPath)}`);
