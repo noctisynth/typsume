@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.1.5
+
+### New Features
+
+- [`b4f6799`](https://github.com/noctisynth/typsume/commit/b4f67994466b515a0f7b48f6d7d3bb6b6664c5f7): Separate build completion from artifact output
+
+    The dynamic spinner now ends with a concise completion status, followed by a dedicated Consola
+    result line containing the generated relative path and file size.
+
+- [`d87a5ab`](https://github.com/noctisynth/typsume/commit/d87a5abde54475f89187cc7de67a81e0aa725446): Use a dynamic single-line build spinner
+
+    Interactive builds now update one Clack spinner in place across compilation stages, pause cleanly
+    for download consent, and fall back to regular progress logs in CI and piped environments.
+
+- [`6d18449`](https://github.com/noctisynth/typsume/commit/6d18449ef63cff375ca639f36b328ebc53bd5079): Use completion ticks and relative output paths
+
+    Build stages now emit success ticks only after completing, and generated artifact paths are shown
+    relative to the current working directory for concise terminal output.
+
 ## v0.1.4
 
 ### Chores
