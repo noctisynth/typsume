@@ -1,8 +1,11 @@
 import type { TemplateConfigOverrides } from '@typsume/core';
-import { RotateCcw } from 'lucide-react';
+import { Check, Copy, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { serializeProjectConfig } from '@/lib/project-config';
+import { DEFAULT_TEMPLATE } from '@/lib/template-registry';
 import { useStyleModel } from '@/models/style-model';
 import { StyleConfigField } from './style-config-field';
 
@@ -45,7 +48,21 @@ const groups: Array<{
 
 export function StyleFields() {
   const { t } = useTranslation();
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
+  const overrides = useStyleModel((state) => state.overrides);
   const resetOverrides = useStyleModel((state) => state.resetOverrides);
+
+  async function copyProjectConfig() {
+    try {
+      await navigator.clipboard.writeText(
+        serializeProjectConfig({ ...DEFAULT_TEMPLATE.configDefaults, ...overrides }),
+      );
+      setCopyState('copied');
+    } catch {
+      setCopyState('error');
+    }
+  }
+
   return (
     <div className="space-y-5">
       {groups.map((group) => (
@@ -69,6 +86,21 @@ export function StyleFields() {
           </div>
         </section>
       ))}
+      <div className="space-y-2">
+        <Button className="w-full" type="button" variant="outline" onClick={copyProjectConfig}>
+          {copyState === 'copied' ? (
+            <Check data-icon="inline-start" />
+          ) : (
+            <Copy data-icon="inline-start" />
+          )}
+          {copyState === 'copied'
+            ? t('style.configCopied')
+            : copyState === 'error'
+              ? t('style.configCopyFailed')
+              : t('style.copyConfig')}
+        </Button>
+        <p className="text-xs leading-5 text-muted-foreground">{t('style.copyConfigHint')}</p>
+      </div>
       <Button className="w-full" type="button" variant="outline" onClick={resetOverrides}>
         <RotateCcw data-icon="inline-start" />
         {t('style.reset')}

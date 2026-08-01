@@ -152,8 +152,9 @@
     }
     #for award-date in award-dates [
       #let grouped-awards = data.awards.filter(award => award.date == award-date)
-      #for (index, award) in grouped-awards.enumerate() [
-        #grid(
+      #let award-rows = ()
+      #for (index, award) in grouped-awards.enumerate() {
+        let title-row = grid(
           columns: (3.2em, 0.5em, 1fr),
           gutter: 0.4em,
           align: (right + horizon, center + horizon, left + horizon),
@@ -163,19 +164,22 @@
           circle(radius: 0.1em, fill: rgb_of(colors.theme)),
           text(size: 0.7em, award.title),
         )
-        #let level = award.at("level", default: none)
-        #if level != none [
-          #grid(
+        let level = award.at("level", default: none)
+        if level != none {
+          let level-row = grid(
             columns: (3.2em, 0.5em, 1fr),
             gutter: 0.4em,
             [],
             [],
             text(size: 0.65em, fill: rgb_of(colors.secondary), level),
           )
-        ]
-        #v(0.25em)
-      ]
-      #v(0.2em)
+          award-rows.push(stack(spacing: 0.05em, title-row, level-row))
+        } else {
+          award-rows.push(title-row)
+        }
+      }
+      #stack(spacing: 0.12em, ..award-rows)
+      #v(0.12em)
     ]
   ]
 ]

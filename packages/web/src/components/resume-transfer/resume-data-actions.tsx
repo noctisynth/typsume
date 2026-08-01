@@ -96,16 +96,13 @@ export function ResumeDownloadMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
-        <DropdownMenuLabel>{t('data.downloadFormat')}</DropdownMenuLabel>
-        <DropdownMenuItem
-          className="items-start py-2"
-          onSelect={() => downloadResume(resume, 'toml')}
-        >
-          <span className="flex flex-col gap-0.5">
-            <span className="font-medium">TOML</span>
-            <span className="text-xs leading-4 text-muted-foreground">{t('data.tomlCliHint')}</span>
+        <DropdownMenuLabel className="space-y-1.5 py-2">
+          <span className="block">{t('data.downloadFormat')}</span>
+          <span className="block text-xs leading-4 font-normal text-muted-foreground">
+            {t('data.cliHint')}
           </span>
-        </DropdownMenuItem>
+        </DropdownMenuLabel>
+        <DropdownMenuItem onSelect={() => downloadResume(resume, 'toml')}>TOML</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => downloadResume(resume, 'json')}>JSON</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => downloadResume(resume, 'yaml')}>YAML</DropdownMenuItem>
       </DropdownMenuContent>

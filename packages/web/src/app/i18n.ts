@@ -30,7 +30,7 @@ const resources = {
         downloadToml: '下载 TOML',
         downloadJson: '下载 JSON',
         downloadYaml: '下载 YAML',
-        tomlCliHint: '保存为 TOML 后，可使用 typsume build resume.toml 在 CLI 中编译 PDF。',
+        cliHint: '三种格式均可使用 typsume build <文件> 在 CLI 中编译 PDF。',
         invalidSchema: '导入文件不符合简历数据结构。',
       },
       validation: {
@@ -122,6 +122,10 @@ const resources = {
           'side-width': '侧栏宽度',
         },
         reset: '恢复模板默认排版',
+        copyConfig: '复制 CLI 配置',
+        configCopied: '已复制 typsume.config.toml',
+        configCopyFailed: '复制失败，请检查剪贴板权限',
+        copyConfigHint: '与简历数据文件一起保存，即可在 CLI 中复现当前排版。',
       },
       hint: {
         onePerLine: '每行一项',
@@ -158,7 +162,7 @@ const resources = {
         downloadToml: 'Download TOML',
         downloadJson: 'Download JSON',
         downloadYaml: 'Download YAML',
-        tomlCliHint: 'Save as TOML, then compile it with typsume build resume.toml in the CLI.',
+        cliHint: 'Every format can be compiled in the CLI with typsume build <file>.',
         invalidSchema: 'The imported file does not match the resume schema.',
       },
       validation: {
@@ -251,6 +255,10 @@ const resources = {
           'side-width': 'Sidebar width',
         },
         reset: 'Restore template typesetting',
+        copyConfig: 'Copy CLI config',
+        configCopied: 'Copied typsume.config.toml',
+        configCopyFailed: 'Copy failed. Check clipboard permission.',
+        copyConfigHint: 'Save it beside the resume data file to reproduce this layout in the CLI.',
       },
       hint: {
         onePerLine: 'One item per line',

@@ -148,7 +148,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R10 | npm Trusted Publishing 未触发会回退到传统 token 并以 `ENEEDAUTH` 失败；CLI 的 npm lifecycle 依赖 Bun | 发布 job 固定 Node 24（npm 11.5.1+）并安装 Bun canary，授予 `id-token: write`，发布步骤不注入写 token；每个发布包声明与 workflow 仓库一致的 `repository` | 私有依赖安装可单独使用只读 token，但不得传入发布步骤 |
 | R11 | CLI 不应静默联网，CI 又不能等待交互 | 本地字体下载前确认；`--allow-downloads` 或 `GITHUB_ACTIONS=true` 显式/环境授权；`init` 可生成 main push 构建并上传 PDF artifact 的 workflow | Web 端另行设计权限提示 |
 | R12 | 浏览器 WebFont CDN 通常提供 CSS 与 unicode-range WOFF2 分片，不能直接作为完整 Typst 字体 | W4 支持用户上传完整 TTF / OTF / TTC 并选择由 typst.ts 识别出的内部 family；字节只保留在页面生命周期。字体目录可参考 Fontsource / Google Fonts 元数据，但不在 W4 引入第三方 picker 或把 CSS 分片交给 Typst | 后续设计带许可证、完整字体文件与缓存策略的字体目录 |
-| R13 | `basics.photo` 的本地文件路径不在浏览器 WASM 虚拟工程内，会触发 access denied | Web 把空字符串归一化为未设置；非空路径在浏览器预览中显式告警并暂不渲染，CLI 继续按模板工程资源契约处理路径 | 后续增加图片上传并挂载到页面生命周期虚拟工程 |
+| R13 | `basics.photo` 当前是 CLI 相对路径，浏览器不能读取该路径；Web 上传后还需决定数据导出与 CLI 重建时如何携带图片字节 | **PRD 待 user 拍板**：在“Web 本地草稿专用图片”“数据 URI 内嵌并扩展 CLI”“导出含图片的项目归档”中确定跨端契约前，继续对路径输入安全降级，不静默改变 `photo` 语义 | 拍板后实现上传、虚拟工程挂载与持久化 |
 | R14 | renderer WASM 的 `renderToSvg()` 在 Rust 借用期间直接回调 DOM，StrictMode 重放或 SVG DOM 操作可能触发 wasm-bindgen 所有权 panic | 预览使用串行 `renderSvg()` 只取得 SVG 字符串，每个任务复制 artifact 字节；Rust 调用结束后再由 React 侧挂载到 detached DOM。任何 renderer 异常后丢弃该实例 | 上游修复并验证后再评估直接 DOM renderer |
 | R15 | typst.ts 0.7.0 仍以旧位置参数调用新版 wasm-bindgen 初始化器，且完整 SVG 默认携带运行时脚本 | Web 通过 `getModule()` 传入 `{ module_or_path }` 单对象；静态简历预览只请求 body / defs / CSS，不包含 renderer JavaScript | 升级 typst.ts 后复核并移除兼容层 |
 | R16 | private Web workspace 未登记到 Semifold 时，其 changeset 会使发布 CI 校验失败；根 workspace 若被登记则会产生无意义的 GitHub Release | 登记 `@typsume/web`，由 `package.json#private` 阻止 npm 发布；明确不登记 `@typsume/workspace`，避免根 workspace 进入 release 流程 | package workspace 增删后同步配置，并从结果中排除仓库根包 |
@@ -157,7 +157,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R19 | Web 当前把字号放在 `ResumeData.meta`，CLI 又忽略它；模板其余颜色、字体、字号和布局只来自 `meta.toml` | core 定义 `config` 覆盖与合并契约；模板 `meta.toml[config]` 提供默认值，CLI 项目 `typsume.config.toml[config]` 覆盖，Web 用独立 Zustand 模型；数据导入导出不携带样式 | custom template 继续遵循同一 config key 契约 |
 | R20 | CLI 使用的 `@iarna/toml` 打入浏览器会引入 Node `stream`、直接 `eval` 警告和额外体积 | Web 运行时 TOML 导入导出使用 ESM `smol-toml`；CLI 与 Vite 构建期继续使用 `@iarna/toml` | 两端以相同 fixture 做语义往返测试，不要求使用同一 parser 实现 |
 | R21 | Radix Accordion 内容层固定首次测量高度会裁切动态新增条目；荣誉时间轴按总高度画线导致单项长线与重复年份 | Accordion 只在动画层使用测量高度，内容保持 auto；荣誉按首次出现顺序按年份分组，每年渲染一次日期与多个奖项；日期、标记和奖项标题按同一水平基线对齐，以短标记替代整段高度线 | 动态数组增删必须覆盖展开状态下的容器回流 |
-| R22 | 数据格式操作全部平铺在顶栏会挤占空间；编辑器残留英文固定文案；空数组仍生成空 section 标题 | 导入保留在左栏内容标题；右上角以一个下载菜单提供 TOML/JSON/YAML，与 PDF 并列；编辑器状态、字体确认和模板状态全部走 i18n；模板不渲染空列表 section | TOML 菜单项保留 CLI 编译提示 |
+| R22 | 数据格式操作全部平铺在顶栏会挤占空间；编辑器残留英文固定文案；空数组仍生成空 section 标题 | 导入保留在左栏内容标题；右上角以一个下载菜单提供 TOML/JSON/YAML，与 PDF 并列；CLI 编译提示属于整个格式菜单；排版设置提供可复制的完整 `typsume.config.toml`；编辑器状态、字体确认和模板状态全部走 i18n；模板不渲染空列表 section | 数据文件与样式配置继续分离 |
 
 ## 10. 成功指标
 

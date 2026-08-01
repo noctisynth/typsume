@@ -176,6 +176,10 @@
 - [x] 修复动态 Accordion 新增条目裁切，并把荣誉改为按年份分组、水平对齐的无长线布局
 - [x] 导入保留左栏；顶栏数据下载改为 TOML/JSON/YAML 下拉按钮并与 PDF 并列
 - [x] 补齐编辑器字体确认、schema/预览/资源/模板状态 i18n；模板跳过所有空列表 section
+- [x] 数据下载菜单改为菜单级 CLI 提示；排版设置提供完整 `typsume.config.toml` 复制按钮
+- [x] 使用受控 stack 收紧同年荣誉条目间距
+- [x] `typsume init` 已支持交互确认或 `--github-actions` 生成 main push PDF artifact workflow
+- [ ] **PRD 待 user 拍板**：确定 Web 上传照片在数据导出与 CLI 重建中的字节携带方式
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
