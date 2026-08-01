@@ -20,6 +20,7 @@ describe('CLI interaction policy', () => {
   test('interactive font consent is requested once and reused', async () => {
     let prompts = 0;
     const consent = createFontDownloadConsent({
+      environment: {},
       interactive: true,
       prompt: async () => {
         prompts += 1;
@@ -33,9 +34,9 @@ describe('CLI interaction policy', () => {
   });
 
   test('unapproved non-interactive downloads fail clearly', async () => {
-    await expect(createFontDownloadConsent({ interactive: false })()).rejects.toMatchObject({
-      exitCode: ExitCode.general,
-    });
+    await expect(
+      createFontDownloadConsent({ environment: {}, interactive: false })(),
+    ).rejects.toMatchObject({ exitCode: ExitCode.general });
   });
 
   test('GitHub Actions generation honors explicit, interactive, and non-interactive choices', async () => {
