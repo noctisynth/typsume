@@ -1,5 +1,6 @@
 import { CircleAlert, LoaderCircle, RefreshCw, Type } from 'lucide-react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFontModel } from '@/models/font-model';
@@ -10,6 +11,7 @@ import { FontConsent } from './font-consent';
 import { TypstPreviewDocument } from './typst-preview-document';
 
 export function LivePreview() {
+  const { t } = useTranslation();
   const resume = useResumeModel((state) => state.resume);
   const fontPermission = usePreviewModel((state) => state.fontPermission);
   const state = usePreviewModel((state) => state.state);
@@ -36,7 +38,7 @@ export function LivePreview() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <CircleAlert className="size-5" />
-              Preview compilation failed
+              {t('preview.compilationFailed')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -46,12 +48,12 @@ export function LivePreview() {
             <div className="flex gap-2">
               <Button onClick={() => void compile(resume)}>
                 <RefreshCw data-icon="inline-start" />
-                Retry
+                {t('preview.retry')}
               </Button>
               {fontPermission === 'denied' ? (
                 <Button variant="outline" onClick={() => setFontPermission('allowed')}>
                   <Type data-icon="inline-start" />
-                  Load template font
+                  {t('preview.loadTemplateFont')}
                 </Button>
               ) : null}
             </div>
@@ -67,7 +69,7 @@ export function LivePreview() {
         <div className="absolute inset-0 z-10 grid place-items-center bg-muted/60 backdrop-blur-sm">
           <div className="flex items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm shadow-sm">
             <LoaderCircle className="size-4 animate-spin" />
-            {phase ?? 'Preparing preview'}
+            {phase ? t(`preview.phase.${phase}`) : t('preview.preparing')}
           </div>
         </div>
       ) : null}

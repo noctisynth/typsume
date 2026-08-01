@@ -266,8 +266,9 @@ schema 归一化后的完整数据，文件名扩展名与所选格式一致。�
 浏览器运行时 YAML 使用 `js-yaml`，TOML 使用纯 ESM `smol-toml`；`@iarna/toml` 仅保留给 CLI
 与 Vite 构建期，不能进入浏览器 chunk。
 
-导入、TOML/JSON/YAML 下载与 PDF 下载都位于编辑器右上角。三种数据格式使用独立可见按钮；
-TOML 下载提示该文件可交给 `typsume build` 在 CLI 中编译。左栏 section 标题不承载数据操作。
+导入保留在左栏“内容”标题右侧。编辑器右上角以一个带下拉菜单的数据下载按钮提供
+TOML/JSON/YAML 三种格式，并与 PDF 下载并列为一级操作；TOML 菜单项提示该文件可交给
+`typsume build` 在 CLI 中编译。格式选项不得在顶栏平铺为多个按钮。
 
 样式配置不进入上述文件，也不写入 `ResumeData.meta`。Web 以独立 Zustand 模型持久化与
 `typsume.config.toml[config]` 同语义的覆盖值，和 CLI 共享 core 合并逻辑。
@@ -279,6 +280,7 @@ TOML 下载提示该文件可交给 `typsume build` 在 CLI 中编译。左栏 s
 - 简历内容（basics.name 等）不被 i18n 干涉——它们是数据，不是 UI 文案
 - `meta.locale` 在提交时传给 typst 模板，影响排版（如西文断字策略）
 - shadcn/ui 内置组件文本（即默认 aria-label 等）需要本地化覆盖时走 i18n
+- 编辑器字体确认、schema 状态、预览错误/重试、资源告警和底栏模板名称不得使用硬编码语言
 
 ## 10. 性能预算
 
@@ -318,6 +320,7 @@ TOML 下载提示该文件可交给 `typsume build` 在 CLI 中编译。左栏 s
 - [x] 顶栏短分割线垂直居中，左侧 Card ring 不被 Accordion 动画容器裁切
 - [x] main push 可通过 GitHub Actions 部署 Pages，仓库子路径下首页、`/editor` 与静态资源可访问
 - [x] Web 可原子导入并导出 JSON/YAML/TOML，失败不覆盖草稿且 production build 无 TOML runtime 警告
-- [x] 展开 section 内动态新增条目不被裁切且可滚动；荣誉按年份分组且不绘制超长时间轴
-- [x] 数据导入与 TOML/JSON/YAML/PDF 下载同列为顶栏一级操作，TOML 显示 CLI 使用提示
+- [x] 展开 section 内动态新增条目不被裁切且可滚动；荣誉按年份分组、水平对齐且不绘制超长时间轴
+- [x] 导入位于左栏；顶栏数据下载菜单提供 TOML/JSON/YAML 并与 PDF 并列，TOML 显示 CLI 使用提示
+- [x] 编辑器固定文案完整支持 zh-CN/en-US；空列表不渲染对应的 Typst section
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

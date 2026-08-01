@@ -18,7 +18,7 @@ export function EditorStatusBar() {
           <Tooltip>
             <TooltipTrigger className="flex items-center gap-1 text-amber-700">
               <TriangleAlert className="size-3" />
-              {warnings.length} resource warning{warnings.length === 1 ? '' : 's'}
+              {t('preview.resourceWarnings', { count: warnings.length })}
             </TooltipTrigger>
             <TooltipContent className="w-[min(32rem,var(--radix-tooltip-content-available-width))] max-w-none flex-col items-stretch gap-0 p-1">
               {warnings.map((warning) => (
@@ -34,7 +34,10 @@ export function EditorStatusBar() {
           </Tooltip>
         ) : null}
       </div>
-      <span>Typst · default · A4{latencyMs === null ? '' : ` · ${latencyMs}ms`}</span>
+      <span>
+        Typst · {t('common.defaultTemplate')} · A4
+        {latencyMs === null ? '' : ` · ${latencyMs}ms`}
+      </span>
     </footer>
   );
 }

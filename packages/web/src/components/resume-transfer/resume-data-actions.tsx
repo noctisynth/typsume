@@ -1,8 +1,14 @@
-import { Download, Upload } from 'lucide-react';
+import { ChevronDown, Download, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   detectResumeFormat,
   parseResumeSource,
@@ -11,28 +17,30 @@ import {
 } from '@/lib/resume-format';
 import { useResumeModel } from '@/models/resume-model';
 
-export function ResumeDataActions() {
+function downloadResume(
+  resume: ReturnType<typeof useResumeModel.getState>['resume'],
+  format: ResumeSourceFormat,
+) {
+  const blob = new Blob([serializeResume(resume, format)], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  const safeName = resume.basics.name.trim().replace(/[^\p{L}\p{N}._-]+/gu, '-') || 'resume';
+  anchor.href = url;
+  anchor.download = `${safeName}.${format}`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export function ResumeImportAction() {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const resume = useResumeModel((state) => state.resume);
   const importResume = useResumeModel((state) => state.importResume);
-
-  function exportResume(format: ResumeSourceFormat) {
-    const blob = new Blob([serializeResume(resume, format)], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    const safeName = resume.basics.name.trim().replace(/[^\p{L}\p{N}._-]+/gu, '-') || 'resume';
-    anchor.href = url;
-    anchor.download = `${safeName}.${format}`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-  }
 
   async function importFile(file: File) {
     try {
       const imported = parseResumeSource(await file.text(), detectResumeFormat(file.name));
-      if (!importResume(imported)) throw new Error('Resume schema validation failed.');
+      if (!importResume(imported)) throw new Error(t('data.invalidSchema'));
       setError(null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : String(caught));
@@ -40,7 +48,7 @@ export function ResumeDataActions() {
   }
 
   return (
-    <div className="relative flex items-center gap-1">
+    <div className="relative">
       <input
         ref={inputRef}
         accept=".json,.yaml,.yml,.toml,application/json,text/yaml,application/toml"
@@ -62,41 +70,6 @@ export function ResumeDataActions() {
         <Upload data-icon="inline-start" />
         {t('data.import')}
       </Button>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            aria-label={t('data.downloadToml')}
-            size="sm"
-            type="button"
-            variant="outline"
-            onClick={() => exportResume('toml')}
-          >
-            <Download data-icon="inline-start" />
-            TOML
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-72" side="bottom">
-          {t('data.tomlCliHint')}
-        </TooltipContent>
-      </Tooltip>
-      <Button
-        aria-label={t('data.downloadJson')}
-        size="sm"
-        type="button"
-        variant="outline"
-        onClick={() => exportResume('json')}
-      >
-        JSON
-      </Button>
-      <Button
-        aria-label={t('data.downloadYaml')}
-        size="sm"
-        type="button"
-        variant="outline"
-        onClick={() => exportResume('yaml')}
-      >
-        YAML
-      </Button>
       {error ? (
         <p
           className="absolute top-full right-0 z-50 mt-2 w-80 whitespace-pre-wrap rounded-lg border border-destructive/30 bg-background p-3 text-xs text-destructive shadow-lg"
@@ -106,5 +79,36 @@ export function ResumeDataActions() {
         </p>
       ) : null}
     </div>
+  );
+}
+
+export function ResumeDownloadMenu() {
+  const { t } = useTranslation();
+  const resume = useResumeModel((state) => state.resume);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button aria-label={t('data.download')} type="button" variant="outline">
+          <Download data-icon="inline-start" />
+          {t('data.download')}
+          <ChevronDown data-icon="inline-end" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-72">
+        <DropdownMenuLabel>{t('data.downloadFormat')}</DropdownMenuLabel>
+        <DropdownMenuItem
+          className="items-start py-2"
+          onSelect={() => downloadResume(resume, 'toml')}
+        >
+          <span className="flex flex-col gap-0.5">
+            <span className="font-medium">TOML</span>
+            <span className="text-xs leading-4 text-muted-foreground">{t('data.tomlCliHint')}</span>
+          </span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => downloadResume(resume, 'json')}>JSON</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => downloadResume(resume, 'yaml')}>YAML</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

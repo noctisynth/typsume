@@ -13,11 +13,11 @@ const VIRTUAL_ROOT = '/@memory/';
 const encoder = new TextEncoder();
 
 export type CompilePhase =
-  | 'Loading template'
-  | 'Loading font resources'
-  | 'Initializing Typst WASM'
-  | 'Compiling preview'
-  | 'Compiling PDF';
+  | 'loading-template'
+  | 'loading-font-resources'
+  | 'initializing-typst-wasm'
+  | 'compiling-preview'
+  | 'compiling-pdf';
 
 interface CompilerRuntime {
   compiler: ReturnType<typeof createTypstCompiler>;
@@ -42,7 +42,7 @@ async function createRuntime(
   selectedFont: SelectedFontBundle | null,
   callbacks: CompileCallbacks,
 ): Promise<CompilerRuntime> {
-  callbacks.phase?.('Loading template');
+  callbacks.phase?.('loading-template');
   const accessModel = new MemoryAccessModel();
   insert(accessModel, 'template.typ', DEFAULT_TEMPLATE.source);
   for (const [path, source] of Object.entries(DEFAULT_TEMPLATE.assets)) {
@@ -52,7 +52,7 @@ async function createRuntime(
   let fonts: Uint8Array[] = [];
   let fontFamilyOverride: string | null = null;
   if (selectedFont) {
-    callbacks.phase?.('Loading font resources');
+    callbacks.phase?.('loading-font-resources');
     fonts = selectedFont.fonts;
     fontFamilyOverride = selectedFont.family;
     callbacks.resource?.({
@@ -60,7 +60,7 @@ async function createRuntime(
       message: `Using uploaded font ${selectedFont.family}.`,
     });
   } else if (allowFontDownloads) {
-    callbacks.phase?.('Loading font resources');
+    callbacks.phase?.('loading-font-resources');
     fonts = await loadBrowserFonts(
       DEFAULT_TEMPLATE.fontResources,
       callbacks.resource ? { report: callbacks.resource } : {},
@@ -94,7 +94,7 @@ async function createRuntime(
     });
   }
 
-  callbacks.phase?.('Initializing Typst WASM');
+  callbacks.phase?.('initializing-typst-wasm');
   const compiler = createTypstCompiler();
   await compiler.init({
     workspace: VIRTUAL_ROOT,
@@ -199,7 +199,7 @@ async function compile(
   runtime.queue = runtime.queue
     .then(async () => {
       mapResume(runtime, resume, configOverrides);
-      callbacks.phase?.(format === CompileFormatEnum.pdf ? 'Compiling PDF' : 'Compiling preview');
+      callbacks.phase?.(format === CompileFormatEnum.pdf ? 'compiling-pdf' : 'compiling-preview');
       const document = await runtime.compiler.compile({
         mainFilePath: `${VIRTUAL_ROOT}template.typ`,
         format,

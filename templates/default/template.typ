@@ -132,104 +132,120 @@
       }),
     )
   ]
-  == #icons.fa-wrench 技术栈
-  #for section in data.skills [
-    #tech[ #section.name ]
-    #list(..section.items.map(item => {
-      let level = item.at("level", default: "熟悉")
-      [- #tech-stack(level: level, item.name)]
-    }))
+  #if data.skills.len() > 0 [
+    == #icons.fa-wrench 技术栈
+    #for section in data.skills [
+      #tech[ #section.name ]
+      #list(..section.items.map(item => {
+        let level = item.at("level", default: "熟悉")
+        [- #tech-stack(level: level, item.name)]
+      }))
+    ]
   ]
-  == #icons.fa-award 荣誉
-  #let award-dates = ()
-  #for award in data.awards {
-    if not award-dates.contains(award.date) {
-      award-dates.push(award.date)
+  #if data.awards.len() > 0 [
+    == #icons.fa-award 荣誉
+    #let award-dates = ()
+    #for award in data.awards {
+      if not award-dates.contains(award.date) {
+        award-dates.push(award.date)
+      }
     }
-  }
-  #for award-date in award-dates [
-    #let grouped-awards = data.awards.filter(award => award.date == award-date)
-    #grid(
-      columns: (3.2em, 0.5em, 1fr),
-      gutter: 0.4em,
-      align: (right + top, center + top, left + top),
-      text(size: 0.7em, fill: rgb_of(colors.secondary), award-date),
-      circle(radius: 0.12em, fill: rgb_of(colors.theme)),
-      stack(
-        spacing: 0.25em,
-        ..grouped-awards.map(award => [
-          #text(size: 0.7em, award.title)
-          #if award.at("level", default: none) != none [
-            #h(0.3em)
-            #text(size: 0.65em, fill: rgb_of(colors.secondary), award.level)
-          ]
-        ]),
-      ),
-    )
-    #v(0.45em)
+    #for award-date in award-dates [
+      #let grouped-awards = data.awards.filter(award => award.date == award-date)
+      #for (index, award) in grouped-awards.enumerate() [
+        #grid(
+          columns: (3.2em, 0.5em, 1fr),
+          gutter: 0.4em,
+          align: (right + horizon, center + horizon, left + horizon),
+          if index == 0 {
+            text(size: 0.7em, fill: rgb_of(colors.secondary), award-date)
+          } else { [] },
+          circle(radius: 0.1em, fill: rgb_of(colors.theme)),
+          text(size: 0.7em, award.title),
+        )
+        #let level = award.at("level", default: none)
+        #if level != none [
+          #grid(
+            columns: (3.2em, 0.5em, 1fr),
+            gutter: 0.4em,
+            [],
+            [],
+            text(size: 0.65em, fill: rgb_of(colors.secondary), level),
+          )
+        ]
+        #v(0.25em)
+      ]
+      #v(0.2em)
+    ]
   ]
 ]
 
 #let body = [
-  == #icons.fa-code 项目经历
-  #for it in data.projects [
-    #item(
-      {
-        let links = it.at("links", default: ())
-        if links.len() > 0 {
-          let first = links.at(0)
-          link(first.href, strong(it.title))
-        } else {
-          strong(it.title)
-        }
-      },
-      [* #(it.at("subtitle", default: "")) *],
-      if it.at("period", default: none) != none [ #date(it.period) ],
-    )
-    #let stack-tags = it.at("stack", default: ())
-    #if stack-tags.len() > 0 [
-      #tech[ #stack-tags.join(" ") ]
-    ]
-    #if it.at("body", default: none) != none [ #(it.body) ]
-    #let highlights = it.at("highlights", default: ())
-    #if highlights.len() > 0 [
-      #list(..highlights.map(h => [- #h]))
-    ]
-  ]
-  == #icons.fa-work 实习经历
-  #for it in data.experience [
-    #item(
-      {
-        let links = it.at("links", default: ())
-        if links.len() > 0 {
-          let first = links.at(0)
-          link(first.href, strong(it.title))
-        } else {
-          strong(it.title)
-        }
-      },
-      [* #(it.at("subtitle", default: "")) *],
-      if it.at("period", default: none) != none [ #date(it.period) ],
-    )
-    #let department = it.at("department", default: none)
-    #if department != none [
-      #tech[ #department ]
-    ]
-    #if it.at("body", default: none) != none [ #(it.body) ]
-    #let highlights = it.at("highlights", default: ())
-    #if highlights.len() > 0 [
-      #list(..highlights.map(h => [- #h]))
+  #if data.projects.len() > 0 [
+    == #icons.fa-code 项目经历
+    #for it in data.projects [
+      #item(
+        {
+          let links = it.at("links", default: ())
+          if links.len() > 0 {
+            let first = links.at(0)
+            link(first.href, strong(it.title))
+          } else {
+            strong(it.title)
+          }
+        },
+        [* #(it.at("subtitle", default: "")) *],
+        if it.at("period", default: none) != none [ #date(it.period) ],
+      )
+      #let stack-tags = it.at("stack", default: ())
+      #if stack-tags.len() > 0 [
+        #tech[ #stack-tags.join(" ") ]
+      ]
+      #if it.at("body", default: none) != none [ #(it.body) ]
+      #let highlights = it.at("highlights", default: ())
+      #if highlights.len() > 0 [
+        #list(..highlights.map(h => [- #h]))
+      ]
     ]
   ]
-  == #icons.fa-graduation-cap 教育背景
-  #for it in data.education [
-    #space-between(
-      [* #it.title * #if it.at("subtitle", default: none) != none [ - #it.subtitle ]],
-      if it.at("period", default: none) != none [ #date(it.period) ],
-    )
-    #let highlights = it.at("highlights", default: ())
-    #if highlights.len() > 0 [
-      #list(..highlights.map(h => [- #h]))
+  #if data.experience.len() > 0 [
+    == #icons.fa-work 实习经历
+    #for it in data.experience [
+      #item(
+        {
+          let links = it.at("links", default: ())
+          if links.len() > 0 {
+            let first = links.at(0)
+            link(first.href, strong(it.title))
+          } else {
+            strong(it.title)
+          }
+        },
+        [* #(it.at("subtitle", default: "")) *],
+        if it.at("period", default: none) != none [ #date(it.period) ],
+      )
+      #let department = it.at("department", default: none)
+      #if department != none [
+        #tech[ #department ]
+      ]
+      #if it.at("body", default: none) != none [ #(it.body) ]
+      #let highlights = it.at("highlights", default: ())
+      #if highlights.len() > 0 [
+        #list(..highlights.map(h => [- #h]))
+      ]
+    ]
+  ]
+  #if data.education.len() > 0 [
+    == #icons.fa-graduation-cap 教育背景
+    #for it in data.education [
+      #space-between(
+        [* #it.title * #if it.at("subtitle", default: none) != none [ - #it.subtitle ]],
+        if it.at("period", default: none) != none [ #date(it.period) ],
+      )
+      #let highlights = it.at("highlights", default: ())
+      #if highlights.len() > 0 [
+        #list(..highlights.map(h => [- #h]))
+      ]
     ]
   ]
 ]

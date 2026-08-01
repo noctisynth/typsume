@@ -52,7 +52,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
     if (permission === 'unknown') return;
     const sequence = ++compileSequence;
     const startedAt = performance.now();
-    set({ state: 'loading', phase: 'Loading template', warnings: [], error: null });
+    set({ state: 'loading', phase: 'loading-template', warnings: [], error: null });
     try {
       const { compilePreview } = await import('@/lib/browser-compiler');
       const artifact = await compilePreview(
@@ -84,7 +84,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
   async exportPdf(resume) {
     const permission = get().fontPermission;
     if (permission === 'unknown') throw new Error('Font download permission is required first.');
-    set({ state: 'exporting', phase: 'Compiling PDF', error: null });
+    set({ state: 'exporting', phase: 'compiling-pdf', error: null });
     try {
       const { compilePdf } = await import('@/lib/browser-compiler');
       const pdf = await compilePdf(

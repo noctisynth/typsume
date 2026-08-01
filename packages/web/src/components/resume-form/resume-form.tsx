@@ -82,7 +82,7 @@ export function ResumeForm() {
         <p className="max-w-64 text-xs leading-5 text-muted-foreground">{t('hint.autoSave')}</p>
         <Badge variant={form.formState.isValid ? 'secondary' : 'destructive'}>
           {form.formState.isValid ? <Check /> : <TriangleAlert />}
-          {form.formState.isValid ? 'Schema valid' : 'Check fields'}
+          {form.formState.isValid ? t('validation.schemaValid') : t('validation.checkFields')}
         </Badge>
       </div>
       <Separator />

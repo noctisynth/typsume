@@ -97,7 +97,9 @@ default 模板在工作经历中把 `department` 渲染到原模板 `#tech[...]`
 则在同一位置渲染 `stack`。`stack` 不用于承载部门名称。
 
 default 模板的 awards 按 `date` 首次出现顺序分组；同一日期只显示一次，右侧可排列多个奖项，
-`level` 作为次要文本。荣誉布局不得通过整组测量高度绘制贯穿空白区的时间轴。
+`level` 作为次要文本；日期、短标记与奖项标题按同一水平基线对齐。荣誉布局不得通过整组测量
+高度绘制贯穿空白区的时间轴。`skills`、`awards`、`projects`、`experience` 或 `education`
+数组为空时，default 模板不得渲染对应的 section 标题或占位空白。
 
 JSON Schema / Zod schema 的实现属于 `packages/core`，本文件不下放。
 
