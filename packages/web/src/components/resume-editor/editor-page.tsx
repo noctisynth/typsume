@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ResumeForm } from '@/components/resume-form/resume-form';
 import { LivePreview } from '@/components/resume-preview/live-preview';
+import { ResumeDataActions } from '@/components/resume-transfer/resume-data-actions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePreviewModel } from '@/models/preview-model';
@@ -34,7 +35,7 @@ export default function EditorPage() {
             <p className="text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
               {t('editor.form')}
             </p>
-            <span className="font-mono text-[10px] text-muted-foreground">JSON 1.0</span>
+            <ResumeDataActions />
           </div>
           <ScrollArea id="resume-form-scroll-area" className="h-[calc(100%-2.75rem)]">
             <ResumeForm />

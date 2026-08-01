@@ -31,6 +31,7 @@ export function ResumeForm() {
   const resume = useResumeModel((state) => state.resume);
   const selectedSection = useResumeModel((state) => state.selectedSection);
   const sectionNavigationRevision = useResumeModel((state) => state.sectionNavigationRevision);
+  const importRevision = useResumeModel((state) => state.importRevision);
   const replaceResume = useResumeModel((state) => state.replaceResume);
   const resetResume = useResumeModel((state) => state.resetResume);
   const selectSection = useResumeModel((state) => state.selectSection);
@@ -48,6 +49,11 @@ export function ResumeForm() {
     const section = useResumeModel.getState().selectedSection;
     setOpenSections((current) => (current.includes(section) ? current : [...current, section]));
   }, [sectionNavigationRevision]);
+
+  useEffect(() => {
+    if (importRevision === 0) return;
+    form.reset(useResumeModel.getState().resume);
+  }, [form, importRevision]);
 
   useEffect(() => {
     const timer = setTimeout(() => replaceResume(values), 300);

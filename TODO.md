@@ -172,7 +172,7 @@
 - [x] GitHub Pages workflow：main 自动构建部署，适配仓库 base path 与 SPA 直达 fallback
 - [x] Core：共享模板 `config` 覆盖、严格 schema 与 CLI/Web 合并逻辑；样式不进入 ResumeData
 - [x] CLI：`typsume.config.toml[config]` 覆盖模板默认样式并参与编译；`dump` 保持不变
-- [~] Web：独立样式模型覆盖全部 config 字段并实时预览；导入/导出 JSON/YAML/TOML 仅处理简历数据
+- [x] Web：独立样式模型覆盖全部 config 字段并实时预览；导入/导出 JSON/YAML/TOML 仅处理简历数据
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
@@ -209,6 +209,8 @@
 | 2026-08-02 | Semifold 登记 private Web workspace 以校验 changeset；根 workspace 不登记，避免创建无意义的 GitHub Release | 用户 |
 | 2026-08-02 | 顶栏短分割线显式垂直居中；Accordion 动画容器通过内容内边距保护 Card 外扩 ring | 用户反馈 |
 | 2026-08-02 | Web 由 GitHub Actions 部署到 Pages；构建使用 Pages `base_path`，BrowserRouter 共用 basename，并生成 SPA 404 fallback | 用户 |
+| 2026-08-02 | 样式配置不进入 ResumeData：CLI 使用 `typsume.config.toml[config]`，Web 使用独立模型；Web 数据导入导出不改变 CLI dump | 用户 |
+| 2026-08-02 | Web TOML runtime 使用 `smol-toml`，避免把 CLI/构建期 `@iarna/toml` 的 Node stream 与 eval 带入浏览器 | 用户确认 |
 
 ---
 

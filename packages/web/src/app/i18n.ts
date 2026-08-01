@@ -22,6 +22,7 @@ const resources = {
         saved: '已保存到此浏览器',
         private: '数据不会离开当前设备',
       },
+      data: { format: '导出格式', import: '导入简历数据', export: '导出简历数据' },
       section: {
         basics: '基本信息',
         skills: '技能',
@@ -116,6 +117,7 @@ const resources = {
         saved: 'Saved in this browser',
         private: 'Your data never leaves this device',
       },
+      data: { format: 'Export format', import: 'Import resume data', export: 'Export resume data' },
       section: {
         basics: 'Basics',
         skills: 'Skills',

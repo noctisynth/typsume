@@ -35,4 +35,12 @@ describe('resume model', () => {
     useResumeModel.getState().navigateSection(section);
     expect(useResumeModel.getState().sectionNavigationRevision).toBe(before + 2);
   });
+
+  test('imports a validated resume atomically', () => {
+    const before = useResumeModel.getState().importRevision;
+    expect(useResumeModel.getState().importResume({ schema: 'invalid' })).toBe(false);
+    expect(useResumeModel.getState().importRevision).toBe(before);
+    expect(useResumeModel.getState().importResume(DEFAULT_RESUME)).toBe(true);
+    expect(useResumeModel.getState().importRevision).toBe(before + 1);
+  });
 });

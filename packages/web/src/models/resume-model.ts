@@ -34,7 +34,9 @@ interface ResumeState extends PersistedResumeState {
   hydrated: boolean;
   revision: number;
   sectionNavigationRevision: number;
+  importRevision: number;
   replaceResume: (value: unknown) => boolean;
+  importResume: (value: unknown) => boolean;
   resetResume: () => void;
   selectSection: (section: ResumeSection) => void;
   navigateSection: (section: ResumeSection) => void;
@@ -64,10 +66,21 @@ export const useResumeModel = create<ResumeState>()(
       hydrated: false,
       revision: 0,
       sectionNavigationRevision: 0,
+      importRevision: 0,
       replaceResume(value) {
         const parsed = ResumeSchema.safeParse(value);
         if (!parsed.success) return false;
         set((state) => ({ resume: parsed.data, revision: state.revision + 1 }));
+        return true;
+      },
+      importResume(value) {
+        const parsed = ResumeSchema.safeParse(value);
+        if (!parsed.success) return false;
+        set((state) => ({
+          resume: parsed.data,
+          revision: state.revision + 1,
+          importRevision: state.importRevision + 1,
+        }));
         return true;
       },
       resetResume() {

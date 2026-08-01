@@ -263,6 +263,9 @@ Zod schema 是**单一真相**，下面三处共用：
 schema 归一化后的完整数据，文件名扩展名与所选格式一致。样式不能形成 Web 私有的 ResumeData
 字段。
 
+浏览器运行时 YAML 使用 `js-yaml`，TOML 使用纯 ESM `smol-toml`；`@iarna/toml` 仅保留给 CLI
+与 Vite 构建期，不能进入浏览器 chunk。
+
 样式配置不进入上述文件，也不写入 `ResumeData.meta`。Web 以独立 Zustand 模型持久化与
 `typsume.config.toml[config]` 同语义的覆盖值，和 CLI 共享 core 合并逻辑。
 
@@ -311,4 +314,5 @@ schema 归一化后的完整数据，文件名扩展名与所选格式一致。�
 - [x] 左侧 section 首次点击即可收起，右侧结构导航仍会展开并定位目标 section
 - [x] 顶栏短分割线垂直居中，左侧 Card ring 不被 Accordion 动画容器裁切
 - [x] main push 可通过 GitHub Actions 部署 Pages，仓库子路径下首页、`/editor` 与静态资源可访问
+- [x] Web 可原子导入并导出 JSON/YAML/TOML，失败不覆盖草稿且 production build 无 TOML runtime 警告
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI
