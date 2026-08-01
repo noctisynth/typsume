@@ -132,6 +132,9 @@ describe('CLI smoke', () => {
     });
     expect(result.exitCode).toBe(ExitCode.success);
     const output = `${result.stdout}\n${result.stderr}`;
+    expect(output).toContain('Building resume.json');
+    expect(output).toContain('Validation complete');
+    expect(output).toContain('Output: resume-normalized.json');
     expect(output).toContain('resume-normalized.json');
     expect(output).not.toContain(resolve(root, 'resume-normalized.json'));
   });

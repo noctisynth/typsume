@@ -5,7 +5,7 @@ import { type CompileOptions, type CompileResult, compileWithTemplate } from '..
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
 import { ExitCode, TypsumeError } from '../errors.ts';
 import { createFontDownloadConsent } from '../interaction.ts';
-import { formatDetail, formatPath, formatResult, formatStage } from '../logger.ts';
+import { formatDetail, formatPath, formatResult, formatStage, logger } from '../logger.ts';
 import { createBuildProgress } from '../progress.ts';
 import { ensureProjectRuntime, findProjectRoot } from '../project.ts';
 import { resolveTemplate } from '../resolver.ts';
@@ -147,6 +147,7 @@ export default defineCommand({
       allowDownloads: args['allow-downloads'],
     });
     progress.start(`Building ${formatPath(args.source)}`);
+    await progress.render();
     try {
       const result = await buildResume(
         {
@@ -172,12 +173,9 @@ export default defineCommand({
         },
       );
       const displayedOutput = relative(process.cwd(), result.outputPath) || '.';
-      if (result.dryRun)
-        progress.stop(`Normalized data written to ${formatResult(displayedOutput)}`);
-      else
-        progress.stop(
-          `${formatResult(displayedOutput)} ${formatDetail(`(${result.bytes} bytes)`)}`,
-        );
+      progress.stop(result.dryRun ? 'Validation complete' : 'Compilation complete');
+      const detail = result.dryRun ? '' : ` ${formatDetail(`(${result.bytes} bytes)`)}`;
+      logger.success(`Output: ${formatResult(displayedOutput)}${detail}`);
     } catch (error) {
       progress.error('Build failed');
       throw error;

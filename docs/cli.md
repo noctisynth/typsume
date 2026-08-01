@@ -21,6 +21,7 @@
 - **CLI 框架**：[`citty`](https://github.com/unjs/citty)（unjs 出品，声明式 + ESM-first，体积小）
 - **终端交互与日志**：`consola` + `colorette` + `@clack/prompts`；人类可读状态使用 success/info/warn/error，并对路径、耗时等关键信息局部着色；JSON 等机器输出保持纯 stdout
   - `build` 在 TTY 中使用单行动态 spinner 更新输入校验、模板解析、字体准备、WASM 初始化、Typst 编译与 PDF 写入阶段，完成后落成 uv/indicatif 风格 tick；CI/管道降级为普通阶段日志，最终产物路径相对当前工作目录显示
+  - spinner 结束状态只表达 `Compilation complete` / `Validation complete`；最终产物由 Consola 单独输出 `Output: <relative-path> (<bytes>)`
 - **与 Web 共享**：`packages/core`（Zod schema + types），通过 workspace 软链
 - **typst 编译**：[`@myriaddreamin/typst.ts`](https://github.com/Myriad-Dreamin/typst.ts) Node.js 端 WASM  
   - **关键收益**：用户零外部依赖。`bun add -g typsume` 即装即用，**不需要系统装 typst**
