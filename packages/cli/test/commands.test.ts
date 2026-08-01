@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { buildResume } from '../src/commands/build.ts';
 import { initProject } from '../src/commands/init.ts';
 import { listTemplates } from '../src/commands/templates.ts';
+import type { CompileOptions } from '../src/compiler.ts';
 import { ExitCode, type TypsumeError } from '../src/errors.ts';
 import { parseSource, type SourceFormat } from '../src/format.ts';
 
@@ -20,7 +21,10 @@ afterEach(() => {
 });
 
 const minimalResume = { schema: 'typst-resume/1.0', basics: { name: 'Xxx Yyy' } };
-const fakeCompile = async () => ({ pdf: new Uint8Array([0x25, 0x50, 0x44, 0x46]), bytes: 4 });
+const fakeCompile = async (options: CompileOptions) => {
+  options.reportProgress?.('Compiling the PDF with Typst');
+  return { pdf: new Uint8Array([0x25, 0x50, 0x44, 0x46]), bytes: 4 };
+};
 
 function writeTemplate(directory: string, name: string, required = 'basics.name') {
   mkdirSync(directory, { recursive: true });
@@ -34,14 +38,27 @@ function writeTemplate(directory: string, name: string, required = 'basics.name'
 describe('CLI command workflows', () => {
   test('init output can pass through build with project output configuration', async () => {
     const root = temporaryDirectory();
+    const progress: string[] = [];
     initProject('.', root);
     const result = await buildResume(
       { source: 'resume.toml' },
-      { cwd: root, homeDir: root, configEnvironment: { homeDir: root }, compile: fakeCompile },
+      {
+        cwd: root,
+        homeDir: root,
+        configEnvironment: { homeDir: root },
+        compile: fakeCompile,
+        reportProgress: (message) => progress.push(message),
+      },
     );
     expect(result.outputPath).toBe(resolve(root, 'resume.pdf'));
     expect(readFileSync(result.outputPath)).toEqual(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
     expect(readFileSync(resolve(root, '.typsume', '.gitignore'), 'utf-8')).toBe('*\n');
+    expect(progress).toEqual([
+      'Reading configuration and validating resume data',
+      'Resolving the resume template',
+      'Compiling the PDF with Typst',
+      'Writing the generated PDF',
+    ]);
   });
 
   test('init defaults to TOML and supports every declared source format', () => {

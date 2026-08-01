@@ -28,6 +28,7 @@ export interface CompileOptions {
   resumeJson: string;
   fontCacheDir: string;
   fontResources?: FontResource[];
+  reportProgress?: (message: string) => void;
   config: {
     colors: Record<string, string>;
     fonts: { main: string; mono: string };
@@ -42,8 +43,10 @@ export interface CompileResult {
 }
 
 export async function compileWithTemplate(opts: CompileOptions): Promise<CompileResult> {
+  opts.reportProgress?.('Initializing Typst WASM compiler');
   await ensureWasm();
 
+  opts.reportProgress?.('Preparing the in-memory template workspace');
   const fsAcc = new MemoryAccessModel();
 
   function insert(absPath: string, content: Uint8Array | string): void {
@@ -81,6 +84,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
       fontBlobs.push(readFileSync(resolve(fontsDir, entry)));
     }
   }
+  opts.reportProgress?.('Loading font resources');
   fontBlobs.push(
     ...(await loadRemoteFonts(opts.fontResources ?? [], { cacheDir: opts.fontCacheDir })),
   );
@@ -88,6 +92,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
   if (!compiler) throw new Error('compiler not initialized');
 
   try {
+    opts.reportProgress?.('Initializing the Typst WASM workspace');
     await compiler.init({
       workspace: VROOT,
       beforeBuild: [loadFonts(fontBlobs, { assets: false }), withAccessModel(fsAcc)],
@@ -101,6 +106,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
 
   let doc: Awaited<ReturnType<typeof compiler.compile>>;
   try {
+    opts.reportProgress?.('Compiling the PDF with Typst');
     doc = await compiler.compile({
       mainFilePath: `${VROOT}template.typ`,
       format: CompileFormatEnum.pdf,

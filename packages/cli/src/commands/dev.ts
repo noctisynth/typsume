@@ -56,7 +56,7 @@ export default defineCommand({
     const watcher = watchSource(
       sourcePath,
       async () => {
-        await buildResume(buildOptions);
+        await buildResume(buildOptions, { reportProgress: (message) => logger.info(message) });
       },
       ({ durationMs, error }) => {
         const timestamp = new Date().toLocaleTimeString();

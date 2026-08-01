@@ -23,6 +23,7 @@ export interface BuildContext {
   homeDir?: string;
   configEnvironment?: ConfigEnvironment;
   compile?: (options: CompileOptions) => Promise<CompileResult>;
+  reportProgress?: (message: string) => void;
 }
 
 export interface BuildResult {
@@ -42,9 +43,11 @@ export async function buildResume(
 ): Promise<BuildResult> {
   const cwd = context.cwd ?? process.cwd();
   const sourcePath = resolve(cwd, options.source);
+  context.reportProgress?.('Reading configuration and validating resume data');
   const projectRoot = findProjectRoot(sourcePath);
   const config = loadConfig(projectRoot, context.configEnvironment);
   const data = loadResume(sourcePath);
+  context.reportProgress?.('Resolving the resume template');
   const resolved = resolveTemplate(options.template, config, projectRoot, cwd, context.homeDir);
 
   const strict = options.strict ?? config.project?.build?.strict ?? false;
@@ -94,13 +97,15 @@ export async function buildResume(
   };
 
   const compile = context.compile ?? compileWithTemplate;
-  const result = await compile({
+  const compileOptions: CompileOptions = {
     templateDir: resolved.dir,
     resumeJson: JSON.stringify(data),
     fontCacheDir: ensureProjectRuntime(projectRoot),
     fontResources: resolved.meta.resources?.fonts ?? [],
     config: { colors, fonts, sizes, layout },
-  });
+  };
+  if (context.reportProgress) compileOptions.reportProgress = context.reportProgress;
+  const result = await compile(compileOptions);
 
   const configuredOutput = config.project?.output;
   const outputPath = options.output
@@ -109,6 +114,7 @@ export async function buildResume(
       ? resolve(projectRoot, configuredOutput)
       : sourceOutputPath(sourcePath);
   mkdirSync(dirname(outputPath), { recursive: true });
+  context.reportProgress?.('Writing the generated PDF');
   writeFileSync(outputPath, result.pdf);
   return { outputPath, bytes: result.bytes, dryRun: false };
 }
@@ -127,13 +133,17 @@ export default defineCommand({
     },
   },
   run: handleErrors(async ({ args }) => {
-    const result = await buildResume({
-      source: args.source,
-      template: args.template,
-      output: args.output,
-      strict: args.strict,
-      dryRun: args['dry-run'],
-    });
+    logger.start(`Building ${args.source}`);
+    const result = await buildResume(
+      {
+        source: args.source,
+        template: args.template,
+        output: args.output,
+        strict: args.strict,
+        dryRun: args['dry-run'],
+      },
+      { reportProgress: (message) => logger.info(message) },
+    );
     if (result.dryRun) logger.success(`Normalized data written to ${result.outputPath}`);
     else logger.success(`${result.outputPath} (${result.bytes} bytes)`);
   }),
