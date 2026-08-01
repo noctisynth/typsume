@@ -140,6 +140,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R6 | CLI 分发/单 binary | 发布包 `@typsume/cli`，bin 名 `typsume`；pnpm/npm/Bun 均可安装或执行，运行时仍需 Bun；pack 时把根 `templates/` 暂存进包（**用户无需安装 typst**） | v1.1 用 `bun build --compile` 出单 binary；v2 可选 Rust 重写 |
 | R7 | 中文字体文件体积过大，不适合进入 Git 历史 | 模板在 `meta.toml` 声明远程字体资源；CLI 下载到简历项目内的 `.typsume/fonts/`，Web 只在页面生命周期内复用 | 后续增加 `--offline` 与跨平台系统字体发现 |
 | R8 | 远程字体不可用会改变排版或导致编译失败 | 每个异常步骤必须说明原因与接下来的行为；镜像全部失败后继续尝试编译，并明确提示当前阶段不保证系统字体可用 | 后续实现 CLI / Web 系统字体加载 |
+| R9 | Semifold latest 变化导致发布 CI 行为漂移 | `semifold-ci` 通过 setup Action 的 `version` 输入锁定 `v0.3.0-beta.3` | 经验证后显式升级固定版本 |
 
 ## 10. 成功指标
 

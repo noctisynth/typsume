@@ -128,6 +128,7 @@
   - [x] 所有异常路径说明当前问题与接下来的行为；全部镜像失败后继续尝试编译
   - [x] 为直接字体、ZIP、镜像回退、校验失败、无有效字体和日志 URL 脱敏补测试
 - [~] DoD：CI 使用 Bun canary、执行 check/typecheck/test/build；等待线上新包发布流程验收
+- [x] `semifold-ci` 通过 setup Action 锁定 Semifold CLI `v0.3.0-beta.3`
 
 ## W4 — `packages/web`
 
