@@ -278,7 +278,10 @@ Zod schema 是**单一真相**，下面三处共用：
 
 ## 11. 部署
 
-- **首选**：Cloudflare Pages / Vercel 静态部署
+- 当前使用 GitHub Pages：main push 由 GitHub Actions 构建并部署 `packages/web/dist`
+- workflow 使用 `actions/configure-pages` 返回的 `base_path` 设置 Vite `base`；React Router 使用同一
+  `import.meta.env.BASE_URL` 作为 basename，同时生成 `404.html` 支持 `/editor` 直达与刷新
+- 仍可迁移到 Cloudflare Pages / Vercel 静态部署
 - 自定义域名（typst-resume.com / 类似）方便后续做 SEO
 - WASM + 字体子集放 CDN
 - 不需要 Backend / DB
@@ -299,4 +302,5 @@ Zod schema 是**单一真相**，下面三处共用：
 - [x] WASM 初始化无项目侧弃用警告；静态 SVG 不携带 renderer JavaScript
 - [x] 左侧 section 首次点击即可收起，右侧结构导航仍会展开并定位目标 section
 - [x] 顶栏短分割线垂直居中，左侧 Card ring 不被 Accordion 动画容器裁切
+- [x] main push 可通过 GitHub Actions 部署 Pages，仓库子路径下首页、`/editor` 与静态资源可访问
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

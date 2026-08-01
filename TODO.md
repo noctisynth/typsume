@@ -169,6 +169,7 @@
 - [x] 修复左侧 Accordion 首次收起被 selected section effect 重新展开的问题
 - [x] 通过 `smif config sync` 登记 private Web workspace，使 Web changeset 通过 Semifold CI 且不发布 npm
 - [x] 修复顶栏垂直分割线对齐与左侧 Accordion 卡片 ring 裁切
+- [x] GitHub Pages workflow：main 自动构建部署，适配仓库 base path 与 SPA 直达 fallback
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
@@ -204,6 +205,7 @@
 | 2026-08-01 | Web WASM 初始化采用 wasm-bindgen 单对象参数；静态 SVG 排除 renderer JavaScript，Accordion 手动折叠与结构导航分离 | 用户反馈 |
 | 2026-08-02 | Semifold 登记 private Web workspace 以校验 changeset；根 workspace 不登记，避免创建无意义的 GitHub Release | 用户 |
 | 2026-08-02 | 顶栏短分割线显式垂直居中；Accordion 动画容器通过内容内边距保护 Card 外扩 ring | 用户反馈 |
+| 2026-08-02 | Web 由 GitHub Actions 部署到 Pages；构建使用 Pages `base_path`，BrowserRouter 共用 basename，并生成 SPA 404 fallback | 用户 |
 
 ---
 

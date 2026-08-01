@@ -18,7 +18,10 @@ function EditorRoute() {
   );
 }
 
-export const router = createBrowserRouter([
-  { path: '/', element: <HomePage /> },
-  { path: '/editor', element: <EditorRoute /> },
-]);
+export const router = createBrowserRouter(
+  [
+    { path: '/', element: <HomePage /> },
+    { path: '/editor', element: <EditorRoute /> },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
