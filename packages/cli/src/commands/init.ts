@@ -1,6 +1,10 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { stringify as stringifyToml } from '@iarna/toml';
 import { defineCommand } from 'citty';
+import { dump as stringifyYaml } from 'js-yaml';
+import { ExitCode, TypsumeError } from '../errors.ts';
+import type { SourceFormat } from '../format.ts';
 import { ensureProjectRuntime } from '../project.ts';
 
 const SAMPLE_RESUME = {
@@ -59,6 +63,31 @@ output  = "resume.pdf"
 strict = false
 `;
 
+const SOURCE_FILENAMES: Record<SourceFormat, string> = {
+  json: 'resume.json',
+  yaml: 'resume.yaml',
+  toml: 'resume.toml',
+};
+
+function parseInitFormat(value: string): SourceFormat {
+  if (value === 'json' || value === 'yaml' || value === 'toml') return value;
+  throw new TypsumeError(
+    `Unsupported init format: ${value}. Expected json, yaml, or toml.`,
+    ExitCode.general,
+  );
+}
+
+function serializeSample(format: SourceFormat): string {
+  switch (format) {
+    case 'json':
+      return `${JSON.stringify(SAMPLE_RESUME, null, 2)}\n`;
+    case 'yaml':
+      return stringifyYaml(SAMPLE_RESUME, { noRefs: true, lineWidth: 100 });
+    case 'toml':
+      return stringifyToml(SAMPLE_RESUME);
+  }
+}
+
 export default defineCommand({
   meta: { name: 'init', description: 'Scaffold a minimal resume project' },
   args: {
@@ -67,25 +96,31 @@ export default defineCommand({
       default: '.',
       description: 'Target directory',
     },
+    format: {
+      type: 'string',
+      default: 'toml',
+      description: 'Resume source format: json, yaml, or toml',
+    },
   },
   run({ args }) {
-    const { targetDir, resumePath, configPath } = initProject(args.dir);
+    const format = parseInitFormat(args.format);
+    const { targetDir, resumePath, configPath } = initProject(args.dir, process.cwd(), format);
 
     console.log(`OK: scaffolded resume project in ${targetDir}`);
     console.log(`  ${resumePath}`);
     console.log(`  ${configPath}`);
-    console.log('Run: typsume build resume.json');
+    console.log(`Run: typsume build ${SOURCE_FILENAMES[format]}`);
   },
 });
 
-export function initProject(directory: string, cwd = process.cwd()) {
+export function initProject(directory: string, cwd = process.cwd(), format: SourceFormat = 'toml') {
   const targetDir = resolve(cwd, directory);
   mkdirSync(targetDir, { recursive: true });
   ensureProjectRuntime(targetDir);
 
-  const resumePath = resolve(targetDir, 'resume.json');
+  const resumePath = resolve(targetDir, SOURCE_FILENAMES[format]);
   if (!existsSync(resumePath)) {
-    writeFileSync(resumePath, `${JSON.stringify(SAMPLE_RESUME, null, 2)}\n`, 'utf-8');
+    writeFileSync(resumePath, serializeSample(format), 'utf-8');
   }
 
   const configPath = resolve(targetDir, 'typsume.config.toml');

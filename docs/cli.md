@@ -109,6 +109,16 @@ typsume build my.yaml -t ./my-template -o out.pdf
 typsume build resume.json --dry-run
 ```
 
+### 4.1 `typsume init`
+
+```text
+typsume init [dir] [--format json|yaml|toml]
+```
+
+`init` 默认生成 `resume.toml`；`--format` 可以改为 `resume.json` 或 `resume.yaml`。三种文件
+表达相同的 `ResumeData`，并共用同一份 Zod schema。命令同时创建 `typsume.config.toml` 与
+`.typsume/.gitignore`，且不覆盖已经存在的目标文件。
+
 ### 4.1 源文件格式
 
 支持以下输入（按扩展名识别，无扩展名视作 JSON）：
@@ -253,7 +263,7 @@ GitHub Actions：
 
 ## 10. 验证清单（DoD）
 
-- [ ] `typsume init` 在空目录生成可编译的最小示例
+- [x] `typsume init` 默认生成可编译的 `resume.toml`，并支持 `--format json|yaml|toml`
 - [ ] `typsume build resume.json` 成功输出 PDF（与 Web 同一份 fixture 对齐）
 - [ ] `typsume validate` 对错误输入给出上述可读错误
 - [ ] `typsume dev` 在 watch 时变更即重建

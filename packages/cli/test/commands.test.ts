@@ -6,6 +6,7 @@ import { buildResume } from '../src/commands/build.ts';
 import { initProject } from '../src/commands/init.ts';
 import { listTemplates } from '../src/commands/templates.ts';
 import { ExitCode, type TypsumeError } from '../src/errors.ts';
+import { parseSource, type SourceFormat } from '../src/format.ts';
 
 const directories: string[] = [];
 const temporaryDirectory = () => {
@@ -35,12 +36,31 @@ describe('CLI command workflows', () => {
     const root = temporaryDirectory();
     initProject('.', root);
     const result = await buildResume(
-      { source: 'resume.json' },
+      { source: 'resume.toml' },
       { cwd: root, homeDir: root, configEnvironment: { homeDir: root }, compile: fakeCompile },
     );
     expect(result.outputPath).toBe(resolve(root, 'resume.pdf'));
     expect(readFileSync(result.outputPath)).toEqual(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
     expect(readFileSync(resolve(root, '.typsume', '.gitignore'), 'utf-8')).toBe('*\n');
+  });
+
+  test('init defaults to TOML and supports every declared source format', () => {
+    const root = temporaryDirectory();
+    const cases: Array<[SourceFormat, string]> = [
+      ['toml', 'resume.toml'],
+      ['json', 'resume.json'],
+      ['yaml', 'resume.yaml'],
+    ];
+
+    for (const [format, filename] of cases) {
+      const directory = resolve(root, format);
+      const result = initProject('.', directory, format);
+      expect(result.resumePath).toBe(resolve(directory, filename));
+      expect(parseSource(result.resumePath).data).toMatchObject({
+        schema: 'typst-resume/1.0',
+        basics: { name: '你的名字' },
+      });
+    }
   });
 
   test('CLI output overrides project output and dry-run writes normalized JSON', async () => {
