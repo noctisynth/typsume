@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, extname, resolve } from 'node:path';
+import { dirname, extname, relative, resolve } from 'node:path';
 import { defineCommand } from 'citty';
 import { type CompileOptions, type CompileResult, compileWithTemplate } from '../compiler.ts';
 import { type ConfigEnvironment, loadConfig } from '../config.ts';
@@ -45,12 +45,12 @@ export async function buildResume(
 ): Promise<BuildResult> {
   const cwd = context.cwd ?? process.cwd();
   const sourcePath = resolve(cwd, options.source);
-  context.reportProgress?.('Reading configuration and validating resume data');
   const projectRoot = findProjectRoot(sourcePath);
   const config = loadConfig(projectRoot, context.configEnvironment);
   const data = loadResume(sourcePath);
-  context.reportProgress?.('Resolving the resume template');
+  context.reportProgress?.('Validated configuration and resume data');
   const resolved = resolveTemplate(options.template, config, projectRoot, cwd, context.homeDir);
+  context.reportProgress?.('Resolved the resume template');
 
   const strict = options.strict ?? config.project?.build?.strict ?? false;
   if (strict) {
@@ -117,8 +117,8 @@ export async function buildResume(
       ? resolve(projectRoot, configuredOutput)
       : sourceOutputPath(sourcePath);
   mkdirSync(dirname(outputPath), { recursive: true });
-  context.reportProgress?.('Writing the generated PDF');
   writeFileSync(outputPath, result.pdf);
+  context.reportProgress?.('Wrote the generated PDF');
   return { outputPath, bytes: result.bytes, dryRun: false };
 }
 
@@ -151,17 +151,16 @@ export default defineCommand({
         dryRun: args['dry-run'],
       },
       {
-        reportProgress: (message) => logger.info(formatStage(message)),
+        reportProgress: (message) => logger.success(formatStage(message)),
         confirmFontDownload: createFontDownloadConsent({
           allowDownloads: args['allow-downloads'],
         }),
       },
     );
+    const displayedOutput = relative(process.cwd(), result.outputPath) || '.';
     if (result.dryRun)
-      logger.success(`Normalized data written to ${formatResult(result.outputPath)}`);
+      logger.success(`Normalized data written to ${formatResult(displayedOutput)}`);
     else
-      logger.success(
-        `${formatResult(result.outputPath)} ${formatDetail(`(${result.bytes} bytes)`)}`,
-      );
+      logger.success(`${formatResult(displayedOutput)} ${formatDetail(`(${result.bytes} bytes)`)}`);
   }),
 });

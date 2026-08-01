@@ -66,7 +66,7 @@ export default defineCommand({
       sourcePath,
       async () => {
         await buildResume(buildOptions, {
-          reportProgress: (message) => logger.info(formatStage(message)),
+          reportProgress: (message) => logger.success(formatStage(message)),
           confirmFontDownload,
         });
       },

@@ -22,7 +22,7 @@ afterEach(() => {
 
 const minimalResume = { schema: 'typst-resume/1.0', basics: { name: 'Xxx Yyy' } };
 const fakeCompile = async (options: CompileOptions) => {
-  options.reportProgress?.('Compiling the PDF with Typst');
+  options.reportProgress?.('Compiled the PDF with Typst');
   return { pdf: new Uint8Array([0x25, 0x50, 0x44, 0x46]), bytes: 4 };
 };
 
@@ -54,10 +54,10 @@ describe('CLI command workflows', () => {
     expect(readFileSync(result.outputPath)).toEqual(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
     expect(readFileSync(resolve(root, '.typsume', '.gitignore'), 'utf-8')).toBe('*\n');
     expect(progress).toEqual([
-      'Reading configuration and validating resume data',
-      'Resolving the resume template',
-      'Compiling the PDF with Typst',
-      'Writing the generated PDF',
+      'Validated configuration and resume data',
+      'Resolved the resume template',
+      'Compiled the PDF with Typst',
+      'Wrote the generated PDF',
     ]);
   });
 

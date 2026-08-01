@@ -14,14 +14,18 @@ afterEach(() => {
     rmSync(directory, { recursive: true, force: true });
 });
 
-async function runCli(args: string[], cwd = packageRoot) {
+async function runCli(
+  args: string[],
+  cwd = packageRoot,
+  environment: Record<string, string | undefined> = {},
+) {
   const home = mkdtempSync(resolve(tmpdir(), 'typsume-cli-home-'));
   directories.push(home);
   const subprocess = Bun.spawn([bunExecutable, mainPath, ...args], {
     cwd,
     stdout: 'pipe',
     stderr: 'pipe',
-    env: { ...Bun.env, HOME: home, XDG_CONFIG_HOME: resolve(home, '.config') },
+    env: { ...Bun.env, HOME: home, XDG_CONFIG_HOME: resolve(home, '.config'), ...environment },
   });
   const [exitCode, stdout, stderr] = await Promise.all([
     subprocess.exited,
@@ -111,5 +115,24 @@ describe('CLI smoke', () => {
     expect((await runCli(['build', 'resume.json', '--dry-run'], root)).exitCode).toBe(
       ExitCode.schema,
     );
+  });
+
+  test('build reports generated output relative to the working directory', async () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'typsume-cli-test-'));
+    directories.push(root);
+    writeFileSync(
+      resolve(root, 'resume.json'),
+      JSON.stringify({ schema: 'typst-resume/1.0', basics: { name: 'Xxx Yyy' } }),
+    );
+
+    const result = await runCli(['build', 'resume.json', '--dry-run'], root, {
+      CI: undefined,
+      GITHUB_ACTIONS: undefined,
+      NODE_ENV: 'production',
+    });
+    expect(result.exitCode).toBe(ExitCode.success);
+    const output = `${result.stdout}\n${result.stderr}`;
+    expect(output).toContain('resume-normalized.json');
+    expect(output).not.toContain(resolve(root, 'resume-normalized.json'));
   });
 });

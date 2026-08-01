@@ -20,7 +20,7 @@
   - 后续可用 `bun build --compile` 打包成单 binary 分发（v1.x 考虑）
 - **CLI 框架**：[`citty`](https://github.com/unjs/citty)（unjs 出品，声明式 + ESM-first，体积小）
 - **终端交互与日志**：`consola` + `colorette`；人类可读状态使用 success/info/warn/error，并对路径、耗时等关键信息局部着色；JSON 等机器输出保持纯 stdout
-  - `build` 在输入校验、模板解析、字体准备、WASM 初始化、Typst 编译与 PDF 写入阶段持续报告进度，避免长时间静默
+  - `build` 在输入校验、模板解析、字体准备、WASM 初始化、Typst 编译与 PDF 写入真正完成后以 uv 风格 tick 报告；最终产物路径相对当前工作目录显示
 - **与 Web 共享**：`packages/core`（Zod schema + types），通过 workspace 软链
 - **typst 编译**：[`@myriaddreamin/typst.ts`](https://github.com/Myriad-Dreamin/typst.ts) Node.js 端 WASM  
   - **关键收益**：用户零外部依赖。`bun add -g typsume` 即装即用，**不需要系统装 typst**
