@@ -3,6 +3,8 @@ import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
 import compilerWasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
 import type { ResumeData } from '@typsume/core';
+import type { SelectedFontBundle } from '@/models/font-model';
+import { inspectFontFamilies, selectFontFamily } from './font-inspection';
 import { type FontStatus, loadBrowserFonts, loadLocalFontFallback } from './font-resources';
 import { DEFAULT_TEMPLATE } from './template-registry';
 
@@ -36,6 +38,7 @@ function insert(accessModel: MemoryAccessModel, path: string, content: string): 
 async function createRuntime(
   allowFontDownloads: boolean,
   preferredFontFamilies: string[],
+  selectedFont: SelectedFontBundle | null,
   callbacks: CompileCallbacks,
 ): Promise<CompilerRuntime> {
   callbacks.phase?.('Loading template');
@@ -47,17 +50,36 @@ async function createRuntime(
 
   let fonts: Uint8Array[] = [];
   let fontFamilyOverride: string | null = null;
-  if (allowFontDownloads) {
+  if (selectedFont) {
+    callbacks.phase?.('Loading font resources');
+    fonts = selectedFont.fonts;
+    fontFamilyOverride = selectedFont.family;
+    callbacks.resource?.({
+      kind: 'info',
+      message: `Using uploaded font ${selectedFont.family}.`,
+    });
+  } else if (allowFontDownloads) {
     callbacks.phase?.('Loading font resources');
     fonts = await loadBrowserFonts(
       DEFAULT_TEMPLATE.fontResources,
       callbacks.resource ? { report: callbacks.resource } : {},
     );
+    if (fonts.length > 0) {
+      fontFamilyOverride = await selectFontFamily(fonts, preferredFontFamilies);
+      if (!fontFamilyOverride) {
+        callbacks.resource?.({
+          kind: 'warning',
+          message:
+            'Downloaded font files could not be identified by Typst. Trying a local fallback font.',
+        });
+        fonts = [];
+      }
+    }
     if (fonts.length === 0) {
-      const fallback = await loadLocalFontFallback(
-        preferredFontFamilies,
-        callbacks.resource ? { report: callbacks.resource } : {},
-      );
+      const fallback = await loadLocalFontFallback(preferredFontFamilies, {
+        ...(callbacks.resource ? { report: callbacks.resource } : {}),
+        inspectFamilies: inspectFontFamilies,
+      });
       if (fallback) {
         fonts = fallback.fonts;
         fontFamilyOverride = fallback.family;
@@ -84,12 +106,22 @@ async function createRuntime(
 async function getRuntime(
   allowFontDownloads: boolean,
   preferredFontFamilies: string[],
+  selectedFont: SelectedFontBundle | null,
   callbacks: CompileCallbacks,
 ): Promise<CompilerRuntime> {
-  const key = JSON.stringify([allowFontDownloads, preferredFontFamilies]);
+  const key = JSON.stringify([
+    allowFontDownloads,
+    preferredFontFamilies,
+    selectedFont?.key ?? null,
+  ]);
   let runtime = runtimes.get(key);
   if (!runtime) {
-    runtime = createRuntime(allowFontDownloads, preferredFontFamilies, callbacks).catch((error) => {
+    runtime = createRuntime(
+      allowFontDownloads,
+      preferredFontFamilies,
+      selectedFont,
+      callbacks,
+    ).catch((error) => {
       runtimes.delete(key);
       throw error;
     });
@@ -99,14 +131,19 @@ async function getRuntime(
 }
 
 function mapResume(runtime: CompilerRuntime, resume: ResumeData): void {
-  const config = DEFAULT_TEMPLATE.config(resume);
+  const browserResume = structuredClone(resume);
+  if (browserResume.basics.photo) delete browserResume.basics.photo;
+  const config = DEFAULT_TEMPLATE.config(browserResume);
   if (runtime.fontFamilyOverride) {
     config.fonts = {
       main: runtime.fontFamilyOverride,
       mono: runtime.fontFamilyOverride,
     };
   }
-  runtime.compiler.mapShadow(`${VIRTUAL_ROOT}resume.json`, encoder.encode(JSON.stringify(resume)));
+  runtime.compiler.mapShadow(
+    `${VIRTUAL_ROOT}resume.json`,
+    encoder.encode(JSON.stringify(browserResume)),
+  );
   runtime.compiler.mapShadow(
     `${VIRTUAL_ROOT}cfg_colors.json`,
     encoder.encode(JSON.stringify(config.colors)),
@@ -129,10 +166,23 @@ async function compile(
   resume: ResumeData,
   format: CompileFormatEnum,
   allowFontDownloads: boolean,
+  selectedFont: SelectedFontBundle | null,
   callbacks: CompileCallbacks,
 ): Promise<Uint8Array> {
   const preferredFontFamilies = Object.values(DEFAULT_TEMPLATE.config(resume).fonts);
-  const runtime = await getRuntime(allowFontDownloads, preferredFontFamilies, callbacks);
+  if (resume.basics.photo) {
+    callbacks.resource?.({
+      kind: 'warning',
+      message:
+        'Photo paths are not accessible in the browser preview. The photo was omitted from this compilation; the saved resume data was not changed.',
+    });
+  }
+  const runtime = await getRuntime(
+    allowFontDownloads,
+    preferredFontFamilies,
+    selectedFont,
+    callbacks,
+  );
   let resolveResult: (value: Uint8Array) => void = () => undefined;
   let rejectResult: (reason: unknown) => void = () => undefined;
   const result = new Promise<Uint8Array>((resolve, reject) => {
@@ -158,7 +208,9 @@ async function compile(
       resolveResult(document.result);
     })
     .catch((error) => {
-      runtimes.delete(JSON.stringify([allowFontDownloads, preferredFontFamilies]));
+      runtimes.delete(
+        JSON.stringify([allowFontDownloads, preferredFontFamilies, selectedFont?.key ?? null]),
+      );
       rejectResult(error);
     });
 
@@ -168,15 +220,17 @@ async function compile(
 export function compilePreview(
   resume: ResumeData,
   allowFontDownloads: boolean,
+  selectedFont: SelectedFontBundle | null,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
-  return compile(resume, CompileFormatEnum.vector, allowFontDownloads, callbacks);
+  return compile(resume, CompileFormatEnum.vector, allowFontDownloads, selectedFont, callbacks);
 }
 
 export function compilePdf(
   resume: ResumeData,
   allowFontDownloads: boolean,
+  selectedFont: SelectedFontBundle | null,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
-  return compile(resume, CompileFormatEnum.pdf, allowFontDownloads, callbacks);
+  return compile(resume, CompileFormatEnum.pdf, allowFontDownloads, selectedFont, callbacks);
 }

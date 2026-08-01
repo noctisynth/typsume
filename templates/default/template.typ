@@ -121,7 +121,8 @@
   proficiency(level)
 }
 
-#let photo = data.basics.at("photo", default: none)
+#let photo-value = data.basics.at("photo", default: none)
+#let photo = if photo-value == none or photo-value == "" { none } else { photo-value }
 #let contacts = data.basics.contacts
 
 #let header = [

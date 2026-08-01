@@ -1,6 +1,7 @@
 import type { ResumeInput } from '@typsume/core';
 import type { UseFormRegister } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { FontSelector } from '@/components/font-manager/font-selector';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -47,6 +48,7 @@ export function MetaFields({ register, locale, setLocale }: MetaFieldsProps) {
           })}
         />
       </Field>
+      <FontSelector />
       <input type="hidden" value="default" {...register('meta.template')} />
     </div>
   );

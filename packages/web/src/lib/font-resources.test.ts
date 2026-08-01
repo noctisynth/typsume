@@ -71,9 +71,10 @@ describe('browser font resources', () => {
         { family: 'Maple Mono NF', blob: localBlob },
         { family: 'Maple Mono NF', blob: localBlob },
       ],
+      inspectFamilies: async () => ['Maple Mono NF CN'],
     });
 
-    expect(fallback?.family).toBe('Maple Mono NF');
+    expect(fallback?.family).toBe('Maple Mono NF CN');
     expect(fallback?.fonts).toHaveLength(2);
   });
 

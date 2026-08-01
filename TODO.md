@@ -158,6 +158,11 @@
 - [x] 字体资源警告按问题列表垂直展示；保留 React StrictMode 并通过串行适配层防止 WASM renderer 重入
 - [x] Web 远程字体失败后经 `queryLocalFonts()` 权限读取本地候选字体，并把实际 family 注入 Typst
 - [x] Vitest 覆盖 store / 表单数据转换 / 字体资源异常路径，仓库 check/typecheck/test/build 全绿
+- [x] 字体上传与选择：完整 TTF / OTF / TTC 经 typst.ts 解析内部 family，页面生命周期复用且不持久化
+- [x] 修正 Local Font Access fallback：展示 family 仅用于候选匹配，Typst 配置使用字体内部 family
+- [x] 浏览器资源边界：空照片路径归一化；不可访问路径显式告警并从本次预览数据移除
+- [x] 结构导航只滚动左侧 ScrollArea viewport，重复点击不再移动 document root
+- [x] 字体目录 / picker 调研结论同步：W4 不接入 WebFont CSS 分片，后续目录需完整字体与许可证设计
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
@@ -188,6 +193,7 @@
 | 2026-08-01 | `ItemBlock.department?` 表示工作经历的部门/业务线；experience 渲染 department，projects 渲染 stack | 用户 |
 | 2026-08-01 | CLI 保留 `MemoryAccessModel`；不实现磁盘临时 workspace、`--debug` 或 `typsume.log`，编译错误直接输出 stderr | 用户 |
 | 2026-08-01 | CLI 发布包保持 `@typsume/cli`，bin 名为 `typsume`；pack 时从根 `templates/` 暂存内置模板，运行时保持 Bun | 用户 |
+| 2026-08-01 | Web 支持页面生命周期字体上传/选择；Typst 字体配置以字体文件内部 family 为准，不直接采用浏览器展示名称 | 用户 |
 
 ---
 

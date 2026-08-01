@@ -91,6 +91,9 @@ packages/web/src/
 - 中间：实时预览（WASM 编译）
 - 右侧：结构跳转（点击跳到对应 section 表单 + 预览位置）
 
+结构跳转只能滚动左侧 Radix ScrollArea viewport，不得调用可能连带滚动 document root 的
+`scrollIntoView()`；重复点击不能改变页面根滚动位置或编辑器整体布局。
+
 移动端 v1 不做。
 
 ## 5. 关键数据流
@@ -135,12 +138,29 @@ CLI 的项目内 `.typsume/fonts/` 缓存不改变 Web 的零持久字体缓存�
 显示在编辑器状态区，并说明接下来可能使用不同字体或编译失败。远程资源全部失败后，在支持桌面
 Local Font Access API 的浏览器中调用 `queryLocalFonts()`；浏览器权限提示不可绕过。先匹配模板声明
 的字体 family，再依次尝试 `Maple Mono NF CN`、`Maple Mono CN`、`PingFang SC`、
-`Microsoft YaHei`、`Noto Sans CJK SC` 与 `Source Han Sans SC`。只加载首个匹配 family 的全部字重，
-并把该 family 注入 Typst 配置。API 不可用、用户拒绝或无候选时继续无模板字体编译并显示警告。
+`Microsoft YaHei`、`Noto Sans CJK SC` 与 `Source Han Sans SC`。候选匹配使用浏览器展示 family，
+但注入 Typst 配置前必须把实际字体字节交给 typst.ts font builder，使用字体文件内部 family；不得假设
+Local Font Access 的展示名称与 Typst 识别名称相同。API 不可用、用户拒绝、字体无法解析或无候选时
+继续无模板字体编译并显示警告。
+
+W4 同时提供字体上传与选择：接受完整的 TTF / OTF / TTC 文件，使用 typst.ts 自身解析、校验字体并
+列出内部 family；用户可选择“模板默认”或已上传 family。选中的上传字体覆盖模板默认字体配置，
+但不修改 `meta.toml`；`meta.toml` 只是模板默认值，不是用户字体锁。上传字节、解析结果和选择只保留
+在当前页面生命周期，不进入简历 schema、IndexedDB、Cache Storage 或 Service Worker。无须引入字体
+解析器或专用 React font picker：选择 UI 复用 shadcn 元组件，解析能力复用编译栈。
 
 `@chinese-fonts/maple-mono-cn` 是供浏览器 CSS 使用的 `unicode-range` WOFF2 分片集合；其
 `dist/MapleMono-CN-Regular/result.css` 可以直接由 CDN 引入，但任一哈希 WOFF2 都不是完整字体，
 Typst 也不会按 CSS 规则组合这些分片，因此不得把它作为模板远程字体资源。
+
+字体目录调研结论：Fontsource API 与 Google Fonts Developer API 可用于未来的字体搜索元数据，现有
+React font picker 也主要是 Google Fonts 目录的 UI 封装；它们不能保证返回可直接交给 Typst 的完整
+字体资源。W4 不接入 CDN 目录。后续接入前必须补齐完整文件定位、字体内部 family 校验、许可证展示、
+跨域与缓存策略。
+
+浏览器不能读取 `basics.photo` 中的任意本地路径。空字符串提交时归一化为未设置；非空路径在 Web
+预览中显示资源警告并从本次浏览器编译数据中移除，避免 WASM 越过虚拟工程根。该处理不修改用户草稿，
+CLI 仍按模板资源契约解析路径。图片上传与虚拟工程挂载另行实现。
 
 第一次加载 typst.ts WASM 体积较大（~5MB 量级），W4 需做：
 
@@ -254,4 +274,7 @@ Zod schema 是**单一真相**，下面三处共用：
 - [ ] 关闭浏览器再打开，当前简历草稿与编辑状态恢复
 - [ ] React DevTools 中预览组件不引起表单 re-render
 - [ ] Vitest 覆盖存储、数据更新和编译资源异常路径
+- [x] 用户上传完整字体后可按字体内部 family 选择，预览与 PDF 导出使用同一页面生命周期字体
+- [x] 本地字体 fallback 以 typst.ts 解析出的内部 family 注入，不产生 unknown font family
+- [x] 重复点击结构导航只滚动左侧表单，不移动页面根；浏览器不可访问的照片路径可见告警并安全降级
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

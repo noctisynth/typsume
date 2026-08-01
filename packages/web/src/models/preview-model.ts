@@ -2,6 +2,7 @@ import type { ResumeData } from '@typsume/core';
 import { create } from 'zustand';
 import type { CompilePhase } from '@/lib/browser-compiler';
 import type { FontStatus } from '@/lib/font-resources';
+import { getSelectedFontBundle } from '@/models/font-model';
 
 export type FontPermission = 'unknown' | 'allowed' | 'denied';
 export type PreviewStateKind = 'idle' | 'loading' | 'ready' | 'error' | 'exporting';
@@ -15,7 +16,7 @@ interface PreviewState {
   error: string | null;
   latencyMs: number | null;
   setFontPermission: (permission: Exclude<FontPermission, 'unknown'>) => void;
-  compile: (resume: ResumeData) => Promise<void>;
+  compile: (resume: ResumeData, fontRevision?: number) => Promise<void>;
   exportPdf: (resume: ResumeData) => Promise<Uint8Array>;
 }
 
@@ -45,18 +46,23 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
   setFontPermission(fontPermission) {
     set({ fontPermission, state: 'idle', warnings: [], error: null });
   },
-  async compile(resume) {
+  async compile(resume, fontRevision) {
     const permission = get().fontPermission;
     if (permission === 'unknown') return;
     const sequence = ++compileSequence;
     const startedAt = performance.now();
-    set({ state: 'loading', phase: 'Loading template', error: null });
+    set({ state: 'loading', phase: 'Loading template', warnings: [], error: null });
     try {
       const { compilePreview } = await import('@/lib/browser-compiler');
-      const artifact = await compilePreview(resume, permission === 'allowed', {
-        phase: setPhase,
-        resource: appendStatus,
-      });
+      const artifact = await compilePreview(
+        resume,
+        permission === 'allowed',
+        getSelectedFontBundle(fontRevision),
+        {
+          phase: setPhase,
+          resource: appendStatus,
+        },
+      );
       if (sequence !== compileSequence) return;
       set({
         artifact,
@@ -79,7 +85,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
     set({ state: 'exporting', phase: 'Compiling PDF', error: null });
     try {
       const { compilePdf } = await import('@/lib/browser-compiler');
-      const pdf = await compilePdf(resume, permission === 'allowed', {
+      const pdf = await compilePdf(resume, permission === 'allowed', getSelectedFontBundle(), {
         phase: setPhase,
         resource: appendStatus,
       });

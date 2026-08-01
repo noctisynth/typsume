@@ -2,6 +2,7 @@ import { CircleAlert, LoaderCircle, RefreshCw, Type } from 'lucide-react';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useFontModel } from '@/models/font-model';
 import { usePreviewModel } from '@/models/preview-model';
 import { useResumeModel } from '@/models/resume-model';
 import { FontConsent } from './font-consent';
@@ -16,12 +17,13 @@ export function LivePreview() {
   const error = usePreviewModel((state) => state.error);
   const setFontPermission = usePreviewModel((model) => model.setFontPermission);
   const compile = usePreviewModel((model) => model.compile);
+  const fontRevision = useFontModel((model) => model.revision);
 
   useEffect(() => {
     if (fontPermission === 'unknown') return;
-    const timer = setTimeout(() => void compile(resume), 300);
+    const timer = setTimeout(() => void compile(resume, fontRevision), 300);
     return () => clearTimeout(timer);
-  }, [compile, fontPermission, resume]);
+  }, [compile, fontPermission, fontRevision, resume]);
 
   if (fontPermission === 'unknown') return <FontConsent />;
 

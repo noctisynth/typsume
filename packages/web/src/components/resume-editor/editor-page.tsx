@@ -36,7 +36,7 @@ export default function EditorPage() {
             </p>
             <span className="font-mono text-[10px] text-muted-foreground">JSON 1.0</span>
           </div>
-          <ScrollArea className="h-[calc(100%-2.75rem)]">
+          <ScrollArea id="resume-form-scroll-area" className="h-[calc(100%-2.75rem)]">
             <ResumeForm />
           </ScrollArea>
         </aside>

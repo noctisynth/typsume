@@ -56,6 +56,15 @@ const resources = {
         awardLevel: '级别',
         locale: '简历语言',
         fontSize: '正文字号',
+        fontFamily: '预览字体',
+      },
+      font: {
+        templateDefault: '模板默认',
+        upload: '上传字体',
+        reading: '正在识别字体…',
+        clear: '清除上传字体',
+        pageLifetime: '支持 TTF、OTF、TTC；字体仅保留在当前页面，不会保存到浏览器。',
+        loadedFiles: '已加载 {{count}} 个文件：{{names}}',
       },
       hint: {
         onePerLine: '每行一项',
@@ -118,6 +127,16 @@ const resources = {
         awardLevel: 'Level',
         locale: 'Resume language',
         fontSize: 'Body font size',
+        fontFamily: 'Preview font',
+      },
+      font: {
+        templateDefault: 'Template default',
+        upload: 'Upload fonts',
+        reading: 'Reading fonts…',
+        clear: 'Clear uploaded fonts',
+        pageLifetime:
+          'Supports TTF, OTF, and TTC. Fonts remain in this page only and are not saved.',
+        loadedFiles: '{{count}} file(s) loaded: {{names}}',
       },
       hint: {
         onePerLine: 'One item per line',

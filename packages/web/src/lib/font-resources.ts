@@ -29,6 +29,7 @@ type QueryLocalFonts = () => Promise<LocalFontData[]>;
 interface LoadLocalFontOptions {
   queryLocalFonts?: QueryLocalFonts;
   report?: (status: FontStatus) => void;
+  inspectFamilies?: (bytes: Uint8Array) => Promise<string[]>;
 }
 
 export interface LocalFontFallback {
@@ -58,7 +59,8 @@ function isFont(bytes: Uint8Array): boolean {
     startsWith(bytes, [0x00, 0x01, 0x00, 0x00]) ||
     startsWith(bytes, [0x4f, 0x54, 0x54, 0x4f]) ||
     startsWith(bytes, [0x74, 0x72, 0x75, 0x65]) ||
-    startsWith(bytes, [0x74, 0x79, 0x70, 0x31])
+    startsWith(bytes, [0x74, 0x79, 0x70, 0x31]) ||
+    startsWith(bytes, [0x74, 0x74, 0x63, 0x66])
   );
 }
 
@@ -263,10 +265,15 @@ export async function loadLocalFontFallback(
   }
 
   const fonts: Uint8Array[] = [];
+  const internalFamilies: string[] = [];
   for (const font of available) {
     if (normalizeFamily(font.family) !== normalizeFamily(selectedFamily)) continue;
     try {
-      fonts.push(new Uint8Array(await (await font.blob()).arrayBuffer()));
+      const bytes = new Uint8Array(await (await font.blob()).arrayBuffer());
+      if (options.inspectFamilies) {
+        internalFamilies.push(...(await options.inspectFamilies(bytes)));
+      }
+      fonts.push(bytes);
     } catch {
       report({
         kind: 'warning',
@@ -283,11 +290,12 @@ export async function loadLocalFontFallback(
     return null;
   }
 
+  const internalFamily = internalFamilies[0] ?? selectedFamily;
   report({
     kind: 'warning',
-    message: `Using local font ${selectedFamily} because the template font could not be downloaded; layout may differ.`,
+    message: `Using local font ${internalFamily} because the template font could not be downloaded; layout may differ.`,
   });
-  return { family: selectedFamily, fonts };
+  return { family: internalFamily, fonts };
 }
 
 export function clearFontPageCache(): void {

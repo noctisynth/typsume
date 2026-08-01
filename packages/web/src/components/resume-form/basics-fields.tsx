@@ -29,7 +29,9 @@ export function BasicsFields({ control, register }: BasicsFieldsProps) {
         id="basics-photo"
         label={t('field.photo')}
         optional={t('common.optional')}
-        registration={register('basics.photo')}
+        registration={register('basics.photo', {
+          setValueAs: (value) => value || undefined,
+        })}
       />
 
       <div className="space-y-3">

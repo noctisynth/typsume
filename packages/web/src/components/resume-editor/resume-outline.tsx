@@ -2,6 +2,7 @@ import { LockKeyhole } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { calculateContainedScrollTop } from '@/lib/outline-scroll';
 import { RESUME_SECTIONS, type ResumeSection, useResumeModel } from '@/models/resume-model';
 
 export function ResumeOutline() {
@@ -11,9 +12,16 @@ export function ResumeOutline() {
 
   function navigate(section: ResumeSection) {
     selectSection(section);
-    document.getElementById(`section-${section}`)?.scrollIntoView({
+    const viewport = document.querySelector<HTMLElement>(
+      '#resume-form-scroll-area [data-slot="scroll-area-viewport"]',
+    );
+    const target = document.getElementById(`section-${section}`);
+    if (!viewport || !target) return;
+    const viewportTop = viewport.getBoundingClientRect().top;
+    const targetTop = target.getBoundingClientRect().top;
+    viewport.scrollTo({
       behavior: 'smooth',
-      block: 'start',
+      top: calculateContainedScrollTop(viewport.scrollTop, viewportTop, targetTop),
     });
   }
 
@@ -26,6 +34,7 @@ export function ResumeOutline() {
       <div className="space-y-1">
         {RESUME_SECTIONS.map((section, index) => (
           <Button
+            type="button"
             className="w-full justify-start px-2 font-normal"
             key={section}
             size="sm"
