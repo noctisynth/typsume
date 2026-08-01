@@ -1,5 +1,56 @@
 # Changelog
 
+## v0.1.1
+
+### Bug Fixes
+
+- [`bbc4bac`](https://github.com/noctisynth/typsume/commit/bbc4bacacb1642f327d0a79468a10912b73fce7a): Honor default template layout settings and optional photos
+
+    The default template now restores Typst length values from the injected layout configuration, uses
+    the configured margins and column dimensions, and renders an optional profile image from the
+    template workspace. The sample contact icon now matches the bundled icon name.
+
+- [`59663a3`](https://github.com/noctisynth/typsume/commit/59663a3d8d4d3178fdeb625ed6c339fe19196dce): Keep resume item columns within predictable bounds
+
+    The default template now gives job titles, organizations, and dates independent grid columns so
+    long content wraps without displacing adjacent fields. Linked titles no longer include trailing
+    underline space, and a complete Chinese sample covers long-title wrapping and all resume sections.
+
+- [`0becd5b`](https://github.com/noctisynth/typsume/commit/0becd5ba36393498de05495be0f6969fe60683b5): Model experience departments explicitly
+
+    Resume item blocks now support an optional department field. The default template renders that
+    field as the experience detail line while project items continue to render their technology stack.
+    The English and Chinese samples now consistently map organizations, roles, schools, and degrees to
+    their documented fields.
+
+- [`916355e`](https://github.com/noctisynth/typsume/commit/916355edc0244d0b47c4965734a7f0c0c59c2b5d): Mount self-contained template resources in the Typst workspace
+
+    The compiler now recursively exposes template files to Typst while keeping metadata and font files
+    on their dedicated loading paths. Templates can reference assets such as profile images without the
+    compiler needing to understand resume fields.
+
+
+### Chores
+
+- [`9995f78`](https://github.com/noctisynth/typsume/commit/9995f78dcd7b2237a20c7df663521128088239d9): Restore the Bun canary runtime in CI
+
+    The CI workflow now uses the available Bun canary release instead of requesting a nonexistent
+    stable version.
+
+- [`587d7a8`](https://github.com/noctisynth/typsume/commit/587d7a863709f2fd0e432c5d173c5ac65debe3dc): Close the W2 template milestone
+
+    The project documentation now treats a successful sample PDF build as the W2 exit condition,
+    records the completed migration steps, and documents the final configuration and resource-loading
+    contract.
+
+
+### New Features
+
+- [`474ec42`](https://github.com/noctisynth/typsume/commit/474ec42b7874862d75fcaca8df65fd6f284806bc): Complete the W3 CLI workflow
+
+    The CLI now provides validated configuration, stable exit codes, template resolution, development
+    watching, project scaffolding, and packaged built-in templates through the `typsume` executable.
+
 ## v0.1.0
 
 ### Chores
