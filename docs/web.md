@@ -17,6 +17,9 @@ W4 交付一份当前简历的完整编辑闭环：表单、浏览器内编译�
 草稿恢复。多简历/多版本管理、第二套模板、分享链接和 Playwright e2e 属于 W5，不提前混入
 W4 的数据模型。
 
+`@typsume/web` 是 `private: true` 的静态应用：它登记在 Semifold package 配置中，以便 Web
+changeset 可被 CI 校验和纳入版本记录，但 Semifold 必须依据 private 标记跳过 npm 发布。
+
 ## 2. 技术栈
 
 | 维度 | 选型 | 理由 |

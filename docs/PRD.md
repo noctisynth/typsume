@@ -147,6 +147,7 @@ default 模板将 experience 的 `department` 与 projects 的 `stack` 渲染在
 | R13 | `basics.photo` 的本地文件路径不在浏览器 WASM 虚拟工程内，会触发 access denied | Web 把空字符串归一化为未设置；非空路径在浏览器预览中显式告警并暂不渲染，CLI 继续按模板工程资源契约处理路径 | 后续增加图片上传并挂载到页面生命周期虚拟工程 |
 | R14 | renderer WASM 的 `renderToSvg()` 在 Rust 借用期间直接回调 DOM，StrictMode 重放或 SVG DOM 操作可能触发 wasm-bindgen 所有权 panic | 预览使用串行 `renderSvg()` 只取得 SVG 字符串，每个任务复制 artifact 字节；Rust 调用结束后再由 React 侧挂载到 detached DOM。任何 renderer 异常后丢弃该实例 | 上游修复并验证后再评估直接 DOM renderer |
 | R15 | typst.ts 0.7.0 仍以旧位置参数调用新版 wasm-bindgen 初始化器，且完整 SVG 默认携带运行时脚本 | Web 通过 `getModule()` 传入 `{ module_or_path }` 单对象；静态简历预览只请求 body / defs / CSS，不包含 renderer JavaScript | 升级 typst.ts 后复核并移除兼容层 |
+| R16 | private Web workspace 未登记到 Semifold 时，其 changeset 会使发布 CI 校验失败；根 workspace 若被登记则会产生无意义的 GitHub Release | 登记 `@typsume/web`，由 `package.json#private` 阻止 npm 发布；明确不登记 `@typsume/workspace`，避免根 workspace 进入 release 流程 | package workspace 增删后同步配置，并从结果中排除仓库根包 |
 
 ## 10. 成功指标
 

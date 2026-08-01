@@ -17,6 +17,11 @@ resolver = "nodejs"
 path = "packages/core"
 resolver = "nodejs"
 
+[packages."@typsume/web"]
+path = "packages/web"
+resolver = "nodejs"
+
+# Keep the private workspace root unregistered to avoid creating a repository-level GitHub Release.
 [resolver.nodejs.pre-check]
 url = "https://registry.npmjs.org/{{ package.name }}/{{ package.version }}"
 
