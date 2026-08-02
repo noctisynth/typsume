@@ -36,6 +36,45 @@ export interface BuildResult {
   dryRun: boolean;
 }
 
+export async function buildWithFeedback(
+  options: BuildOptions,
+  context: BuildContext = {},
+): Promise<BuildResult> {
+  const progress = createBuildProgress();
+  const confirmFontDownload = context.confirmFontDownload;
+  progress.start(`Building ${formatPath(options.source)}`);
+  await progress.render();
+  try {
+    const result = await buildResume(options, {
+      ...context,
+      reportProgress: async (message) => {
+        progress.message(formatStage(message));
+        await progress.render();
+      },
+      ...(confirmFontDownload
+        ? {
+            confirmFontDownload: async () => {
+              progress.suspend();
+              try {
+                return await confirmFontDownload();
+              } finally {
+                progress.resume(formatStage('Loading font resources'));
+              }
+            },
+          }
+        : {}),
+    });
+    const displayedOutput = relative(context.cwd ?? process.cwd(), result.outputPath) || '.';
+    progress.stop(result.dryRun ? 'Validation complete' : 'Compilation complete');
+    const detail = result.dryRun ? '' : ` ${formatDetail(`(${result.bytes} bytes)`)}`;
+    logger.success(`Output: ${formatResult(displayedOutput)}${detail}`);
+    return result;
+  } catch (error) {
+    progress.error('Build failed');
+    throw error;
+  }
+}
+
 function sourceOutputPath(sourcePath: string): string {
   const extension = extname(sourcePath);
   return extension ? `${sourcePath.slice(0, -extension.length)}.pdf` : `${sourcePath}.pdf`;
@@ -175,43 +214,18 @@ export default defineCommand({
     },
   },
   run: handleErrors(async ({ args }) => {
-    const progress = createBuildProgress();
     const confirmFontDownload = createFontDownloadConsent({
       allowDownloads: args['allow-downloads'],
     });
-    progress.start(`Building ${formatPath(args.source)}`);
-    await progress.render();
-    try {
-      const result = await buildResume(
-        {
-          source: args.source,
-          template: args.template,
-          output: args.output,
-          strict: args.strict,
-          dryRun: args['dry-run'],
-        },
-        {
-          reportProgress: async (message) => {
-            progress.message(formatStage(message));
-            await progress.render();
-          },
-          confirmFontDownload: async () => {
-            progress.suspend();
-            try {
-              return await confirmFontDownload();
-            } finally {
-              progress.resume(formatStage('Loading font resources'));
-            }
-          },
-        },
-      );
-      const displayedOutput = relative(process.cwd(), result.outputPath) || '.';
-      progress.stop(result.dryRun ? 'Validation complete' : 'Compilation complete');
-      const detail = result.dryRun ? '' : ` ${formatDetail(`(${result.bytes} bytes)`)}`;
-      logger.success(`Output: ${formatResult(displayedOutput)}${detail}`);
-    } catch (error) {
-      progress.error('Build failed');
-      throw error;
-    }
+    await buildWithFeedback(
+      {
+        source: args.source,
+        template: args.template,
+        output: args.output,
+        strict: args.strict,
+        dryRun: args['dry-run'],
+      },
+      { confirmFontDownload },
+    );
   }),
 });

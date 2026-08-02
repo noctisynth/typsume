@@ -203,9 +203,11 @@ CLI 不提供 `--debug` 或 `typsume.log`。编译失败时把可读 diagnostics
 
 ## 5. `typsume dev` watch 模式
 
-- 监听 source 文件变更
+- 启动后立即执行一次完整编译，再进入监听
+- 同时监听 source 与项目根 `typsume.config.toml`；轻量文件状态监听兼容配置后续创建和原子替换保存
 - 防抖 300ms 后重建
-- 输出上一次 build 的耗时与状态
+- 初始编译与后续重建复用 `build` 的完整阶段进度、完成状态和最终产物输出
+- 初始编译失败时保持监听，允许修改 source 或配置后恢复
 - 不做浏览器 preview（CLI 不做 Web 集成）
 
 ## 6. `typsume templates`

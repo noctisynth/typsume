@@ -166,6 +166,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R28 | `config.font` 只声明字体 family，无法让 CLI 获得简历项目自带的字体字节 | 项目通过 `[build].font-paths` 声明项目根内的 TTF / OTF / TTC；CLI 校验相对路径与项目边界后，将字节与模板字体、远程字体一起传给 `loadFonts` | 字体文件不挂载到 Typst workspace；Web 项目 ZIP 暂不自动携带 CLI 专用本地字体 |
 | R29 | 侧栏联系方式继承正文字号，长地址容易换行；只降低全局字号又会不必要地压缩正文 | 完整样式契约新增 `contact-size`，只控制联系方式文字；`font-size` 继续独立控制正文，CLI 与 Web 使用同一覆盖键 | default 模板保持 10pt 正文、8.5pt 联系方式；项目可以分别覆盖 |
 | R30 | Web 首页与编辑器使用临时字母方块，没有可复用的小尺寸品牌标志 | 以品牌蓝圆角底、白色折角文档和无字体依赖的 `T` 字形组成 SVG；`packages/web/public/logo.svg` 作为单一来源，同时用于 favicon 与界面品牌入口 | 保持纯路径、透明外部背景和 64×64 viewBox；不得依赖系统字体或位图 |
+| R31 | `typsume dev` 启动后不编译、只监听 source，且重建日志与 `build` 使用两套输出 | dev 在建立监听前先完成一次 build；以轻量文件状态监听同时覆盖 source 与项目根 `typsume.config.toml`；初始及后续构建统一调用 build 的反馈入口 | 初始编译失败仍进入监听，便于用户修复；100ms 文件状态检查兼容配置后续创建、inode 变化与编辑器原子替换保存，再统一执行 300ms 防抖 |
 
 ## 10. 成功指标
 

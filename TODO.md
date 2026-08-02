@@ -116,7 +116,7 @@
 - [x] WASM 编译通道同进程（`MemoryAccessModel`，不创建磁盘临时 workspace）
 - [x] 错误码 2–7 与可读 schema diagnostics 完整落实
 - [x] `templates` 合并内置与全局自定义模板
-- [x] `init → build`、`dev` 防抖与失败恢复验收
+- [x] `init → build`、`dev` 首次编译、source/config 双监听、防抖与失败恢复验收
   - [x] `init` 默认生成 `resume.toml`，支持 `--format json|yaml|toml`
   - [x] 使用 `consola` 统一人类可读的 CLI 状态、警告与错误输出
   - [x] `build` 为长耗时的字体/WASM/Typst 阶段提供持续可见的进度反馈
