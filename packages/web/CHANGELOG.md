@@ -1,5 +1,70 @@
 # Changelog
 
+## v0.1.2
+
+### Bug Fixes
+
+- [`5bd571d`](https://github.com/noctisynth/typsume/commit/5bd571d73a37138f46190d22dd7323dccb2c9933): Refine CLI configuration export and award spacing
+
+    Describe CLI compatibility at the data format menu level, let users copy a complete project
+    configuration from the typesetting panel, and keep grouped award rows compact.
+
+- [`52ff533`](https://github.com/noctisynth/typsume/commit/52ff533520d27ad11e54494242c46e5123d59c2f): Fix editor separator alignment and clipped card borders
+
+    Center the compact header separator and reserve space inside animated accordion content so card
+    rings remain visible along their top and right edges.
+
+- [`f09b5c2`](https://github.com/noctisynth/typsume/commit/f09b5c2aa3ff1edca4ef9c356c4f843e7c420f40): Fix dynamic editor sections and award rendering
+
+    Allow expanded form sections to grow when items are added, group awards by date without long
+    timeline rules, and promote resume imports and every download format to the editor header.
+
+- [`3014523`](https://github.com/noctisynth/typsume/commit/3014523556fb2c2f293a33ffa745c2cae208d45e): Increase preview zoom sensitivity for pixel-based wheel and trackpad input.
+
+    Continuous gestures now reach the intended scale with less movement while traditional line and page wheel increments remain unchanged.
+
+- [`154ca7e`](https://github.com/noctisynth/typsume/commit/154ca7e9e9b6a1247c809f5752af0495b3fa4816): Disable preview zoom until a rendered document is available.
+
+    Font consent, initial compilation, and empty error states no longer expose active zoom controls or capture zoom gestures.
+
+- [`4987323`](https://github.com/noctisynth/typsume/commit/4987323d77ad9e3bc1784fc32989f0ab346dd6c7): Keep uploaded photo controls within the form column
+
+    Constrain long photo filenames to a shrinkable content column and allow photo actions to wrap
+    without expanding or clipping the resume form.
+
+- [`c14f2e0`](https://github.com/noctisynth/typsume/commit/c14f2e01ff1087cb5a3c3a22d5e1a88ce5749cfd): Polish editor data actions and conditional sections
+
+    Align grouped awards, omit empty resume sections, move imports back to the form header, provide a
+    compact data download menu, and localize the remaining editor status and font consent copy.
+
+
+### New Features
+
+- [`918d847`](https://github.com/noctisynth/typsume/commit/918d84798c594195808a576c45e44deddaa4fced): Import and export resume data in three formats
+
+    Add atomic JSON, YAML, and TOML resume imports with shared schema validation, matching exports,
+    visible errors that preserve the current draft, and a browser-safe TOML runtime.
+
+- [`4ab0b02`](https://github.com/noctisynth/typsume/commit/4ab0b027ef91a350bfdc47d6bdf12ba21d9f3774): Share template configuration across CLI and Web
+
+    Define and validate the complete template configuration contract, apply project overrides from
+    typsume.config.toml in the CLI, and keep Web typesetting overrides in an independent persisted
+    model instead of resume metadata.
+
+- [`58fc2a1`](https://github.com/noctisynth/typsume/commit/58fc2a13688b54e6150fe8bd7ec48c639da06ad5): Deploy the Web application to GitHub Pages
+
+    Build and publish the Web workspace on main branch updates, apply the Pages base path to Vite and
+    React Router, and include an SPA fallback for direct editor navigation.
+
+- [`d77c087`](https://github.com/noctisynth/typsume/commit/d77c087f65948200b449bc524342e19fc089f046): Support portable project photo assets
+
+    Upload and persist PNG or JPEG profile photos under logical assets paths, mount referenced images
+    in both compilers, export complete CLI project archives, and reject unsafe project asset paths.
+
+- [`2bb9619`](https://github.com/noctisynth/typsume/commit/2bb961932f6692c081ae843c2802a21682f5ede6): Add interactive resume preview zoom controls and gesture support.
+
+    The preview now supports preset and incremental zoom from 50% to 200%, Ctrl or Cmd plus wheel input, and trackpad pinch gestures without recompiling the Typst document.
+
 ## v0.1.1
 
 ### Bug Fixes
@@ -74,4 +139,3 @@
     Use kebab-case files, generate UI primitives with the shadcn CLI, keep all React components under
     feature-oriented component directories, move state models to a dedicated models layer, and replace
     hand-written component CSS with Tailwind utilities.
-
