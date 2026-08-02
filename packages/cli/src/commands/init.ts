@@ -95,7 +95,7 @@ jobs:
       - uses: actions/cache@v5
         with:
           path: .typsume/fonts
-          key: \${{ runner.os }}-typsume-fonts-\${{ hashFiles('typsume.config.toml', '${sourceFilename}') }}
+          key: \${{ runner.os }}-typsume-fonts-\${{ hashFiles('typsume.config.toml') }}
           restore-keys: |
             \${{ runner.os }}-typsume-fonts-
       - run: bunx @typsume/cli@latest build ${sourceFilename} --output resume.pdf --allow-downloads

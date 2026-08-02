@@ -161,7 +161,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R23 | 照片卡片在单行 flex 中同时放置缩略图、长文件名与操作按钮，min-content 宽度会撑破左栏 | 照片卡片使用固定缩略图列与 `minmax(0,1fr)` 内容列；文件名截断，操作区在内容列内换行，卡片禁止横向溢出 | 所有上传文件名均按超长无断点文本验收 |
 | R24 | 预览栏固定显示 `100%` 但没有缩放语义；直接 `transform: scale()` 又不会扩大滚动布局 | 使用独立 Zustand 视图状态控制 50%-200% 的实际预览容器尺寸；按钮/预设比例、Ctrl/Cmd+滚轮及触摸板捏合共用同一状态；放大后提供双向滚动且不重新编译 Typst | 仅已有预览产物时允许缩放；预览区域内手势阻止浏览器页面级缩放，普通滚轮仍滚动预览 |
 | R25 | GitHub 托管 runner 会淘汰旧 Action 运行时，`init` 生成的 workflow 与仓库 CI 可能因长期未更新而失效 | 官方 Actions 使用已核对的最新稳定主版本：`checkout@v6`、`setup-node@v6`、`cache@v5`、`upload-artifact@v7`、`configure-pages@v5`、`upload-pages-artifact@v4`、`deploy-pages@v4`；`setup-bun@v2` 保持当前主版本 | 升级 Action 主版本时同步生成器、文档、fixture 与仓库 workflows；第三方 Semifold setup 继续跟踪其 `main` |
-| R26 | `init` workflow 把单个 `resume.pdf` 压缩为名为 `resume` 的 artifact，且每次 runner 都重复下载模板字体 | `upload-artifact@v7` 使用 `archive: false` 直接以 `resume.pdf` 文件名上传；`cache@v5` 缓存 `.typsume/fonts/`，主键包含 OS、项目配置和 source 哈希，OS restore key 复用既有字体并允许配置变化后保存增量 | 直传只允许单文件；未来输出多文件时必须恢复归档模式或拆分 artifact |
+| R26 | `init` workflow 把单个 `resume.pdf` 压缩为名为 `resume` 的 artifact，且每次 runner 都重复下载模板字体 | `upload-artifact@v7` 使用 `archive: false` 直接以 `resume.pdf` 文件名上传；`cache@v5` 缓存 `.typsume/fonts/`，主键包含 OS 与项目配置哈希，OS restore key 复用既有字体并允许配置变化后保存增量 | 简历正文不影响字体选择，不进入缓存键；CLI 内部继续按字体资源声明隔离缓存文件；直传只允许单文件 |
 
 ## 10. 成功指标
 

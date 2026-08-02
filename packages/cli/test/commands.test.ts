@@ -94,8 +94,9 @@ describe('CLI command workflows', () => {
     expect(workflow).toContain('actions/cache@v5');
     expect(workflow).toContain('path: .typsume/fonts');
     expect(workflow).toContain(
-      `key: \${{ runner.os }}-typsume-fonts-\${{ hashFiles('typsume.config.toml', 'resume.yaml') }}`,
+      `key: \${{ runner.os }}-typsume-fonts-\${{ hashFiles('typsume.config.toml') }}`,
     );
+    expect(workflow).not.toContain("hashFiles('typsume.config.toml', 'resume.yaml')");
     expect(workflow).toContain('actions/upload-artifact@v7');
     expect(workflow).toContain('path: resume.pdf');
     expect(workflow).toContain('archive: false');
