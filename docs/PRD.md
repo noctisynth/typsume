@@ -163,6 +163,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R25 | GitHub 托管 runner 会淘汰旧 Action 运行时，`init` 生成的 workflow 与仓库 CI 可能因长期未更新而失效 | 官方 Actions 使用已核对的最新稳定主版本：`checkout@v6`、`setup-node@v6`、`cache@v5`、`upload-artifact@v7`、`configure-pages@v5`、`upload-pages-artifact@v4`、`deploy-pages@v4`；`setup-bun@v2` 保持当前主版本 | 升级 Action 主版本时同步生成器、文档、fixture 与仓库 workflows；第三方 Semifold setup 继续跟踪其 `main` |
 | R26 | `init` workflow 把单个 `resume.pdf` 压缩为名为 `resume` 的 artifact，且每次 runner 都重复下载模板字体 | `upload-artifact@v7` 使用 `archive: false` 直接以 `resume.pdf` 文件名上传；`cache@v5` 缓存 `.typsume/fonts/`，主键包含 OS 与项目配置哈希，OS restore key 复用既有字体并允许配置变化后保存增量 | 简历正文不影响字体选择，不进入缓存键；CLI 内部继续按字体资源声明隔离缓存文件；直传只允许单文件 |
 | R27 | default 模板 section 顺序偏离原简历；姓名带多余方括号；联系方式内置 key 未注册而全部回退成奖章；荣誉长文本行高与日期列留白失衡 | 正文固定教育 → 实习 → 项目；姓名不加装饰括号；内置 contact key 显式映射对应图标；每个荣誉直接使用年份/标记/文本三列同行网格，多行正文自然撑高 | 年份列左对齐且同组仅首行显示；标记使用与标题同字号的文本 bullet，共享首行字体基线；自定义图标只精确挂载引用文件 |
+| R28 | `config.font` 只声明字体 family，无法让 CLI 获得简历项目自带的字体字节 | 项目通过 `[build].font-paths` 声明项目根内的 TTF / OTF / TTC；CLI 校验相对路径与项目边界后，将字节与模板字体、远程字体一起传给 `loadFonts` | 字体文件不挂载到 Typst workspace；Web 项目 ZIP 暂不自动携带 CLI 专用本地字体 |
 
 ## 10. 成功指标
 

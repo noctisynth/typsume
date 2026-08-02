@@ -10,7 +10,13 @@ const ProjectConfigSchema = z
   .object({
     template: z.string().min(1).optional(),
     output: z.string().min(1).optional(),
-    build: z.object({ strict: z.boolean().optional() }).strict().optional(),
+    build: z
+      .object({
+        strict: z.boolean().optional(),
+        'font-paths': z.array(z.string().min(1)).optional(),
+      })
+      .strict()
+      .optional(),
     config: TemplateConfigOverridesSchema.optional(),
   })
   .strict();

@@ -213,6 +213,50 @@ describe('CLI command workflows', () => {
     expect(compileOptions?.projectAssets?.[0]?.path).toBe('project/assets/contact.svg');
   });
 
+  test('loads project-relative font files without mounting them in the workspace', async () => {
+    const root = temporaryDirectory();
+    mkdirSync(resolve(root, 'assets', 'fonts'), { recursive: true });
+    const fontBytes = new Uint8Array([0, 1, 0, 0]);
+    writeFileSync(resolve(root, 'assets', 'fonts', 'example.ttf'), fontBytes);
+    writeFileSync(resolve(root, 'resume.json'), JSON.stringify(minimalResume));
+    writeFileSync(
+      resolve(root, 'typsume.config.toml'),
+      '[build]\nfont-paths = ["assets/fonts/example.ttf"]\n',
+    );
+    let compileOptions: CompileOptions | undefined;
+    await buildResume(
+      { source: 'resume.json' },
+      {
+        cwd: root,
+        configEnvironment: { homeDir: root },
+        compile: async (options) => {
+          compileOptions = options;
+          return fakeCompile(options);
+        },
+      },
+    );
+
+    expect(compileOptions?.projectFonts).toEqual([fontBytes]);
+    expect(compileOptions?.projectAssets).toBeUndefined();
+  });
+
+  test('rejects invalid and out-of-project font paths', async () => {
+    const root = temporaryDirectory();
+    writeFileSync(resolve(root, 'resume.json'), JSON.stringify(minimalResume));
+    for (const fontPath of ['assets/font.woff2', '../font.ttf']) {
+      writeFileSync(
+        resolve(root, 'typsume.config.toml'),
+        `[build]\nfont-paths = ["${fontPath}"]\n`,
+      );
+      await expect(
+        buildResume(
+          { source: 'resume.json' },
+          { cwd: root, configEnvironment: { homeDir: root }, compile: fakeCompile },
+        ),
+      ).rejects.toMatchObject({ exitCode: ExitCode.inputRead });
+    }
+  });
+
   test('rejects missing and out-of-project photo paths', async () => {
     const root = temporaryDirectory();
     const resumePath = resolve(root, 'resume.json');

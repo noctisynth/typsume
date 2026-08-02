@@ -156,7 +156,7 @@ CLI 继续由用户直接维护 JSON/YAML/TOML source；`dump` 保持当前规�
 3. parse   转 JSON object
 4. schema  Zod validate → 失败打印 path + message，exit 1
 5. template meta check  --strict 时校验 requiredFields
-6. fonts   读取本地字体；按 meta.toml 顺序下载、校验并解压远程字体资源
+6. fonts   读取模板与项目本地字体；按 meta.toml 顺序下载、校验并解压远程字体资源
 7. compile 同进程调用 @myriaddreamin/typst.ts，传入模板路径、resume.json 与字体字节
 8. write   把返回的 PDF bytes 写到 -o 指定路径
 9. cache   有效下载原子写入项目 `.typsume/fonts/`，供后续 build 复用
@@ -194,7 +194,9 @@ WASM init 懒加载：首次 build 才初始化 typst renderer，避免冷启动
 
 CLI 使用 typst.ts 的 `MemoryAccessModel` 构建虚拟 workspace。normalized `resume.json`、模板文件、
 图标以及 `cfg_*.json` 只写入内存，不创建磁盘临时目录。字体字节通过 `loadFonts` 注入；只有远程
-字体原始响应按资源缓存契约写入项目 `.typsume/fonts/`。
+字体原始响应按资源缓存契约写入项目 `.typsume/fonts/`。项目配置可通过
+`[build].font-paths = ["assets/fonts/example.ttf"]` 注入 TTF / OTF / TTC；路径必须相对项目根目录，
+不能越界，且字体只通过 `loadFonts` 读取，不写入内存 workspace。
 
 CLI 不提供 `--debug` 或 `typsume.log`。编译失败时把可读 diagnostics 直接写到 stderr；需要额外
 诊断信息时通过 issue 提供复现输入和环境信息。
@@ -231,6 +233,7 @@ output   = "build/resume.pdf"
 
 [build]
 strict = false     # CLI 全局 --strict 开关
+font-paths = ["assets/fonts/example.ttf"] # 可选；相对项目根目录的 TTF / OTF / TTC
 
 [config]
 # 与模板 meta.toml[config] 使用相同 key；这里只写用户希望覆盖的项目级样式。

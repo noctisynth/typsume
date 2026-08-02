@@ -188,6 +188,7 @@
 - [x] 实现预览 50%-200% 实际尺寸缩放、比例控件、Ctrl/Cmd+滚轮与触摸板捏合
 - [x] 无预览产物时禁用缩放控件与手势
 - [x] 提高像素级滚轮与触摸板的预览缩放灵敏度
+- [x] CLI 支持从 `typsume.config.toml[build].font-paths` 安全加载项目字体
 - [x] 荣誉标记改用与标题同字号的文本 bullet，共享首行字体基线
 - [x] 修复 default 模板 section 顺序、姓名括号、联系方式内置图标与多行荣誉布局
 - [x] 支持 contact 自定义 SVG/PNG 图标的 CLI 精确挂载、Web 上传持久化与项目导出

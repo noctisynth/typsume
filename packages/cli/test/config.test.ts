@@ -26,13 +26,14 @@ describe('CLI configuration', () => {
     mkdirSync(project);
     writeFileSync(
       resolve(project, 'typsume.config.toml'),
-      'template = "default"\noutput = "build/cv.pdf"\n[build]\nstrict = true\n[config]\ntheme-color = "#112233"\nfont-size = 9\n',
+      'template = "default"\noutput = "build/cv.pdf"\n[build]\nstrict = true\nfont-paths = ["assets/fonts/example.ttf"]\n[config]\ntheme-color = "#112233"\nfont-size = 9\n',
     );
     writeFileSync(resolve(xdg, 'typsume', 'config.toml'), 'templates-dir = "~/templates"\n');
 
     const config = loadConfig(project, { homeDir: root, xdgConfigHome: xdg });
     expect(config.project?.output).toBe('build/cv.pdf');
     expect(config.project?.build?.strict).toBe(true);
+    expect(config.project?.build?.['font-paths']).toEqual(['assets/fonts/example.ttf']);
     expect(config.project?.config?.['theme-color']).toBe('#112233');
     expect(config.project?.config?.['font-size']).toBe(9);
     expect(config.global?.['templates-dir']).toBe('~/templates');

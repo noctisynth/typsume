@@ -27,6 +27,7 @@ export interface CompileOptions {
   templateDir: string;
   resumeJson: string;
   projectAssets?: Array<{ path: string; bytes: Uint8Array }>;
+  projectFonts?: Uint8Array[];
   fontCacheDir: string;
   fontResources?: FontResource[];
   reportProgress?: (message: string) => void | Promise<void>;
@@ -89,6 +90,7 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
       fontBlobs.push(readFileSync(resolve(fontsDir, entry)));
     }
   }
+  fontBlobs.push(...(opts.projectFonts ?? []));
   await opts.reportProgress?.('Loading font resources');
   const fontOptions: FontResourceOptions = { cacheDir: opts.fontCacheDir };
   if (opts.confirmFontDownload) fontOptions.confirmDownload = opts.confirmFontDownload;

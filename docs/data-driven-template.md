@@ -169,7 +169,7 @@ integrity = "sha256-<base64>" # 可选
 - `integrity` 可选，格式固定为 `sha256-<base64>`，校验对象是下载响应的原始字节。校验失败等同该 URL 失败。
 - 响应类型按内容识别，不依赖 URL 后缀或 `Content-Type`。v1 支持直接 `.ttf` / `.otf` 字体和 ZIP 压缩包。
 - ZIP 使用 `fflate` 在内存中解压，只加载其中的 `.ttf` / `.otf` 文件；目录和其他文件不传给 typst.ts。
-- 本地 `fonts/` 与远程字体字节最终一起传给 typst.ts `loadFonts`。
+- 模板本地 `fonts/`、项目 `[build].font-paths` 指向的字体与远程字体字节最终一起传给 typst.ts `loadFonts`。项目字体路径必须相对项目根目录，且不能越界。
 - CLI 把下载响应的原始字节缓存到简历项目的 `.typsume/fonts/`；Web 不做持久缓存，只在页面生命周期内复用字节。
 - `template.typ` 不负责联网、解压或校验，也不得直接引用远程 URL。
 

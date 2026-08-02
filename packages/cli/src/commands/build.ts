@@ -70,6 +70,16 @@ function isProjectIcon(icon: string) {
   return icon.includes('/') || /\.(?:png|svg)$/i.test(icon);
 }
 
+function loadProjectFont(projectRoot: string, fontPath: string): Uint8Array {
+  if (!/\.(?:ttf|otf|ttc)$/i.test(fontPath)) {
+    throw new TypsumeError(
+      `Project font must be a TTF, OTF, or TTC file: ${fontPath}`,
+      ExitCode.inputRead,
+    );
+  }
+  return loadProjectAsset(projectRoot, fontPath, 'Project font').asset.bytes;
+}
+
 export async function buildResume(
   options: BuildOptions,
   context: BuildContext = {},
@@ -125,7 +135,11 @@ export async function buildResume(
     fontResources: resolved.meta.resources?.fonts ?? [],
     config: renderConfig,
   };
+  const projectFonts = (config.project?.build?.['font-paths'] ?? []).map((fontPath) =>
+    loadProjectFont(projectRoot, fontPath),
+  );
   if (projectAssets.length > 0) compileOptions.projectAssets = projectAssets;
+  if (projectFonts.length > 0) compileOptions.projectFonts = projectFonts;
   if (context.reportProgress) compileOptions.reportProgress = context.reportProgress;
   if (context.confirmFontDownload) compileOptions.confirmFontDownload = context.confirmFontDownload;
   const result = await compile(compileOptions);
