@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFontModel } from '@/models/font-model';
+import { usePhotoModel } from '@/models/photo-model';
 import { usePreviewModel } from '@/models/preview-model';
 import { useResumeModel } from '@/models/resume-model';
 import { useStyleModel } from '@/models/style-model';
@@ -21,13 +22,17 @@ export function LivePreview() {
   const setFontPermission = usePreviewModel((model) => model.setFontPermission);
   const compile = usePreviewModel((model) => model.compile);
   const fontRevision = useFontModel((model) => model.revision);
+  const photoRevision = usePhotoModel((model) => model.revision);
   const styleRevision = useStyleModel((model) => model.revision);
 
   useEffect(() => {
     if (fontPermission === 'unknown') return;
-    const timer = setTimeout(() => void compile(resume, fontRevision, styleRevision), 300);
+    const timer = setTimeout(
+      () => void compile(resume, fontRevision, styleRevision, photoRevision),
+      300,
+    );
     return () => clearTimeout(timer);
-  }, [compile, fontPermission, fontRevision, resume, styleRevision]);
+  }, [compile, fontPermission, fontRevision, photoRevision, resume, styleRevision]);
 
   if (fontPermission === 'unknown') return <FontConsent />;
 

@@ -64,7 +64,7 @@ type Award = {
 type Basics = {
   name: string
   title?: string         // 头衔 / 一句话定位，例如 "Software Engineer"
-  photo?: string         // 相对模板根的路径
+  photo?: string         // 相对简历项目根的路径，例如 assets/profile.png
   contacts: Contact[]
 }
 
@@ -95,6 +95,10 @@ type ResumeData = {
 
 default 模板在工作经历中把 `department` 渲染到原模板 `#tech[...]` 的位置，在项目经历中
 则在同一位置渲染 `stack`。`stack` 不用于承载部门名称。
+
+`basics.photo` 必须是简历项目根内的相对路径。compiler 只挂载该字段直接引用的文件，不递归暴露
+整个项目目录；绝对路径、`..` 越界、目录或不存在文件都必须显式报错。Web 上传图片时生成
+`assets/<安全文件名>` 并保留原始 PNG/JPEG 字节，CLI 在解压项目 ZIP 后读取同一路径。
 
 default 模板的 awards 按 `date` 首次出现顺序分组；同一日期只显示一次，右侧可排列多个奖项，
 `level` 作为次要文本；日期、短标记与奖项标题按同一水平基线对齐。荣誉布局不得通过整组测量

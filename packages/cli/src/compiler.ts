@@ -26,6 +26,7 @@ async function ensureWasm(): Promise<void> {
 export interface CompileOptions {
   templateDir: string;
   resumeJson: string;
+  projectAssets?: Array<{ path: string; bytes: Uint8Array }>;
   fontCacheDir: string;
   fontResources?: FontResource[];
   reportProgress?: (message: string) => void | Promise<void>;
@@ -71,6 +72,9 @@ export async function compileWithTemplate(opts: CompileOptions): Promise<Compile
   }
 
   insertTemplateResources(opts.templateDir);
+  for (const asset of opts.projectAssets ?? []) {
+    insert(`${VROOT}${asset.path}`, asset.bytes);
+  }
   insert(`${VROOT}resume.json`, opts.resumeJson);
   insert(`${VROOT}cfg_colors.json`, JSON.stringify(opts.config.colors));
   insert(`${VROOT}cfg_fonts.json`, JSON.stringify(opts.config.fonts));

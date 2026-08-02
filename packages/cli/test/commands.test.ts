@@ -135,6 +135,73 @@ describe('CLI command workflows', () => {
     expect(compileOptions?.config.sizes.heading).toBe(16);
   });
 
+  test('mounts only the project-relative photo referenced by resume data', async () => {
+    const root = temporaryDirectory();
+    mkdirSync(resolve(root, 'assets'));
+    writeFileSync(resolve(root, 'assets', 'profile.png'), new Uint8Array([137, 80, 78, 71]));
+    writeFileSync(
+      resolve(root, 'resume.json'),
+      JSON.stringify({
+        ...minimalResume,
+        basics: { ...minimalResume.basics, photo: 'assets/profile.png' },
+      }),
+    );
+    let compileOptions: CompileOptions | undefined;
+    await buildResume(
+      { source: 'resume.json' },
+      {
+        cwd: root,
+        configEnvironment: { homeDir: root },
+        compile: async (options) => {
+          compileOptions = options;
+          return fakeCompile(options);
+        },
+      },
+    );
+
+    expect(JSON.parse(compileOptions?.resumeJson ?? '{}').basics.photo).toBe(
+      'project/assets/profile.png',
+    );
+    expect(compileOptions?.projectAssets).toEqual([
+      {
+        path: 'project/assets/profile.png',
+        bytes: new Uint8Array([137, 80, 78, 71]),
+      },
+    ]);
+  });
+
+  test('rejects missing and out-of-project photo paths', async () => {
+    const root = temporaryDirectory();
+    const resumePath = resolve(root, 'resume.json');
+    writeFileSync(
+      resumePath,
+      JSON.stringify({
+        ...minimalResume,
+        basics: { ...minimalResume.basics, photo: 'missing.png' },
+      }),
+    );
+    await expect(
+      buildResume(
+        { source: 'resume.json' },
+        { cwd: root, configEnvironment: { homeDir: root }, compile: fakeCompile },
+      ),
+    ).rejects.toMatchObject({ exitCode: ExitCode.inputRead });
+
+    writeFileSync(
+      resumePath,
+      JSON.stringify({
+        ...minimalResume,
+        basics: { ...minimalResume.basics, photo: '../photo.png' },
+      }),
+    );
+    await expect(
+      buildResume(
+        { source: 'resume.json' },
+        { cwd: root, configEnvironment: { homeDir: root }, compile: fakeCompile },
+      ),
+    ).rejects.toMatchObject({ exitCode: ExitCode.inputRead });
+  });
+
   test('project strict can be overridden and reports missing template fields', async () => {
     const root = temporaryDirectory();
     writeFileSync(resolve(root, 'resume.json'), JSON.stringify(minimalResume));

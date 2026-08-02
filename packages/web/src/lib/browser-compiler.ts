@@ -4,6 +4,7 @@ import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init
 import compilerWasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
 import type { ResumeData, TemplateConfigOverrides } from '@typsume/core';
 import type { SelectedFontBundle } from '@/models/font-model';
+import { type PhotoAsset, photoAssetBytes } from '@/models/photo-model';
 import { inspectFontFamilies, selectFontFamily } from './font-inspection';
 import { type FontStatus, loadBrowserFonts, loadLocalFontFallback } from './font-resources';
 import { DEFAULT_TEMPLATE } from './template-registry';
@@ -135,9 +136,16 @@ function mapResume(
   runtime: CompilerRuntime,
   resume: ResumeData,
   configOverrides: TemplateConfigOverrides,
+  photoAsset: PhotoAsset | null,
 ): void {
   const browserResume = structuredClone(resume);
-  if (browserResume.basics.photo) delete browserResume.basics.photo;
+  if (photoAsset && browserResume.basics.photo === photoAsset.path) {
+    const workspacePath = `project/${photoAsset.path}`;
+    runtime.compiler.mapShadow(`${VIRTUAL_ROOT}${workspacePath}`, photoAssetBytes(photoAsset));
+    browserResume.basics.photo = workspacePath;
+  } else if (browserResume.basics.photo) {
+    delete browserResume.basics.photo;
+  }
   const config = DEFAULT_TEMPLATE.config(configOverrides);
   if (runtime.fontFamilyOverride) {
     config.fonts = {
@@ -172,15 +180,16 @@ async function compile(
   format: CompileFormatEnum,
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
+  photoAsset: PhotoAsset | null,
   configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks,
 ): Promise<Uint8Array> {
   const preferredFontFamilies = Object.values(DEFAULT_TEMPLATE.config(configOverrides).fonts);
-  if (resume.basics.photo) {
+  if (resume.basics.photo && resume.basics.photo !== photoAsset?.path) {
     callbacks.resource?.({
       kind: 'warning',
       message:
-        'Photo paths are not accessible in the browser preview. The photo was omitted from this compilation; the saved resume data was not changed.',
+        'The photo asset is unavailable in this browser. Upload the matching image again; the saved resume path was not changed.',
     });
   }
   const runtime = await getRuntime(
@@ -198,7 +207,7 @@ async function compile(
 
   runtime.queue = runtime.queue
     .then(async () => {
-      mapResume(runtime, resume, configOverrides);
+      mapResume(runtime, resume, configOverrides, photoAsset);
       callbacks.phase?.(format === CompileFormatEnum.pdf ? 'compiling-pdf' : 'compiling-preview');
       const document = await runtime.compiler.compile({
         mainFilePath: `${VIRTUAL_ROOT}template.typ`,
@@ -227,6 +236,7 @@ export function compilePreview(
   resume: ResumeData,
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
+  photoAsset: PhotoAsset | null,
   configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
@@ -235,6 +245,7 @@ export function compilePreview(
     CompileFormatEnum.vector,
     allowFontDownloads,
     selectedFont,
+    photoAsset,
     configOverrides,
     callbacks,
   );
@@ -244,6 +255,7 @@ export function compilePdf(
   resume: ResumeData,
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
+  photoAsset: PhotoAsset | null,
   configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
@@ -252,6 +264,7 @@ export function compilePdf(
     CompileFormatEnum.pdf,
     allowFontDownloads,
     selectedFont,
+    photoAsset,
     configOverrides,
     callbacks,
   );

@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { findNewlyOpenedSection } from '@/lib/accordion-state';
+import { usePhotoModel } from '@/models/photo-model';
 import { DEFAULT_RESUME, RESUME_SECTIONS, useResumeModel } from '@/models/resume-model';
 import { AwardsFields } from './awards-fields';
 import { BasicsFields } from './basics-fields';
@@ -35,6 +36,7 @@ export function ResumeForm() {
   const replaceResume = useResumeModel((state) => state.replaceResume);
   const resetResume = useResumeModel((state) => state.resetResume);
   const selectSection = useResumeModel((state) => state.selectSection);
+  const clearPhoto = usePhotoModel((state) => state.clear);
   const [openSections, setOpenSections] = useState<string[]>([selectedSection]);
   const form = useForm<ResumeInput, unknown, ResumeOutput>({
     resolver: zodResolver(ResumeSchema),
@@ -62,6 +64,7 @@ export function ResumeForm() {
 
   function resetToSample() {
     form.reset(DEFAULT_RESUME);
+    clearPhoto();
     resetResume();
   }
 
@@ -105,7 +108,11 @@ export function ResumeForm() {
             </AccordionTrigger>
             <AccordionContent className="pt-px pr-px pb-5 pl-7">
               {section === 'basics' ? (
-                <BasicsFields control={form.control} register={form.register} />
+                <BasicsFields
+                  control={form.control}
+                  register={form.register}
+                  setValue={form.setValue}
+                />
               ) : null}
               {section === 'skills' ? (
                 <SkillsFields control={form.control} register={form.register} />

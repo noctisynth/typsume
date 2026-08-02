@@ -1,5 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, extname, relative, resolve } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { resolveTemplateConfig } from '@typsume/core';
 import { defineCommand } from 'citty';
 import { type CompileOptions, type CompileResult, compileWithTemplate } from '../compiler.ts';
@@ -41,6 +41,29 @@ function sourceOutputPath(sourcePath: string): string {
   return extension ? `${sourcePath.slice(0, -extension.length)}.pdf` : `${sourcePath}.pdf`;
 }
 
+function loadProjectPhoto(projectRoot: string, photoPath: string | undefined) {
+  if (!photoPath) return null;
+  if (isAbsolute(photoPath)) {
+    throw new TypsumeError(
+      'Photo path must be relative to the resume project root.',
+      ExitCode.inputRead,
+    );
+  }
+  const absolutePath = resolve(projectRoot, photoPath);
+  const projectPath = relative(projectRoot, absolutePath);
+  if (projectPath === '..' || projectPath.startsWith(`..${sep}`) || isAbsolute(projectPath)) {
+    throw new TypsumeError('Photo path cannot leave the resume project root.', ExitCode.inputRead);
+  }
+  if (!existsSync(absolutePath) || !statSync(absolutePath).isFile()) {
+    throw new TypsumeError(`Photo file not found: ${photoPath}`, ExitCode.inputRead);
+  }
+  const normalizedPath = projectPath.split(sep).join('/');
+  return {
+    dataPath: `project/${normalizedPath}`,
+    asset: { path: `project/${normalizedPath}`, bytes: readFileSync(absolutePath) },
+  };
+}
+
 export async function buildResume(
   options: BuildOptions,
   context: BuildContext = {},
@@ -51,6 +74,7 @@ export async function buildResume(
   const projectRoot = findProjectRoot(sourcePath);
   const config = loadConfig(projectRoot, context.configEnvironment);
   const data = loadResume(sourcePath);
+  const projectPhoto = loadProjectPhoto(projectRoot, data.basics.photo);
   await context.reportProgress?.('Resolving the resume template');
   const resolved = resolveTemplate(options.template, config, projectRoot, cwd, context.homeDir);
 
@@ -74,15 +98,18 @@ export async function buildResume(
   }
 
   const renderConfig = resolveTemplateConfig(resolved.meta.config, config.project?.config);
+  const compileData = structuredClone(data);
+  if (projectPhoto) compileData.basics.photo = projectPhoto.dataPath;
 
   const compile = context.compile ?? compileWithTemplate;
   const compileOptions: CompileOptions = {
     templateDir: resolved.dir,
-    resumeJson: JSON.stringify(data),
+    resumeJson: JSON.stringify(compileData),
     fontCacheDir: ensureProjectRuntime(projectRoot),
     fontResources: resolved.meta.resources?.fonts ?? [],
     config: renderConfig,
   };
+  if (projectPhoto) compileOptions.projectAssets = [projectPhoto.asset];
   if (context.reportProgress) compileOptions.reportProgress = context.reportProgress;
   if (context.confirmFontDownload) compileOptions.confirmFontDownload = context.confirmFontDownload;
   const result = await compile(compileOptions);

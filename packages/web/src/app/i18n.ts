@@ -31,6 +31,10 @@ const resources = {
         downloadJson: '下载 JSON',
         downloadYaml: '下载 YAML',
         cliHint: '三种格式均可使用 typsume build <文件> 在 CLI 中编译 PDF。',
+        downloadProject: '导出 CLI 项目',
+        projectHint: 'ZIP 包含 resume.toml、排版配置和已上传的 assets/ 图片。',
+        missingPhotoAsset: '照片路径缺少对应图片，请重新上传后再导出项目。',
+        projectExportFailed: '项目导出失败，请重试。',
         invalidSchema: '导入文件不符合简历数据结构。',
       },
       validation: {
@@ -100,6 +104,19 @@ const resources = {
         pageLifetime: '支持 TTF、OTF、TTC；字体仅保留在当前页面，不会保存到浏览器。',
         loadedFiles: '已加载 {{count}} 个文件：{{names}}',
       },
+      photo: {
+        upload: '上传图片',
+        uploading: '正在读取…',
+        remove: '移除照片',
+        empty: '尚未上传照片',
+        help: '支持 PNG/JPEG，项目路径自动设置到 assets/。',
+        missingAsset: '当前数据仅包含路径，请重新上传对应图片。',
+        previewAlt: '简历照片预览',
+        error: {
+          'unsupported-type': '请选择 PNG 或 JPEG 图片。',
+          'read-failed': '图片读取失败，请重新选择。',
+        },
+      },
       style: {
         group: { colors: '颜色', fonts: '字体', sizes: '字号', layout: '页面布局' },
         field: {
@@ -163,6 +180,10 @@ const resources = {
         downloadJson: 'Download JSON',
         downloadYaml: 'Download YAML',
         cliHint: 'Every format can be compiled in the CLI with typsume build <file>.',
+        downloadProject: 'Export CLI project',
+        projectHint: 'ZIP with resume.toml, typesetting config, and uploaded assets/ photo.',
+        missingPhotoAsset: 'The photo path has no image bytes. Upload it again before exporting.',
+        projectExportFailed: 'Unable to export the project. Try again.',
         invalidSchema: 'The imported file does not match the resume schema.',
       },
       validation: {
@@ -232,6 +253,19 @@ const resources = {
         pageLifetime:
           'Supports TTF, OTF, and TTC. Fonts remain in this page only and are not saved.',
         loadedFiles: '{{count}} file(s) loaded: {{names}}',
+      },
+      photo: {
+        upload: 'Upload image',
+        uploading: 'Reading…',
+        remove: 'Remove photo',
+        empty: 'No photo uploaded',
+        help: 'Supports PNG/JPEG and automatically uses an assets/ project path.',
+        missingAsset: 'The data contains only a path. Upload the matching image again.',
+        previewAlt: 'Resume photo preview',
+        error: {
+          'unsupported-type': 'Choose a PNG or JPEG image.',
+          'read-failed': 'Unable to read the image. Choose it again.',
+        },
       },
       style: {
         group: { colors: 'Colors', fonts: 'Fonts', sizes: 'Type sizes', layout: 'Page layout' },

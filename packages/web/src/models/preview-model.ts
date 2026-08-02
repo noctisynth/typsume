@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import type { CompilePhase } from '@/lib/browser-compiler';
 import type { FontStatus } from '@/lib/font-resources';
 import { getSelectedFontBundle } from '@/models/font-model';
+import { getPhotoAsset } from '@/models/photo-model';
 import { getStyleOverrides } from '@/models/style-model';
 
 export type FontPermission = 'unknown' | 'allowed' | 'denied';
@@ -17,7 +18,12 @@ interface PreviewState {
   error: string | null;
   latencyMs: number | null;
   setFontPermission: (permission: Exclude<FontPermission, 'unknown'>) => void;
-  compile: (resume: ResumeData, fontRevision?: number, styleRevision?: number) => Promise<void>;
+  compile: (
+    resume: ResumeData,
+    fontRevision?: number,
+    styleRevision?: number,
+    photoRevision?: number,
+  ) => Promise<void>;
   exportPdf: (resume: ResumeData) => Promise<Uint8Array>;
 }
 
@@ -47,7 +53,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
   setFontPermission(fontPermission) {
     set({ fontPermission, state: 'idle', warnings: [], error: null });
   },
-  async compile(resume, fontRevision, styleRevision) {
+  async compile(resume, fontRevision, styleRevision, photoRevision) {
     const permission = get().fontPermission;
     if (permission === 'unknown') return;
     const sequence = ++compileSequence;
@@ -59,6 +65,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
         resume,
         permission === 'allowed',
         getSelectedFontBundle(fontRevision),
+        getPhotoAsset(photoRevision),
         getStyleOverrides(styleRevision),
         {
           phase: setPhase,
@@ -91,6 +98,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
         resume,
         permission === 'allowed',
         getSelectedFontBundle(),
+        getPhotoAsset(),
         getStyleOverrides(),
         {
           phase: setPhase,

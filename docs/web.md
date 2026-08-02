@@ -164,9 +164,9 @@ React font picker 也主要是 Google Fonts 目录的 UI 封装；它们不能�
 字体资源。W4 不接入 CDN 目录。后续接入前必须补齐完整文件定位、字体内部 family 校验、许可证展示、
 跨域与缓存策略。
 
-浏览器不能读取 `basics.photo` 中的任意本地路径。空字符串提交时归一化为未设置；非空路径在 Web
-预览中显示资源警告并从本次浏览器编译数据中移除，避免 WASM 越过虚拟工程根。该处理不修改用户草稿，
-CLI 仍按模板资源契约解析路径。图片上传与虚拟工程挂载另行实现。
+基本信息不要求用户手写照片路径。Web 接受 PNG/JPEG，生成安全的 `assets/<文件名>` 写入
+`basics.photo`，把图片字节独立持久化到 IndexedDB，并在预览/PDF 编译前挂载到同名 WASM 虚拟路径。
+删除或替换图片时同步更新字段与字节；导入纯数据文件不会伪造缺失资产。
 
 第一次加载 typst.ts WASM 体积较大（~5MB 量级），W4 需做：
 
@@ -276,6 +276,10 @@ TOML/JSON/YAML 三种格式，并与 PDF 下载并列为一级操作；菜单级
 CLI 配置”操作，复制包含 `template`、`output` 和当前完整 `[config]` 的
 `typsume.config.toml`，使数据文件与样式配置可以一起交给 CLI。
 
+数据菜单同时提供“导出项目 ZIP”：固定包含 `resume.toml`、完整 `typsume.config.toml`，并在已上传
+照片时包含其 `assets/` 文件。解压后可直接执行 `typsume build resume.toml`。纯
+JSON/YAML/TOML 下载仍只表达 ResumeData，不内嵌图片或样式。
+
 ## 9. 国际化
 
 - react-i18next + i18next，初始 zh-CN、en-US
@@ -328,5 +332,5 @@ CLI 配置”操作，复制包含 `template`、`output` 和当前完整 `[confi
 - [x] 编辑器固定文案完整支持 zh-CN/en-US；空列表不渲染对应的 Typst section
 - [x] 数据下载菜单在菜单级说明三种格式均支持 CLI；排版设置可复制完整 `typsume.config.toml`
 - [x] 同年荣誉条目采用受控紧凑间距，不受 Typst 段落默认 spacing 放大
-- [ ] 图片上传的持久化与跨端导出契约经 user 拍板后实现
+- [x] PNG/JPEG 上传自动写入 `assets/` 逻辑路径，刷新后恢复，Web 预览/PDF 与 CLI 项目 ZIP 使用同一图片
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI

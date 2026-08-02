@@ -179,7 +179,8 @@
 - [x] 数据下载菜单改为菜单级 CLI 提示；排版设置提供完整 `typsume.config.toml` 复制按钮
 - [x] 使用受控 stack 收紧同年荣誉条目间距
 - [x] `typsume init` 已支持交互确认或 `--github-actions` 生成 main push PDF artifact workflow
-- [ ] **PRD 待 user 拍板**：确定 Web 上传照片在数据导出与 CLI 重建中的字节携带方式
+- [x] Web PNG/JPEG 上传到逻辑 `assets/` 并持久化；浏览器编译挂载图片；项目 ZIP 携带数据、配置与图片
+- [x] CLI 安全挂载项目根内 `basics.photo` 引用，使 Web 项目 ZIP 解压后可直接构建
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright

@@ -123,6 +123,9 @@ typsume init [dir] [--format json|yaml|toml] [--github-actions|--no-github-actio
 表达相同的 `ResumeData`，并共用同一份 Zod schema。命令同时创建 `typsume.config.toml` 与
 `.typsume/.gitignore`，且不覆盖已经存在的目标文件。
 
+`basics.photo` 是相对简历项目根的资源路径。`build` 仅解析并挂载该字段引用且位于项目根内的文件；
+绝对路径、越过项目根的路径、目录或不存在文件均报资源错误，不允许 WASM 访问项目其他内容。
+
 交互终端中，`init` 询问是否生成 `.github/workflows/resume.yml`。确认后，workflow 在每次
 push 到 `main` 时运行 `typsume build <source> --allow-downloads`，并通过
 `actions/upload-artifact@v4` 上传 `resume.pdf`。脚本或非交互环境使用
