@@ -41,27 +41,33 @@ function sourceOutputPath(sourcePath: string): string {
   return extension ? `${sourcePath.slice(0, -extension.length)}.pdf` : `${sourcePath}.pdf`;
 }
 
-function loadProjectPhoto(projectRoot: string, photoPath: string | undefined) {
-  if (!photoPath) return null;
-  if (isAbsolute(photoPath)) {
+function loadProjectAsset(projectRoot: string, assetPath: string, label: string) {
+  if (isAbsolute(assetPath)) {
     throw new TypsumeError(
-      'Photo path must be relative to the resume project root.',
+      `${label} path must be relative to the resume project root.`,
       ExitCode.inputRead,
     );
   }
-  const absolutePath = resolve(projectRoot, photoPath);
+  const absolutePath = resolve(projectRoot, assetPath);
   const projectPath = relative(projectRoot, absolutePath);
   if (projectPath === '..' || projectPath.startsWith(`..${sep}`) || isAbsolute(projectPath)) {
-    throw new TypsumeError('Photo path cannot leave the resume project root.', ExitCode.inputRead);
+    throw new TypsumeError(
+      `${label} path cannot leave the resume project root.`,
+      ExitCode.inputRead,
+    );
   }
   if (!existsSync(absolutePath) || !statSync(absolutePath).isFile()) {
-    throw new TypsumeError(`Photo file not found: ${photoPath}`, ExitCode.inputRead);
+    throw new TypsumeError(`${label} file not found: ${assetPath}`, ExitCode.inputRead);
   }
   const normalizedPath = projectPath.split(sep).join('/');
   return {
     dataPath: `project/${normalizedPath}`,
     asset: { path: `project/${normalizedPath}`, bytes: readFileSync(absolutePath) },
   };
+}
+
+function isProjectIcon(icon: string) {
+  return icon.includes('/') || /\.(?:png|svg)$/i.test(icon);
 }
 
 export async function buildResume(
@@ -74,7 +80,9 @@ export async function buildResume(
   const projectRoot = findProjectRoot(sourcePath);
   const config = loadConfig(projectRoot, context.configEnvironment);
   const data = loadResume(sourcePath);
-  const projectPhoto = loadProjectPhoto(projectRoot, data.basics.photo);
+  const projectPhoto = data.basics.photo
+    ? loadProjectAsset(projectRoot, data.basics.photo, 'Photo')
+    : null;
   await context.reportProgress?.('Resolving the resume template');
   const resolved = resolveTemplate(options.template, config, projectRoot, cwd, context.homeDir);
 
@@ -99,7 +107,15 @@ export async function buildResume(
 
   const renderConfig = resolveTemplateConfig(resolved.meta.config, config.project?.config);
   const compileData = structuredClone(data);
+  const projectAssets: NonNullable<CompileOptions['projectAssets']> = [];
   if (projectPhoto) compileData.basics.photo = projectPhoto.dataPath;
+  if (projectPhoto) projectAssets.push(projectPhoto.asset);
+  for (const contact of compileData.basics.contacts) {
+    if (!isProjectIcon(contact.icon)) continue;
+    const projectIcon = loadProjectAsset(projectRoot, contact.icon, 'Contact icon');
+    contact.icon = projectIcon.dataPath;
+    projectAssets.push(projectIcon.asset);
+  }
 
   const compile = context.compile ?? compileWithTemplate;
   const compileOptions: CompileOptions = {
@@ -109,7 +125,7 @@ export async function buildResume(
     fontResources: resolved.meta.resources?.fonts ?? [],
     config: renderConfig,
   };
-  if (projectPhoto) compileOptions.projectAssets = [projectPhoto.asset];
+  if (projectAssets.length > 0) compileOptions.projectAssets = projectAssets;
   if (context.reportProgress) compileOptions.reportProgress = context.reportProgress;
   if (context.confirmFontDownload) compileOptions.confirmFontDownload = context.confirmFontDownload;
   const result = await compile(compileOptions);

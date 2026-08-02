@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useContactIconModel } from '@/models/contact-icon-model';
 import { useFontModel } from '@/models/font-model';
 import { usePhotoModel } from '@/models/photo-model';
 import { usePreviewModel } from '@/models/preview-model';
@@ -25,6 +26,7 @@ export function LivePreview() {
   const compile = usePreviewModel((model) => model.compile);
   const fontRevision = useFontModel((model) => model.revision);
   const photoRevision = usePhotoModel((model) => model.revision);
+  const contactIconRevision = useContactIconModel((model) => model.revision);
   const styleRevision = useStyleModel((model) => model.revision);
   const zoom = usePreviewViewportModel((model) => model.zoom);
   const setZoom = usePreviewViewportModel((model) => model.setZoom);
@@ -33,11 +35,19 @@ export function LivePreview() {
   useEffect(() => {
     if (fontPermission === 'unknown') return;
     const timer = setTimeout(
-      () => void compile(resume, fontRevision, styleRevision, photoRevision),
+      () => void compile(resume, fontRevision, styleRevision, photoRevision, contactIconRevision),
       300,
     );
     return () => clearTimeout(timer);
-  }, [compile, fontPermission, fontRevision, photoRevision, resume, styleRevision]);
+  }, [
+    compile,
+    contactIconRevision,
+    fontPermission,
+    fontRevision,
+    photoRevision,
+    resume,
+    styleRevision,
+  ]);
 
   useEffect(() => {
     const viewport = viewportRef.current;

@@ -2,6 +2,7 @@ import type { ResumeData } from '@typsume/core';
 import { create } from 'zustand';
 import type { CompilePhase } from '@/lib/browser-compiler';
 import type { FontStatus } from '@/lib/font-resources';
+import { getContactIconAssets } from '@/models/contact-icon-model';
 import { getSelectedFontBundle } from '@/models/font-model';
 import { getPhotoAsset } from '@/models/photo-model';
 import { getStyleOverrides } from '@/models/style-model';
@@ -23,6 +24,7 @@ interface PreviewState {
     fontRevision?: number,
     styleRevision?: number,
     photoRevision?: number,
+    contactIconRevision?: number,
   ) => Promise<void>;
   exportPdf: (resume: ResumeData) => Promise<Uint8Array>;
 }
@@ -53,7 +55,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
   setFontPermission(fontPermission) {
     set({ fontPermission, state: 'idle', warnings: [], error: null });
   },
-  async compile(resume, fontRevision, styleRevision, photoRevision) {
+  async compile(resume, fontRevision, styleRevision, photoRevision, contactIconRevision) {
     const permission = get().fontPermission;
     if (permission === 'unknown') return;
     const sequence = ++compileSequence;
@@ -66,6 +68,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
         permission === 'allowed',
         getSelectedFontBundle(fontRevision),
         getPhotoAsset(photoRevision),
+        getContactIconAssets(contactIconRevision),
         getStyleOverrides(styleRevision),
         {
           phase: setPhase,
@@ -99,6 +102,7 @@ export const usePreviewModel = create<PreviewState>((set, get) => ({
         permission === 'allowed',
         getSelectedFontBundle(),
         getPhotoAsset(),
+        getContactIconAssets(),
         getStyleOverrides(),
         {
           phase: setPhase,

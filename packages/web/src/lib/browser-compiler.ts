@@ -3,6 +3,7 @@ import { MemoryAccessModel } from '@myriaddreamin/typst.ts/fs/memory';
 import { loadFonts, withAccessModel } from '@myriaddreamin/typst.ts/options.init';
 import compilerWasmUrl from '@myriaddreamin/typst-ts-web-compiler/wasm?url';
 import type { ResumeData, TemplateConfigOverrides } from '@typsume/core';
+import { type ContactIconAsset, contactIconAssetBytes } from '@/models/contact-icon-model';
 import type { SelectedFontBundle } from '@/models/font-model';
 import { type PhotoAsset, photoAssetBytes } from '@/models/photo-model';
 import { inspectFontFamilies, selectFontFamily } from './font-inspection';
@@ -137,6 +138,7 @@ function mapResume(
   resume: ResumeData,
   configOverrides: TemplateConfigOverrides,
   photoAsset: PhotoAsset | null,
+  contactIconAssets: ContactIconAsset[],
 ): void {
   const browserResume = structuredClone(resume);
   if (photoAsset && browserResume.basics.photo === photoAsset.path) {
@@ -145,6 +147,18 @@ function mapResume(
     browserResume.basics.photo = workspacePath;
   } else if (browserResume.basics.photo) {
     delete browserResume.basics.photo;
+  }
+  for (const contact of browserResume.basics.contacts) {
+    const asset = contactIconAssets.find((candidate) => candidate.path === contact.icon);
+    if (!asset) {
+      if (contact.icon.includes('/') || /\.(?:png|svg)$/i.test(contact.icon)) {
+        contact.icon = 'email';
+      }
+      continue;
+    }
+    const workspacePath = `project/${asset.path}`;
+    runtime.compiler.mapShadow(`${VIRTUAL_ROOT}${workspacePath}`, contactIconAssetBytes(asset));
+    contact.icon = workspacePath;
   }
   const config = DEFAULT_TEMPLATE.config(configOverrides);
   if (runtime.fontFamilyOverride) {
@@ -181,6 +195,7 @@ async function compile(
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
   photoAsset: PhotoAsset | null,
+  contactIconAssets: ContactIconAsset[],
   configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks,
 ): Promise<Uint8Array> {
@@ -190,6 +205,14 @@ async function compile(
       kind: 'warning',
       message:
         'The photo asset is unavailable in this browser. Upload the matching image again; the saved resume path was not changed.',
+    });
+  }
+  for (const contact of resume.basics.contacts) {
+    if (!contact.icon.includes('/') && !/\.(?:png|svg)$/i.test(contact.icon)) continue;
+    if (contactIconAssets.some((asset) => asset.path === contact.icon)) continue;
+    callbacks.resource?.({
+      kind: 'warning',
+      message: `The custom contact icon ${contact.icon} is unavailable in this browser. A built-in fallback will be used.`,
     });
   }
   const runtime = await getRuntime(
@@ -207,7 +230,7 @@ async function compile(
 
   runtime.queue = runtime.queue
     .then(async () => {
-      mapResume(runtime, resume, configOverrides, photoAsset);
+      mapResume(runtime, resume, configOverrides, photoAsset, contactIconAssets);
       callbacks.phase?.(format === CompileFormatEnum.pdf ? 'compiling-pdf' : 'compiling-preview');
       const document = await runtime.compiler.compile({
         mainFilePath: `${VIRTUAL_ROOT}template.typ`,
@@ -237,6 +260,7 @@ export function compilePreview(
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
   photoAsset: PhotoAsset | null,
+  contactIconAssets: ContactIconAsset[],
   configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
@@ -246,6 +270,7 @@ export function compilePreview(
     allowFontDownloads,
     selectedFont,
     photoAsset,
+    contactIconAssets,
     configOverrides,
     callbacks,
   );
@@ -256,6 +281,7 @@ export function compilePdf(
   allowFontDownloads: boolean,
   selectedFont: SelectedFontBundle | null,
   photoAsset: PhotoAsset | null,
+  contactIconAssets: ContactIconAsset[],
   configOverrides: TemplateConfigOverrides,
   callbacks: CompileCallbacks = {},
 ): Promise<Uint8Array> {
@@ -265,6 +291,7 @@ export function compilePdf(
     allowFontDownloads,
     selectedFont,
     photoAsset,
+    contactIconAssets,
     configOverrides,
     callbacks,
   );

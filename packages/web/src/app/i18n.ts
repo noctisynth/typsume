@@ -124,6 +124,9 @@ const resources = {
           'read-failed': '图片读取失败，请重新选择。',
         },
       },
+      contact: {
+        uploadIcon: '上传自定义联系图标',
+      },
       style: {
         group: { colors: '颜色', fonts: '字体', sizes: '字号', layout: '页面布局' },
         field: {
@@ -280,6 +283,9 @@ const resources = {
           'unsupported-type': 'Choose a PNG or JPEG image.',
           'read-failed': 'Unable to read the image. Choose it again.',
         },
+      },
+      contact: {
+        uploadIcon: 'Upload custom contact icon',
       },
       style: {
         group: { colors: 'Colors', fonts: 'Fonts', sizes: 'Type sizes', layout: 'Page layout' },

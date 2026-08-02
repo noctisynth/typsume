@@ -180,6 +180,39 @@ describe('CLI command workflows', () => {
     ]);
   });
 
+  test('mounts only custom contact icons referenced by resume data', async () => {
+    const root = temporaryDirectory();
+    mkdirSync(resolve(root, 'assets'));
+    writeFileSync(resolve(root, 'assets', 'contact.svg'), '<svg></svg>');
+    writeFileSync(
+      resolve(root, 'resume.json'),
+      JSON.stringify({
+        ...minimalResume,
+        basics: {
+          ...minimalResume.basics,
+          contacts: [{ icon: 'assets/contact.svg', text: 'Example' }],
+        },
+      }),
+    );
+    let compileOptions: CompileOptions | undefined;
+    await buildResume(
+      { source: 'resume.json' },
+      {
+        cwd: root,
+        configEnvironment: { homeDir: root },
+        compile: async (options) => {
+          compileOptions = options;
+          return fakeCompile(options);
+        },
+      },
+    );
+
+    expect(JSON.parse(compileOptions?.resumeJson ?? '{}').basics.contacts[0].icon).toBe(
+      'project/assets/contact.svg',
+    );
+    expect(compileOptions?.projectAssets?.[0]?.path).toBe('project/assets/contact.svg');
+  });
+
   test('rejects missing and out-of-project photo paths', async () => {
     const root = temporaryDirectory();
     const resumePath = resolve(root, 'resume.json');

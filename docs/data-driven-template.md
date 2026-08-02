@@ -28,7 +28,7 @@
 
 ```ts
 type Contact = {
-  icon: string          // icon key, e.g. "github", "envelope"
+icon: string          // 内置 key（email/phone/github）或项目相对 SVG/PNG 路径
   text: string          // 显示文本
   link?: string         // URL，缺省则不渲染为链接
 }
@@ -100,9 +100,15 @@ default 模板在工作经历中把 `department` 渲染到原模板 `#tech[...]`
 整个项目目录；绝对路径、`..` 越界、目录或不存在文件都必须显式报错。Web 上传图片时生成
 `assets/<安全文件名>` 并保留原始 PNG/JPEG 字节，CLI 在解压项目 ZIP 后读取同一路径。
 
+`basics.contacts[].icon` 优先按模板内置 key 解析；default 模板至少支持 `email` / `envelope`、
+`phone` 与 `github`。包含 `/` 或以 `.svg` / `.png` 结尾的值视为项目相对自定义图标路径，沿用
+照片相同的越界防护但只挂载被引用的具体文件。Web 上传自定义图标到 `assets/` 并随项目 ZIP 导出。
+
 default 模板的 awards 按 `date` 首次出现顺序分组；同一日期只显示一次，右侧可排列多个奖项，
 `level` 作为次要文本；日期、短标记与奖项标题按同一水平基线对齐。荣誉布局不得通过整组测量
-高度绘制贯穿空白区的时间轴。`skills`、`awards`、`projects`、`experience` 或 `education`
+高度绘制贯穿空白区的时间轴；多行标题使用自然行高并撑开后续条目，日期列只保留显示年份所需宽度。
+default 模板正文顺序固定为教育背景、实习经历、项目经历，姓名不添加方括号等装饰字符。
+`skills`、`awards`、`projects`、`experience` 或 `education`
 数组为空时，default 模板不得渲染对应的 section 标题或占位空白。
 
 JSON Schema / Zod schema 的实现属于 `packages/core`，本文件不下放。

@@ -18,6 +18,7 @@ import {
   serializeResume,
 } from '@/lib/resume-format';
 import { DEFAULT_TEMPLATE } from '@/lib/template-registry';
+import { getContactIconAssets, useContactIconModel } from '@/models/contact-icon-model';
 import { getPhotoAsset, usePhotoModel } from '@/models/photo-model';
 import { useResumeModel } from '@/models/resume-model';
 import { useStyleModel } from '@/models/style-model';
@@ -93,6 +94,7 @@ export function ResumeDownloadMenu() {
   const [error, setError] = useState<string | null>(null);
   const resume = useResumeModel((state) => state.resume);
   const photoRevision = usePhotoModel((state) => state.revision);
+  const contactIconRevision = useContactIconModel((state) => state.revision);
   const overrides = useStyleModel((state) => state.overrides);
 
   function downloadProject() {
@@ -101,6 +103,7 @@ export function ResumeDownloadMenu() {
         resume,
         { ...DEFAULT_TEMPLATE.configDefaults, ...overrides },
         getPhotoAsset(photoRevision),
+        getContactIconAssets(contactIconRevision),
       );
       const url = URL.createObjectURL(
         new Blob([Uint8Array.from(bytes).buffer], { type: 'application/zip' }),

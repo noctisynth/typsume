@@ -43,4 +43,26 @@ describe('resume project bundle', () => {
     });
     expect(() => createProjectBundle(resume, {}, null)).toThrow('missing-photo-asset');
   });
+
+  test('includes every referenced custom contact icon', () => {
+    const resume = ResumeSchema.parse({
+      schema: 'typst-resume/1.0',
+      basics: {
+        name: 'Xxx Yyy',
+        contacts: [{ icon: 'assets/contact.svg', text: 'Example' }],
+      },
+    });
+    const bundle = unzipSync(
+      createProjectBundle(resume, {}, null, [
+        {
+          path: 'assets/contact.svg',
+          fileName: 'contact.svg',
+          mimeType: 'image/svg+xml',
+          base64: 'PHN2Zz48L3N2Zz4=',
+        },
+      ]),
+    );
+
+    expect(strFromU8(bundle['assets/contact.svg'] as Uint8Array)).toBe('<svg></svg>');
+  });
 });

@@ -21,6 +21,13 @@
   fa-code: icon("icons/fa-code.svg"),
 )
 
+#let contact-icons = (
+  email: icon("icons/fa-envelope.svg"),
+  envelope: icon("icons/fa-envelope.svg"),
+  phone: icon("icons/fa-phone.svg"),
+  github: icon("icons/fa-github.svg"),
+)
+
 #let resume(font-size: 10pt, margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm), gutter-width: 2em, side-width: 12em, photo: none, header, body) = {
   set page(paper: "a4", numbering: none, margin: margin)
   set text(font: (fonts.main, fonts.mono), fill: rgb_of(colors.main), size: font-size, lang: "zh")
@@ -114,18 +121,24 @@
 
 #let header = [
   #set align(right)
-  = [#data.basics.name]
+  = #data.basics.name
   #h(0.5em)
   #set align(left)
   #if contacts.len() > 0 [
     #info(
       color: rgb_of(colors.theme),
       ..contacts.map(c => {
-        let icon-key = "fa-" + c.at("icon", default: "envelope")
+        let icon-key = c.at("icon", default: "email")
         let text-val = c.at("text", default: "")
         let link-val = c.at("link", default: none)
         (
-          icon: icons.at(icon-key, default: icons.fa-award),
+          icon: if contact-icons.keys().contains(icon-key) {
+            contact-icons.at(icon-key)
+          } else if icon-key.contains("/") {
+            icon(icon-key)
+          } else {
+            icons.fa-code
+          },
           content: text-val,
           link: link-val,
         )
@@ -153,59 +166,45 @@
     #for award-date in award-dates [
       #let grouped-awards = data.awards.filter(award => award.date == award-date)
       #let award-rows = ()
-      #for (index, award) in grouped-awards.enumerate() {
+      #for award in grouped-awards {
+        let award-copy = block(width: 100%)[
+          #set par(leading: 0.32em)
+          #text(size: 0.7em, award.title)
+          #let level = award.at("level", default: none)
+          #if level != none [
+            #linebreak()
+            #text(size: 0.65em, fill: rgb_of(colors.secondary), level)
+          ]
+        ]
         let title-row = grid(
-          columns: (3.2em, 0.5em, 1fr),
-          gutter: 0.4em,
-          align: (right + horizon, center + horizon, left + horizon),
-          if index == 0 {
-            text(size: 0.7em, fill: rgb_of(colors.secondary), award-date)
-          } else { [] },
+          columns: (0.35em, 1fr),
+          gutter: 0.25em,
+          align: (center + top, left + top),
           circle(radius: 0.1em, fill: rgb_of(colors.theme)),
-          text(size: 0.7em, award.title),
+          award-copy,
         )
-        let level = award.at("level", default: none)
-        if level != none {
-          let level-row = grid(
-            columns: (3.2em, 0.5em, 1fr),
-            gutter: 0.4em,
-            [],
-            [],
-            text(size: 0.65em, fill: rgb_of(colors.secondary), level),
-          )
-          award-rows.push(stack(spacing: 0.05em, title-row, level-row))
-        } else {
-          award-rows.push(title-row)
-        }
+        award-rows.push(title-row)
       }
-      #stack(spacing: 0.12em, ..award-rows)
-      #v(0.12em)
+      #grid(
+        columns: (2.2em, 1fr),
+        gutter: 0.35em,
+        align: (right + top, left + top),
+        text(size: 0.7em, fill: rgb_of(colors.secondary), award-date),
+        stack(spacing: 0.2em, ..award-rows),
+      )
+      #v(0.18em)
     ]
   ]
 ]
 
 #let body = [
-  #if data.projects.len() > 0 [
-    == #icons.fa-code 项目经历
-    #for it in data.projects [
-      #item(
-        {
-          let links = it.at("links", default: ())
-          if links.len() > 0 {
-            let first = links.at(0)
-            link(first.href, strong(it.title))
-          } else {
-            strong(it.title)
-          }
-        },
-        [* #(it.at("subtitle", default: "")) *],
+  #if data.education.len() > 0 [
+    == #icons.fa-graduation-cap 教育背景
+    #for it in data.education [
+      #space-between(
+        [* #it.title * #if it.at("subtitle", default: none) != none [ - #it.subtitle ]],
         if it.at("period", default: none) != none [ #date(it.period) ],
       )
-      #let stack-tags = it.at("stack", default: ())
-      #if stack-tags.len() > 0 [
-        #tech[ #stack-tags.join(" ") ]
-      ]
-      #if it.at("body", default: none) != none [ #(it.body) ]
       #let highlights = it.at("highlights", default: ())
       #if highlights.len() > 0 [
         #list(..highlights.map(h => [- #h]))
@@ -239,13 +238,27 @@
       ]
     ]
   ]
-  #if data.education.len() > 0 [
-    == #icons.fa-graduation-cap 教育背景
-    #for it in data.education [
-      #space-between(
-        [* #it.title * #if it.at("subtitle", default: none) != none [ - #it.subtitle ]],
+  #if data.projects.len() > 0 [
+    == #icons.fa-code 项目经历
+    #for it in data.projects [
+      #item(
+        {
+          let links = it.at("links", default: ())
+          if links.len() > 0 {
+            let first = links.at(0)
+            link(first.href, strong(it.title))
+          } else {
+            strong(it.title)
+          }
+        },
+        [* #(it.at("subtitle", default: "")) *],
         if it.at("period", default: none) != none [ #date(it.period) ],
       )
+      #let stack-tags = it.at("stack", default: ())
+      #if stack-tags.len() > 0 [
+        #tech[ #stack-tags.join(" ") ]
+      ]
+      #if it.at("body", default: none) != none [ #(it.body) ]
       #let highlights = it.at("highlights", default: ())
       #if highlights.len() > 0 [
         #list(..highlights.map(h => [- #h]))

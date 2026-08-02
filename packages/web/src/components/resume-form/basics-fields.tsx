@@ -1,11 +1,12 @@
 import type { ResumeInput, ResumeOutput } from '@typsume/core';
-import { ImagePlus, Plus, Trash2 } from 'lucide-react';
+import { ImagePlus, Plus, Trash2, Upload } from 'lucide-react';
 import { useRef } from 'react';
 import type { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useContactIconModel } from '@/models/contact-icon-model';
 import { photoAssetDataUrl, usePhotoModel } from '@/models/photo-model';
 import { TextField } from './text-field';
 
@@ -25,6 +26,7 @@ export function BasicsFields({ control, register, setValue }: BasicsFieldsProps)
   const photoError = usePhotoModel((state) => state.error);
   const uploadPhoto = usePhotoModel((state) => state.upload);
   const clearPhoto = usePhotoModel((state) => state.clear);
+  const uploadContactIcon = useContactIconModel((state) => state.upload);
   const activePhoto = photoAsset?.path === photoPath ? photoAsset : null;
 
   async function selectPhoto(file: File) {
@@ -130,11 +132,39 @@ export function BasicsFields({ control, register, setValue }: BasicsFieldsProps)
         {contacts.fields.map((contact, index) => (
           <Card className="bg-muted/30 shadow-none" key={contact.id}>
             <CardContent className="grid grid-cols-[0.7fr_1.2fr_1.4fr_auto] items-end gap-3 p-3">
-              <TextField
-                id={`contact-icon-${contact.id}`}
-                label={t('field.icon')}
-                registration={register(`basics.contacts.${index}.icon`)}
-              />
+              <div className="flex items-end gap-1">
+                <div className="min-w-0 flex-1">
+                  <TextField
+                    id={`contact-icon-${contact.id}`}
+                    label={t('field.icon')}
+                    registration={register(`basics.contacts.${index}.icon`)}
+                  />
+                </div>
+                <Button asChild aria-label={t('contact.uploadIcon')} size="icon" variant="outline">
+                  <label>
+                    <Upload />
+                    <input
+                      accept="image/png,image/svg+xml"
+                      className="sr-only"
+                      type="file"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) {
+                          void uploadContactIcon(file).then((asset) => {
+                            if (asset) {
+                              setValue(`basics.contacts.${index}.icon`, asset.path, {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              });
+                            }
+                          });
+                        }
+                        event.target.value = '';
+                      }}
+                    />
+                  </label>
+                </Button>
+              </div>
               <TextField
                 id={`contact-text-${contact.id}`}
                 label={t('field.text')}

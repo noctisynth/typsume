@@ -285,7 +285,9 @@ CLI 配置”操作，复制包含 `template`、`output` 和当前完整 `[confi
 `typsume.config.toml`，使数据文件与样式配置可以一起交给 CLI。
 
 数据菜单同时提供“导出项目 ZIP”：固定包含 `resume.toml`、完整 `typsume.config.toml`，并在已上传
-照片时包含其 `assets/` 文件。解压后可直接执行 `typsume build resume.toml`。纯
+照片或自定义联系方式图标时包含其 `assets/` 文件。联系方式图标输入支持 default 模板内置 key，
+也可上传 PNG/SVG 并自动写入项目相对路径；缺少浏览器内字节时使用内置 fallback 并告警。解压后
+可直接执行 `typsume build resume.toml`。纯
 JSON/YAML/TOML 下载仍只表达 ResumeData，不内嵌图片或样式。
 
 ## 9. 国际化
@@ -344,4 +346,5 @@ JSON/YAML/TOML 下载仍只表达 ResumeData，不内嵌图片或样式。
 - [x] 超长照片文件名不会撑破左栏，缩略图、说明和上传/删除操作均保持可见
 - [x] 预览支持 50%-200% 控件缩放、Ctrl/Cmd+滚轮和触摸板捏合，滚动范围与实际页面尺寸一致；无预览产物时禁用缩放
 - [x] 提高像素级滚轮与触摸板的预览缩放灵敏度
+- [x] 联系方式使用正确的内置图标，并支持上传、持久化和导出项目相对 PNG/SVG 自定义图标
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI
