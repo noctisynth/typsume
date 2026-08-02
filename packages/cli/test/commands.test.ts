@@ -91,8 +91,15 @@ describe('CLI command workflows', () => {
     );
     expect(workflow).toContain('actions/checkout@v6');
     expect(workflow).toContain('oven-sh/setup-bun@v2');
+    expect(workflow).toContain('actions/cache@v5');
+    expect(workflow).toContain('path: .typsume/fonts');
+    expect(workflow).toContain(
+      `key: \${{ runner.os }}-typsume-fonts-\${{ hashFiles('typsume.config.toml', 'resume.yaml') }}`,
+    );
     expect(workflow).toContain('actions/upload-artifact@v7');
     expect(workflow).toContain('path: resume.pdf');
+    expect(workflow).toContain('archive: false');
+    expect(workflow).not.toContain('name: resume\n');
   });
 
   test('CLI output overrides project output and dry-run writes normalized JSON', async () => {

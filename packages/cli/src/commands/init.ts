@@ -92,11 +92,17 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: canary
+      - uses: actions/cache@v5
+        with:
+          path: .typsume/fonts
+          key: \${{ runner.os }}-typsume-fonts-\${{ hashFiles('typsume.config.toml', '${sourceFilename}') }}
+          restore-keys: |
+            \${{ runner.os }}-typsume-fonts-
       - run: bunx @typsume/cli@latest build ${sourceFilename} --output resume.pdf --allow-downloads
       - uses: actions/upload-artifact@v7
         with:
-          name: resume
           path: resume.pdf
+          archive: false
           if-no-files-found: error
 `;
 }

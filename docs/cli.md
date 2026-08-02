@@ -128,7 +128,9 @@ typsume init [dir] [--format json|yaml|toml] [--github-actions|--no-github-actio
 
 交互终端中，`init` 询问是否生成 `.github/workflows/resume.yml`。确认后，workflow 在每次
 push 到 `main` 时运行 `typsume build <source> --allow-downloads`，并通过
-`actions/upload-artifact@v7` 上传 `resume.pdf`。脚本或非交互环境使用
+`actions/upload-artifact@v7` 的单文件直传上传名为 `resume.pdf` 的 artifact。workflow 使用
+`actions/cache@v5` 缓存 `.typsume/fonts/`；缓存主键包含 runner OS、`typsume.config.toml` 与 source
+文件哈希，并以 OS 前缀恢复已有字体。脚本或非交互环境使用
 `--github-actions` / `--no-github-actions` 显式选择；未指定时不生成 workflow。
 
 ### 4.1 源文件格式
@@ -275,17 +277,25 @@ GitHub Actions：
 - uses: oven-sh/setup-bun@v2
   with:
     bun-version: canary
+- uses: actions/cache@v5
+  with:
+    path: .typsume/fonts
+    key: ${{ runner.os }}-typsume-fonts-${{ hashFiles('typsume.config.toml', 'resume.yaml') }}
+    restore-keys: |
+      ${{ runner.os }}-typsume-fonts-
 - run: bun install
 - run: bun run typsume build resume.yaml -t modern
 - uses: actions/upload-artifact@v7
   with:
     path: resume.pdf
+    archive: false
 ```
 
 ## 10. 验证清单（DoD）
 
 - [x] `typsume init` 默认生成可编译的 `resume.toml`，并支持 `--format json|yaml|toml`
 - [x] `init` 生成的 GitHub Actions 使用当前稳定主版本，并与仓库 CI 版本同步
+- [x] `init` workflow 以 `resume.pdf` 单文件 artifact 上传产物，并缓存项目字体下载目录
 - [ ] `typsume build resume.json` 成功输出 PDF（与 Web 同一份 fixture 对齐）
 - [ ] `typsume validate` 对错误输入给出上述可读错误
 - [ ] `typsume dev` 在 watch 时变更即重建
