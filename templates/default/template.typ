@@ -183,11 +183,7 @@
           if index == 0 {
             text(size: 0.7em, fill: rgb_of(colors.secondary), award-date)
           } else { [] },
-          box(
-            width: 0.35em,
-            height: 0.9em,
-            align(center + horizon, circle(radius: 0.1em, fill: rgb_of(colors.theme))),
-          ),
+          text(size: 0.7em, fill: rgb_of(colors.theme), "•"),
           award-copy,
         )
         award-rows.push(title-row)
