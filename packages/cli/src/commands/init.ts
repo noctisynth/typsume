@@ -88,12 +88,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: canary
       - run: bunx @typsume/cli@latest build ${sourceFilename} --output resume.pdf --allow-downloads
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: resume
           path: resume.pdf

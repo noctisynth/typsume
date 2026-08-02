@@ -89,7 +89,9 @@ describe('CLI command workflows', () => {
     expect(workflow).toContain(
       'bunx @typsume/cli@latest build resume.yaml --output resume.pdf --allow-downloads',
     );
-    expect(workflow).toContain('actions/upload-artifact@v4');
+    expect(workflow).toContain('actions/checkout@v6');
+    expect(workflow).toContain('oven-sh/setup-bun@v2');
+    expect(workflow).toContain('actions/upload-artifact@v7');
     expect(workflow).toContain('path: resume.pdf');
   });
 

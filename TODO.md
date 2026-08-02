@@ -127,6 +127,7 @@
   - [x] CLI 子进程测试使用独立临时 HOME/XDG，禁止把 Bun 缓存写入源码目录
   - [x] 交互策略测试隔离 `GITHUB_ACTIONS`，本地复现并覆盖 CI 环境
   - [x] `init` 交互询问并可生成 main push 构建、上传 PDF artifact 的 GitHub Actions workflow
+  - [x] 核对并升级 `init` 生成器与仓库 CI/CD 中的 GitHub Actions 主版本
 - [x] 发布包：`@typsume/cli` + `typsume` bin + pack 内置模板；pnpm/npm/Bun 执行入口已对齐
 - [x] 远程字体资源
   - [x] 下载前交互确认；`--allow-downloads` 与 `GITHUB_ACTIONS=true` 跳过交互并授权
