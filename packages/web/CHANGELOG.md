@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.1.4
+
+### Bug Fixes
+
+- [`9fab7db`](https://github.com/noctisynth/typsume/commit/9fab7dbc3fdbf9c1bd38ab70e68b34e7e99e0038): Remove the rendering seam from the logo fold.
+
+    The document silhouette now reserves the folded corner instead of painting two diagonal shapes on top of each other, eliminating the white anti-aliasing gap at large and favicon sizes.
+
+
+### New Features
+
+- [`1d0ec22`](https://github.com/noctisynth/typsume/commit/1d0ec22f491c4666d697bc1e4df2e42e359a1696): Add a reusable Typsume brand mark.
+
+    The Web app now uses a crisp, font-independent SVG logo inspired by structured data becoming a typeset document across the home page, editor header, and favicon.
+
 ## v0.1.3
 
 ### Bug Fixes
