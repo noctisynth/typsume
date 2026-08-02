@@ -181,6 +181,7 @@
 - [x] `typsume init` 已支持交互确认或 `--github-actions` 生成 main push PDF artifact workflow
 - [x] Web PNG/JPEG 上传到逻辑 `assets/` 并持久化；浏览器编译挂载图片；项目 ZIP 携带数据、配置与图片
 - [x] CLI 安全挂载项目根内 `basics.photo` 引用，使 Web 项目 ZIP 解压后可直接构建
+- [x] 修复照片上传卡片的 min-content 横向溢出，超长文件名不再撑破左栏
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright

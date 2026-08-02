@@ -64,31 +64,31 @@ export function BasicsFields({ control, register, setValue }: BasicsFieldsProps)
           <p className="text-sm font-medium">{t('field.photo')}</p>
           <span className="text-xs text-muted-foreground">{t('common.optional')}</span>
         </div>
-        <Card className="bg-muted/30 shadow-none">
-          <CardContent className="flex items-center gap-3 p-3">
+        <Card className="min-w-0 overflow-hidden bg-muted/30 shadow-none">
+          <CardContent className="grid min-w-0 grid-cols-[4rem_minmax(0,1fr)] items-start gap-x-3 gap-y-2 p-3">
             {activePhoto ? (
               <img
                 alt={t('photo.previewAlt')}
-                className="size-16 rounded-lg border bg-background object-cover"
+                className="row-span-2 size-16 rounded-lg border bg-background object-cover"
                 src={photoAssetDataUrl(activePhoto)}
               />
             ) : (
-              <div className="grid size-16 place-items-center rounded-lg border bg-background text-muted-foreground">
+              <div className="row-span-2 grid size-16 place-items-center rounded-lg border bg-background text-muted-foreground">
                 <ImagePlus className="size-5" />
               </div>
             )}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">
+            <div className="min-w-0 overflow-hidden">
+              <p className="max-w-full truncate text-sm font-medium">
                 {activePhoto?.fileName ?? photoPath ?? t('photo.empty')}
               </p>
-              <p className="mt-1 text-xs leading-4 text-muted-foreground">
+              <p className="mt-1 break-words text-xs leading-4 text-muted-foreground">
                 {photoPath && !activePhoto ? t('photo.missingAsset') : t('photo.help')}
               </p>
               {photoError ? (
                 <p className="mt-1 text-xs text-destructive">{t(`photo.error.${photoError}`)}</p>
               ) : null}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-1">
               <Button
                 disabled={photoUploading}
                 size="sm"

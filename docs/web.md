@@ -96,6 +96,8 @@ packages/web/src/
 - 顶栏模板选择器与语言按钮之间的短垂直分割线必须在 header 内垂直居中。
 - 左侧 Accordion 动画容器保留 `overflow-hidden`，但内容区域必须为 Card 外扩 ring 在上、右侧
   预留 1px，不能裁掉卡片边缘。
+- 照片上传卡片必须在左栏宽度内回流：缩略图固定宽度，文件名所在列使用 `minmax(0,1fr)` 并截断，
+  操作按钮在该列内换行；任意文件名不得扩大表单或遮蔽右侧内容。
 
 结构跳转只能滚动左侧 Radix ScrollArea viewport，不得调用可能连带滚动 document root 的
 `scrollIntoView()`；重复点击不能改变页面根滚动位置或编辑器整体布局。
@@ -333,4 +335,5 @@ JSON/YAML/TOML 下载仍只表达 ResumeData，不内嵌图片或样式。
 - [x] 数据下载菜单在菜单级说明三种格式均支持 CLI；排版设置可复制完整 `typsume.config.toml`
 - [x] 同年荣誉条目采用受控紧凑间距，不受 Typst 段落默认 spacing 放大
 - [x] PNG/JPEG 上传自动写入 `assets/` 逻辑路径，刷新后恢复，Web 预览/PDF 与 CLI 项目 ZIP 使用同一图片
+- [x] 超长照片文件名不会撑破左栏，缩略图、说明和上传/删除操作均保持可见
 - [ ] W5：多简历/多版本、第二套模板、分享链接与 lhci + Playwright e2e 通过 CI
