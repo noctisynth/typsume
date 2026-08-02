@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.3
+
+### New Features
+
+- [`fa8c4d8`](https://github.com/noctisynth/typsume/commit/fa8c4d82c7f572293bf19996ca575fddf64873ef): Configure contact text size independently from body text.
+
+    The shared template configuration now exposes `contact-size`, and the default template and Web style editor apply it without forcing users to shrink all resume content to fit long contact values.
+
 ## v0.1.2
 
 ### New Features

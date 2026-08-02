@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.1.3
+
+### Bug Fixes
+
+- [`63c69c5`](https://github.com/noctisynth/typsume/commit/63c69c58176612f92ef29e650fce068818a614a2): Fix default resume layout and contact icon rendering.
+
+    The default template now renders education before experience and projects, removes decorative name brackets, gives wrapped awards natural spacing, maps built-in contact icons correctly, and supports safely mounted custom SVG or PNG contact icons in CLI and Web projects.
+
+- [`1906090`](https://github.com/noctisynth/typsume/commit/19060903894628fff0b94b23d66de295f87b06e6): Align award markers with the first line of each title.
+
+    Award rows now use a text bullet at the same font size as the title, so both elements share a typographic baseline instead of approximating alignment with a geometric circle.
+
+- [`87d85cf`](https://github.com/noctisynth/typsume/commit/87d85cfa2f69e424932822fe10c5bc8bf7ad67a4): Align award dates, markers, and wrapped titles in the default template.
+
+    Each award now shares one three-column row, keeps grouped years left aligned, and anchors its marker to the first title line while multiline content expands naturally.
+
+
+### New Features
+
+- [`fa8c4d8`](https://github.com/noctisynth/typsume/commit/fa8c4d82c7f572293bf19996ca575fddf64873ef): Configure contact text size independently from body text.
+
+    The shared template configuration now exposes `contact-size`, and the default template and Web style editor apply it without forcing users to shrink all resume content to fit long contact values.
+
 ## v0.1.2
 
 ### Bug Fixes
