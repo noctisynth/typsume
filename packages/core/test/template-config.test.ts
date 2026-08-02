@@ -9,11 +9,12 @@ describe('template configuration', () => {
   test('applies project overrides after template defaults', () => {
     const resolved = resolveTemplateConfig(
       { 'theme-color': '#112233', 'font-size': 9 },
-      { 'theme-color': '#abcdef', 'heading-size': 15 },
+      { 'theme-color': '#abcdef', 'heading-size': 15, 'contact-size': 8 },
     );
     expect(resolved.colors.theme).toBe('#abcdef');
     expect(resolved.sizes.font).toBe(9);
     expect(resolved.sizes.heading).toBe(15);
+    expect(resolved.sizes.contact).toBe(8);
   });
 
   test('provides the complete compiler configuration when overrides are empty', () => {

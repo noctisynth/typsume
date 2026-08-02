@@ -22,6 +22,7 @@ font         = "Maple Mono NF"
 mono-font    = "Maple Mono NF"
 
 font-size    = 10
+contact-size = 8.5
 heading-size = 13
 list-size    = 8.5
 item-title-size = 11

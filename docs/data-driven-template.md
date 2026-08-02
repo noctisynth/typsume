@@ -147,6 +147,8 @@ optional-fields = ["basics.photo", "awards"]
 theme-color = "#0b628b"
 font        = "Noto Sans CJK SC"
 mono-font   = "JetBrains Mono"
+font-size   = 10
+contact-size = 8.5
 
 [[resources.fonts]]
 urls = [

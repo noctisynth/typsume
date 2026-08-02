@@ -239,6 +239,7 @@ font-paths = ["assets/fonts/example.ttf"] # 可选；相对项目根目录的 TT
 # 与模板 meta.toml[config] 使用相同 key；这里只写用户希望覆盖的项目级样式。
 theme-color = "#0b628b"
 font-size = 10
+contact-size = 8.5
 ```
 
 命令行参数覆盖配置文件。

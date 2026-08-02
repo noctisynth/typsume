@@ -56,7 +56,7 @@
 }
 
 #let info(color: black, ..infos) = {
-  set text(font: (fonts.mono, fonts.main), fill: color)
+  set text(font: (fonts.mono, fonts.main), fill: color, size: sizes.contact * 1pt)
   set par(justify: false)
   infos.pos().map(item => {
     box({

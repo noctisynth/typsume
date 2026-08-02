@@ -28,6 +28,7 @@ const groups: Array<{
     title: 'sizes',
     fields: [
       { key: 'font-size', type: 'number', step: '0.5' },
+      { key: 'contact-size', type: 'number', step: '0.5' },
       { key: 'heading-size', type: 'number', step: '0.5' },
       { key: 'list-size', type: 'number', step: '0.5' },
       { key: 'item-title-size', type: 'number', step: '0.5' },

@@ -17,6 +17,7 @@ export const TemplateConfigSchema = z
     font: family,
     'mono-font': family,
     'font-size': size,
+    'contact-size': size,
     'heading-size': size,
     'list-size': size,
     'item-title-size': size,
@@ -37,7 +38,7 @@ export type TemplateConfigOverrides = z.infer<typeof TemplateConfigOverridesSche
 export interface ResolvedTemplateConfig {
   colors: { theme: string; main: string; secondary: string; link: string; icon: string };
   fonts: { main: string; mono: string };
-  sizes: { font: number; heading: number; list: number; item_title: number };
+  sizes: { font: number; contact: number; heading: number; list: number; item_title: number };
   layout: {
     margin_top: string;
     margin_bottom: string;
@@ -57,6 +58,7 @@ export const FALLBACK_TEMPLATE_CONFIG: TemplateConfig = {
   font: 'Maple Mono NF',
   'mono-font': 'Maple Mono NF',
   'font-size': 10,
+  'contact-size': 8.5,
   'heading-size': 13,
   'list-size': 8.5,
   'item-title-size': 11,
@@ -91,6 +93,7 @@ export function resolveTemplateConfig(
     fonts: { main: config.font, mono: config['mono-font'] },
     sizes: {
       font: config['font-size'],
+      contact: config['contact-size'],
       heading: config['heading-size'],
       list: config['list-size'],
       item_title: config['item-title-size'],
