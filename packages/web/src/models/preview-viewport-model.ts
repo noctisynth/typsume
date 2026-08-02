@@ -3,13 +3,14 @@ import { create } from 'zustand';
 export const PREVIEW_ZOOM_MIN = 50;
 export const PREVIEW_ZOOM_MAX = 200;
 export const PREVIEW_ZOOM_STEP = 10;
+const PIXEL_WHEEL_ZOOM_SENSITIVITY = 0.003;
 
 export function clampPreviewZoom(value: number) {
   return Math.min(PREVIEW_ZOOM_MAX, Math.max(PREVIEW_ZOOM_MIN, Math.round(value)));
 }
 
 export function previewZoomFromWheel(current: number, deltaY: number, deltaMode = 0) {
-  const sensitivity = deltaMode === 1 ? 0.04 : deltaMode === 2 ? 0.4 : 0.002;
+  const sensitivity = deltaMode === 1 ? 0.04 : deltaMode === 2 ? 0.4 : PIXEL_WHEEL_ZOOM_SENSITIVITY;
   return clampPreviewZoom(current * Math.exp(-deltaY * sensitivity));
 }
 

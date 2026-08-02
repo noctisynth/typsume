@@ -14,8 +14,8 @@ describe('preview viewport model', () => {
   });
 
   test('turns wheel direction into smooth bounded zoom changes', () => {
-    expect(previewZoomFromWheel(100, -50)).toBeGreaterThan(100);
-    expect(previewZoomFromWheel(100, 50)).toBeLessThan(100);
+    expect(previewZoomFromWheel(100, -50)).toBe(116);
+    expect(previewZoomFromWheel(100, 50)).toBe(86);
     expect(previewZoomFromWheel(PREVIEW_ZOOM_MAX, -100)).toBe(PREVIEW_ZOOM_MAX);
     expect(previewZoomFromWheel(PREVIEW_ZOOM_MIN, 100)).toBe(PREVIEW_ZOOM_MIN);
   });
