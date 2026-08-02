@@ -20,6 +20,9 @@ W4 的数据模型。
 `@typsume/web` 是 `private: true` 的静态应用：它登记在 Semifold package 配置中，以便 Web
 changeset 可被 CI 校验和纳入版本记录，但 Semifold 必须依据 private 标记跳过 npm 发布。
 
+品牌标志由 `public/logo.svg` 单一维护：首页、编辑器 header 与 favicon 均引用该文件。SVG 使用
+64×64 viewBox、纯路径与固定品牌色，不依赖字体或位图，必须在 16px favicon 尺寸保持可辨识。
+
 ## 2. 技术栈
 
 | 维度 | 选型 | 理由 |

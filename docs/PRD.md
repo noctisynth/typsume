@@ -79,7 +79,7 @@ typst-resume/
 ├── packages/
 │   ├── core/                            # ✅ schema · types · template contract（Zod + JSON Schema 7）
 │   ├── cli/                             # `typsume` 命令（Bun + citty）
-│   └── web/                             # React 19 编辑器
+│   └── web/                             # React 19 编辑器；public/logo.svg 为品牌标志单一来源
 ├── templates/
 │   └── default/                         # v1 必备，参考一份高质量中文 typst 简历样式
 ├── examples/                            # 示例简历
@@ -165,6 +165,7 @@ Web 必须支持导入、导出 JSON/YAML/TOML，三种格式只表达 `ResumeDa
 | R27 | default 模板 section 顺序偏离原简历；姓名带多余方括号；联系方式内置 key 未注册而全部回退成奖章；荣誉长文本行高与日期列留白失衡 | 正文固定教育 → 实习 → 项目；姓名不加装饰括号；内置 contact key 显式映射对应图标；每个荣誉直接使用年份/标记/文本三列同行网格，多行正文自然撑高 | 年份列左对齐且同组仅首行显示；标记使用与标题同字号的文本 bullet，共享首行字体基线；自定义图标只精确挂载引用文件 |
 | R28 | `config.font` 只声明字体 family，无法让 CLI 获得简历项目自带的字体字节 | 项目通过 `[build].font-paths` 声明项目根内的 TTF / OTF / TTC；CLI 校验相对路径与项目边界后，将字节与模板字体、远程字体一起传给 `loadFonts` | 字体文件不挂载到 Typst workspace；Web 项目 ZIP 暂不自动携带 CLI 专用本地字体 |
 | R29 | 侧栏联系方式继承正文字号，长地址容易换行；只降低全局字号又会不必要地压缩正文 | 完整样式契约新增 `contact-size`，只控制联系方式文字；`font-size` 继续独立控制正文，CLI 与 Web 使用同一覆盖键 | default 模板保持 10pt 正文、8.5pt 联系方式；项目可以分别覆盖 |
+| R30 | Web 首页与编辑器使用临时字母方块，没有可复用的小尺寸品牌标志 | 以品牌蓝圆角底、白色折角文档和无字体依赖的 `T` 字形组成 SVG；`packages/web/public/logo.svg` 作为单一来源，同时用于 favicon 与界面品牌入口 | 保持纯路径、透明外部背景和 64×64 viewBox；不得依赖系统字体或位图 |
 
 ## 10. 成功指标
 

@@ -1,5 +1,6 @@
 import { ArrowRight, Code2, LockKeyhole, PanelsTopLeft, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { BrandLogo } from '@/components/brand/brand-logo';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -8,9 +9,7 @@ export function HomePage() {
     <main className="min-h-svh overflow-hidden bg-background text-foreground">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link className="flex items-center gap-2 font-semibold tracking-tight" to="/">
-          <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-            T
-          </span>
+          <BrandLogo />
           Typsume
         </Link>
         <Button asChild variant="ghost">

@@ -1,6 +1,7 @@
 import { Download, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { BrandLogo } from '@/components/brand/brand-logo';
 import { ResumeDownloadMenu } from '@/components/resume-transfer/resume-data-actions';
 import { TemplatePicker } from '@/components/template-picker/template-picker';
 import { Button } from '@/components/ui/button';
@@ -32,9 +33,7 @@ export function EditorHeader() {
   return (
     <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background/95 px-4 backdrop-blur">
       <Link className="flex w-64 items-center gap-2 font-semibold tracking-tight" to="/">
-        <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-          T
-        </span>
+        <BrandLogo />
         {t('common.appName')}
       </Link>
       <div className="min-w-0 flex-1">

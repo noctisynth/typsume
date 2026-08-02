@@ -194,6 +194,7 @@
 - [x] 支持 contact 自定义 SVG/PNG 图标的 CLI 精确挂载、Web 上传持久化与项目导出
 - [x] 荣誉改为年份/圆点/文本同行网格，年份靠左且圆点与标题首行对齐
 - [x] 样式契约新增 `contact-size`，CLI/Web 可独立调节联系方式字号
+- [x] 设计纯路径 Typsume SVG Logo，并替换 Web 临时字母标志与 favicon
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright
