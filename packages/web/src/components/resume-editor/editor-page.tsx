@@ -16,6 +16,7 @@ export default function EditorPage() {
   const hydrated = useResumeModel((state) => state.hydrated);
   const previewState = usePreviewModel((state) => state.state);
   const phase = usePreviewModel((state) => state.phase);
+  const artifact = usePreviewModel((state) => state.artifact);
 
   if (!hydrated) {
     return (
@@ -58,7 +59,7 @@ export default function EditorPage() {
             </span>
             <div className="flex items-center gap-2">
               {phase ? <span>{t(`preview.phase.${phase}`)}</span> : null}
-              <PreviewZoomControls />
+              <PreviewZoomControls enabled={Boolean(artifact)} />
             </div>
           </div>
           <ScrollArea className="h-[calc(100%-2.75rem)]" horizontal>

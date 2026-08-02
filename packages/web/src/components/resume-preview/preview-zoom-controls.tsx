@@ -16,7 +16,7 @@ import {
 
 const ZOOM_PRESETS = [50, 75, 100, 125, 150, 200];
 
-export function PreviewZoomControls() {
+export function PreviewZoomControls({ enabled }: { enabled: boolean }) {
   const { t } = useTranslation();
   const zoom = usePreviewViewportModel((state) => state.zoom);
   const setZoom = usePreviewViewportModel((state) => state.setZoom);
@@ -27,7 +27,7 @@ export function PreviewZoomControls() {
     <div className="flex items-center gap-0.5">
       <Button
         aria-label={t('zoom.decrease')}
-        disabled={zoom <= PREVIEW_ZOOM_MIN}
+        disabled={!enabled || zoom <= PREVIEW_ZOOM_MIN}
         onClick={zoomOut}
         size="icon-xs"
         variant="ghost"
@@ -39,6 +39,7 @@ export function PreviewZoomControls() {
           <Button
             aria-label={t('zoom.select')}
             className="w-14 px-1 font-mono tabular-nums"
+            disabled={!enabled}
             size="xs"
             variant="ghost"
           >
@@ -59,7 +60,7 @@ export function PreviewZoomControls() {
       </DropdownMenu>
       <Button
         aria-label={t('zoom.increase')}
-        disabled={zoom >= PREVIEW_ZOOM_MAX}
+        disabled={!enabled || zoom >= PREVIEW_ZOOM_MAX}
         onClick={zoomIn}
         size="icon-xs"
         variant="ghost"

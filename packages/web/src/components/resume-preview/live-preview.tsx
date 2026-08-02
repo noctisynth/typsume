@@ -46,14 +46,17 @@ export function LivePreview() {
     let gestureStartZoom = usePreviewViewportModel.getState().zoom;
     const handleWheel = (event: WheelEvent) => {
       if (!event.ctrlKey && !event.metaKey) return;
+      if (!usePreviewModel.getState().artifact) return;
       event.preventDefault();
       zoomByWheel(event.deltaY, event.deltaMode);
     };
     const handleGestureStart = (event: Event) => {
+      if (!usePreviewModel.getState().artifact) return;
       event.preventDefault();
       gestureStartZoom = usePreviewViewportModel.getState().zoom;
     };
     const handleGestureChange = (event: Event) => {
+      if (!usePreviewModel.getState().artifact) return;
       event.preventDefault();
       const scale = (event as Event & { scale?: number }).scale ?? 1;
       setZoom(gestureStartZoom * scale);
