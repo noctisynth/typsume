@@ -1,6 +1,6 @@
 {
   "name": "@typsume/cli",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "type": "module",
   "description": "Data-driven Typst resume compiler — build resume.json/yaml/toml → PDF via WASM (no system typst needed).",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "@iarna/toml": "^2.2.5",
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
-    "@typsume/core": "^0.1.1",
+    "@typsume/core": "^0.1.2",
     "citty": "^0.1.6",
     "colorette": "^2.0.20",
     "consola": "^3.4.2",

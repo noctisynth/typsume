@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.1.6
+
+### Bug Fixes
+
+- [`5bd571d`](https://github.com/noctisynth/typsume/commit/5bd571d73a37138f46190d22dd7323dccb2c9933): Refine CLI configuration export and award spacing
+
+    Describe CLI compatibility at the data format menu level, let users copy a complete project
+    configuration from the typesetting panel, and keep grouped award rows compact.
+
+- [`f09b5c2`](https://github.com/noctisynth/typsume/commit/f09b5c2aa3ff1edca4ef9c356c4f843e7c420f40): Fix dynamic editor sections and award rendering
+
+    Allow expanded form sections to grow when items are added, group awards by date without long
+    timeline rules, and promote resume imports and every download format to the editor header.
+
+- [`c14f2e0`](https://github.com/noctisynth/typsume/commit/c14f2e01ff1087cb5a3c3a22d5e1a88ce5749cfd): Polish editor data actions and conditional sections
+
+    Align grouped awards, omit empty resume sections, move imports back to the form header, provide a
+    compact data download menu, and localize the remaining editor status and font consent copy.
+
+- [`e369ea8`](https://github.com/noctisynth/typsume/commit/e369ea8b4e3ab155ed6f1a8888f65483ff0653bb): Update generated GitHub Actions workflows to current stable action versions.
+
+    New projects now use checkout v6 and upload-artifact v7 so their automated resume builds remain compatible with current GitHub-hosted runners.
+
+
+### New Features
+
+- [`4ab0b02`](https://github.com/noctisynth/typsume/commit/4ab0b027ef91a350bfdc47d6bdf12ba21d9f3774): Share template configuration across CLI and Web
+
+    Define and validate the complete template configuration contract, apply project overrides from
+    typsume.config.toml in the CLI, and keep Web typesetting overrides in an independent persisted
+    model instead of resume metadata.
+
+- [`d77c087`](https://github.com/noctisynth/typsume/commit/d77c087f65948200b449bc524342e19fc089f046): Support portable project photo assets
+
+    Upload and persist PNG or JPEG profile photos under logical assets paths, mount referenced images
+    in both compilers, export complete CLI project archives, and reject unsafe project asset paths.
+
 ## v0.1.5
 
 ### New Features

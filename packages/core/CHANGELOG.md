@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.2
+
+### New Features
+
+- [`4ab0b02`](https://github.com/noctisynth/typsume/commit/4ab0b027ef91a350bfdc47d6bdf12ba21d9f3774): Share template configuration across CLI and Web
+
+    Define and validate the complete template configuration contract, apply project overrides from
+    typsume.config.toml in the CLI, and keep Web typesetting overrides in an independent persisted
+    model instead of resume metadata.
+
 ## v0.1.1
 
 ### New Features
