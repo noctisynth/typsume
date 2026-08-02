@@ -166,7 +166,7 @@
     #for award-date in award-dates [
       #let grouped-awards = data.awards.filter(award => award.date == award-date)
       #let award-rows = ()
-      #for award in grouped-awards {
+      #for (index, award) in grouped-awards.enumerate() {
         let award-copy = block(width: 100%)[
           #set par(leading: 0.32em)
           #text(size: 0.7em, award.title)
@@ -177,21 +177,22 @@
           ]
         ]
         let title-row = grid(
-          columns: (0.35em, 1fr),
+          columns: (2.2em, 0.35em, 1fr),
           gutter: 0.25em,
-          align: (center + top, left + top),
-          circle(radius: 0.1em, fill: rgb_of(colors.theme)),
+          align: (left + top, center + top, left + top),
+          if index == 0 {
+            text(size: 0.7em, fill: rgb_of(colors.secondary), award-date)
+          } else { [] },
+          box(
+            width: 0.35em,
+            height: 0.9em,
+            align(center + horizon, circle(radius: 0.1em, fill: rgb_of(colors.theme))),
+          ),
           award-copy,
         )
         award-rows.push(title-row)
       }
-      #grid(
-        columns: (2.2em, 1fr),
-        gutter: 0.35em,
-        align: (right + top, left + top),
-        text(size: 0.7em, fill: rgb_of(colors.secondary), award-date),
-        stack(spacing: 0.2em, ..award-rows),
-      )
+      #stack(spacing: 0.2em, ..award-rows)
       #v(0.18em)
     ]
   ]
