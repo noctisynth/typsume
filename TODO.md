@@ -195,6 +195,7 @@
 - [x] 荣誉改为年份/圆点/文本同行网格，年份靠左且圆点与标题首行对齐
 - [x] 样式契约新增 `contact-size`，CLI/Web 可独立调节联系方式字号
 - [x] 设计纯路径 Typsume SVG Logo，并替换 Web 临时字母标志与 favicon
+- [x] 修复 Logo 折角重叠路径产生的白色抗锯齿接缝
 - [ ] DoD：浏览器填表出 PDF，与 CLI 同 fixture 不可区分
 
 ## W5+ — 二套模板 / 模板市集 / 分享链接 / e2e / Playwright

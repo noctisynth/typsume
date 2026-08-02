@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img">
   <title>Typsume</title>
   <rect x="2" y="2" width="60" height="60" rx="18" fill="#0b628b"/>
-  <path fill="#fff" d="M18 11h19l11 11v28a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4Z"/>
-  <path fill="#a7d0e2" d="M37 11v8a4 4 0 0 0 4 4h7Z"/>
+  <path fill="#fff" d="M18 11h19v7a5 5 0 0 0 5 5h6v27a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4Z"/>
+  <path fill="#a7d0e2" d="m37 11 11 12h-6.5a4.5 4.5 0 0 1-4.5-4.5Z"/>
   <path fill="#0b628b" d="M21 27h22v6h-8v16h-6V33h-8Z"/>
 </svg>
