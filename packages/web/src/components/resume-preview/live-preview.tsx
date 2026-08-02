@@ -1,17 +1,19 @@
 import { CircleAlert, LoaderCircle, RefreshCw, Type } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFontModel } from '@/models/font-model';
 import { usePhotoModel } from '@/models/photo-model';
 import { usePreviewModel } from '@/models/preview-model';
+import { usePreviewViewportModel } from '@/models/preview-viewport-model';
 import { useResumeModel } from '@/models/resume-model';
 import { useStyleModel } from '@/models/style-model';
 import { FontConsent } from './font-consent';
 import { TypstPreviewDocument } from './typst-preview-document';
 
 export function LivePreview() {
+  const viewportRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const resume = useResumeModel((state) => state.resume);
   const fontPermission = usePreviewModel((state) => state.fontPermission);
@@ -24,6 +26,9 @@ export function LivePreview() {
   const fontRevision = useFontModel((model) => model.revision);
   const photoRevision = usePhotoModel((model) => model.revision);
   const styleRevision = useStyleModel((model) => model.revision);
+  const zoom = usePreviewViewportModel((model) => model.zoom);
+  const setZoom = usePreviewViewportModel((model) => model.setZoom);
+  const zoomByWheel = usePreviewViewportModel((model) => model.zoomByWheel);
 
   useEffect(() => {
     if (fontPermission === 'unknown') return;
@@ -34,10 +39,41 @@ export function LivePreview() {
     return () => clearTimeout(timer);
   }, [compile, fontPermission, fontRevision, photoRevision, resume, styleRevision]);
 
-  if (fontPermission === 'unknown') return <FontConsent />;
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
 
-  if (state === 'error' && !artifact) {
-    return (
+    let gestureStartZoom = usePreviewViewportModel.getState().zoom;
+    const handleWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return;
+      event.preventDefault();
+      zoomByWheel(event.deltaY, event.deltaMode);
+    };
+    const handleGestureStart = (event: Event) => {
+      event.preventDefault();
+      gestureStartZoom = usePreviewViewportModel.getState().zoom;
+    };
+    const handleGestureChange = (event: Event) => {
+      event.preventDefault();
+      const scale = (event as Event & { scale?: number }).scale ?? 1;
+      setZoom(gestureStartZoom * scale);
+    };
+
+    viewport.addEventListener('wheel', handleWheel, { passive: false });
+    viewport.addEventListener('gesturestart', handleGestureStart, { passive: false });
+    viewport.addEventListener('gesturechange', handleGestureChange, { passive: false });
+    return () => {
+      viewport.removeEventListener('wheel', handleWheel);
+      viewport.removeEventListener('gesturestart', handleGestureStart);
+      viewport.removeEventListener('gesturechange', handleGestureChange);
+    };
+  }, [setZoom, zoomByWheel]);
+
+  let content = null;
+  if (fontPermission === 'unknown') {
+    content = <FontConsent />;
+  } else if (state === 'error' && !artifact) {
+    content = (
       <div className="flex min-h-full items-start justify-center p-8 pt-16">
         <Card className="max-w-lg border-destructive/40">
           <CardHeader>
@@ -66,23 +102,32 @@ export function LivePreview() {
         </Card>
       </div>
     );
+  } else {
+    content = (
+      <div className="relative min-h-full min-w-full p-8">
+        {state === 'loading' && !artifact ? (
+          <div className="absolute inset-0 z-10 grid place-items-center bg-muted/60 backdrop-blur-sm">
+            <div className="flex items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm shadow-sm">
+              <LoaderCircle className="size-4 animate-spin" />
+              {phase ? t(`preview.phase.${phase}`) : t('preview.preparing')}
+            </div>
+          </div>
+        ) : null}
+        {artifact ? (
+          <div
+            className="mx-auto overflow-hidden rounded-sm bg-white shadow-xl [&_.typst-app]:!h-auto"
+            style={{ width: `min(${zoom}%, ${(42 * zoom) / 100}rem)` }}
+          >
+            <TypstPreviewDocument artifact={artifact} fill="#ffffff" />
+          </div>
+        ) : null}
+      </div>
+    );
   }
 
   return (
-    <div className="relative min-h-full p-8">
-      {state === 'loading' && !artifact ? (
-        <div className="absolute inset-0 z-10 grid place-items-center bg-muted/60 backdrop-blur-sm">
-          <div className="flex items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm shadow-sm">
-            <LoaderCircle className="size-4 animate-spin" />
-            {phase ? t(`preview.phase.${phase}`) : t('preview.preparing')}
-          </div>
-        </div>
-      ) : null}
-      {artifact ? (
-        <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-sm bg-white shadow-xl [&_.typst-app]:!h-auto">
-          <TypstPreviewDocument artifact={artifact} fill="#ffffff" />
-        </div>
-      ) : null}
+    <div ref={viewportRef} className="min-h-full min-w-full">
+      {content}
     </div>
   );
 }

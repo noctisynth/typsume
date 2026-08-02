@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ResumeForm } from '@/components/resume-form/resume-form';
 import { LivePreview } from '@/components/resume-preview/live-preview';
+import { PreviewZoomControls } from '@/components/resume-preview/preview-zoom-controls';
 import { ResumeImportAction } from '@/components/resume-transfer/resume-data-actions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,9 +56,12 @@ export default function EditorPage() {
               />
               {t('editor.preview')}
             </span>
-            <span>{phase ? t(`preview.phase.${phase}`) : '100%'}</span>
+            <div className="flex items-center gap-2">
+              {phase ? <span>{t(`preview.phase.${phase}`)}</span> : null}
+              <PreviewZoomControls />
+            </div>
           </div>
-          <ScrollArea className="h-[calc(100%-2.75rem)]">
+          <ScrollArea className="h-[calc(100%-2.75rem)]" horizontal>
             <LivePreview />
           </ScrollArea>
         </section>

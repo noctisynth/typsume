@@ -60,6 +60,13 @@ const resources = {
           'compiling-pdf': '正在编译 PDF',
         },
       },
+      zoom: {
+        title: '预览缩放',
+        decrease: '缩小预览',
+        increase: '放大预览',
+        select: '选择预览比例',
+        reset: '重置',
+      },
       section: {
         basics: '基本信息',
         skills: '技能',
@@ -208,6 +215,13 @@ const resources = {
           'compiling-preview': 'Compiling preview',
           'compiling-pdf': 'Compiling PDF',
         },
+      },
+      zoom: {
+        title: 'Preview zoom',
+        decrease: 'Zoom out',
+        increase: 'Zoom in',
+        select: 'Select preview zoom',
+        reset: 'Reset',
       },
       section: {
         basics: 'Basics',
