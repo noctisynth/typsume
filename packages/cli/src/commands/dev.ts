@@ -1,5 +1,5 @@
 import { existsSync, statSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { relative, resolve } from 'node:path';
 import { defineCommand } from 'citty';
 import { ExitCode } from '../errors.ts';
 import { createFontDownloadConsent } from '../interaction.ts';
@@ -14,6 +14,10 @@ export interface WatchReport {
 
 export interface DevWatcher {
   close(): void;
+}
+
+export function displayWatchPath(path: string, cwd = process.cwd()): string {
+  return relative(cwd, path) || '.';
 }
 
 function fileSnapshot(path: string): string {
@@ -119,7 +123,9 @@ export default defineCommand({
       },
       (error) => logger.error(error.message),
     );
-    logger.info(`Watching ${formatPath(sourcePath)} and ${formatPath(configPath)} for changes...`);
+    logger.info(
+      `Watching ${formatPath(displayWatchPath(sourcePath))} and ${formatPath(displayWatchPath(configPath))} for changes...`,
+    );
 
     process.on('SIGINT', () => {
       for (const watcher of watchers) watcher.close();

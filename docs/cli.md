@@ -208,6 +208,7 @@ CLI 不提供 `--debug` 或 `typsume.log`。编译失败时把可读 diagnostics
 - 防抖 300ms 后重建
 - 初始编译与后续重建复用 `build` 的完整阶段进度、完成状态和最终产物输出
 - 初始编译失败时保持监听，允许修改 source 或配置后恢复
+- 监听提示中的 source 与配置路径相对于命令当前工作目录显示；内部监听仍使用绝对路径
 - 不做浏览器 preview（CLI 不做 Web 集成）
 
 ## 6. `typsume templates`

@@ -2,7 +2,12 @@ import { afterEach, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
-import { createDebouncedRebuild, startDevWatch, type WatchReport } from '../src/commands/dev.ts';
+import {
+  createDebouncedRebuild,
+  displayWatchPath,
+  startDevWatch,
+  type WatchReport,
+} from '../src/commands/dev.ts';
 
 const directories: string[] = [];
 
@@ -32,6 +37,13 @@ test('dev rebuild trigger debounces changes and reports a build failure', async 
     trigger();
   });
   expect(builds).toBe(1);
+});
+
+test('dev displays watched files relative to the command working directory', () => {
+  const cwd = resolve('/workspace', 'resume-project');
+  expect(displayWatchPath(resolve(cwd, 'resume.toml'), cwd)).toBe('resume.toml');
+  expect(displayWatchPath(resolve(cwd, 'typsume.config.toml'), cwd)).toBe('typsume.config.toml');
+  expect(displayWatchPath(cwd, cwd)).toBe('.');
 });
 
 test('dev builds once before watching source and project configuration', async () => {

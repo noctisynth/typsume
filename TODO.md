@@ -123,6 +123,7 @@
   - [x] 构建阶段改为完成后输出 tick，最终产物使用相对路径展示
   - [x] 使用 `@clack/prompts` 将多行 tick 替换为 indicatif 式单行动态 spinner
   - [x] spinner 单独展示任务完成状态，Consola 单独展示最终产物
+  - [x] `dev` 监听提示使用相对于当前工作目录的 source/config 路径
   - [x] 使用 `colorette` 为人类可读输出的路径、耗时和结果信息局部着色
   - [x] CLI 子进程测试使用独立临时 HOME/XDG，禁止把 Bun 缓存写入源码目录
   - [x] 交互策略测试隔离 `GITHUB_ACTIONS`，本地复现并覆盖 CI 环境
