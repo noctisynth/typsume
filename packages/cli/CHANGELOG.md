@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.9
+
+### Bug Fixes
+
+- [`b17c2b5`](https://github.com/noctisynth/typsume/commit/b17c2b592a72a23d305b78c7c271480b23df4e21): Show concise relative paths in dev watch status.
+
+    `typsume dev` now reports the watched resume source and project configuration relative to the command working directory while retaining absolute paths internally for reliable file monitoring.
+
 ## v0.1.8
 
 ### Bug Fixes
