@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.8
+
+### Bug Fixes
+
+- [`be0dfbb`](https://github.com/noctisynth/typsume/commit/be0dfbb56d8ed7120508012ac6b670f99f8cf5d7): Build immediately and watch project configuration in dev mode.
+
+    `typsume dev` now performs an initial compilation, rebuilds for both source and `typsume.config.toml` changes, survives atomic file replacement, and shares the exact progress and artifact output used by `typsume build`.
+
 ## v0.1.7
 
 ### Bug Fixes
